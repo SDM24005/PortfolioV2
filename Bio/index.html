@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bio - Samuele De March</title>
+<style>
+@font-face {
+font-family: 'FormaDJRDisplay';
+src: url('/fonts/FormaDJRDisplay-Regular-Testing.otf') format('opentype');
+font-weight: normal;
+font-style: normal;
+}
+
+    body {
+        margin: 0;
+        font-family: sans-serif;
+        background-color: #000000;
+        cursor: none !important;
+    }
+
+    /* Force regular weight across common elements */
+    b, strong, h1, h2, h3, h4, h5, h6 { font-weight: normal; }
+    .hover-underline { text-decoration: underline !important; text-underline-offset: 2px; }
+
+    a, button, input[type="button"], input[type="submit"], select, textarea, label[for], #menu-trigger,
+    .title-gallery,
+    .text-column,
+    .image-column { /* Added .image-column for completeness, though not interactive */
+        cursor: none !important;
+    }
+
+    #custom-cursor {
+        position: fixed;
+        width: 12px;
+        height: 12px;
+        background-color: grey;
+        border-radius: 50%;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        transition: width 0.15s ease-out, height 0.15s ease-out, background-color 0.15s ease-out;
+        z-index: 99999;
+        display: none;
+    }
+
+    #custom-cursor.hover {
+        width: 24px;
+        height: 24px;
+        background-color: white;
+    }
+
+    .fixed-header { /* Contenitore semantico */ }
+
+    .header-text {
+        font-family: 'FormaDJRDisplay', sans-serif;
+        font-size: 20px;
+        font-weight: normal;
+        color: white;
+        line-height: 1.2;
+        margin: 0;
+        text-decoration: none;
+        display: block;
+    }
+
+    .main-title-name {
+        position: fixed;
+        top: 15px;
+        z-index: 1001;
+        mix-blend-mode: difference; /* Negative style over images */
+    }
+
+    .header-line {
+        position: fixed;
+        background-color: white;
+        height: 1px;
+        z-index: 1000;
+    }
+
+    #line-1 {
+        top: calc(15px + (20px * 1.2) + 10px); /* 49px */
+    }
+
+    .sub-links-block {
+        position: fixed;
+        top: calc( (15px + (20px * 1.2) + 10px) + 1px + 10px ); /* 60px */
+        z-index: 1001;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        display: none;
+    }
+
+    #line-2 { /* For 2 links: Home, Galleria */
+        top: calc(
+            ( (15px + (20px * 1.2) + 10px) + 1px + 10px ) /* 60px */
+            + (20px * 1.2)  /* Link 1 = 24px */
+            + 8px           /* Gap */
+            + (20px * 1.2)  /* Link 2 = 24px */
+            + 10px          /* Padding sotto i link */
+        ); /* 126px */
+        display: none;
+    }
+
+    .title-gallery { /* Will display "Bio" */
+        position: fixed;
+        top: 15px;
+        z-index: 1001;
+        display: block;
+        /* cursor: default; already handled by global rule */
+    }
+
+    /* Default 3-Column Horizontal Alignments for Header */
+    .main-title-name,
+    .sub-links-block {
+        left: calc(8px + (100vw - 32px) / 3 + 8px);
+    }
+    .title-gallery { /* This will be "Bio" title */
+        left: calc(8px + 2 * ((100vw - 32px) / 3) + 2 * 8px);
+    }
+    .header-line {
+        left: 8px;
+        right: 8px;
+    }
+
+    .content-wrapper {
+        display: grid;
+        /* Three equal columns aligned with site grid (8px sides, 3 columns with 8px gaps) */
+        grid-template-columns: repeat(3, calc((100vw - 32px) / 3));
+        align-items: start;
+        column-gap: 8px;
+        padding: 8px;
+        padding-top: 150px; /* Adjusted for 2-link menu */
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .text-column {
+        font-family: 'FormaDJRDisplay', sans-serif;
+        font-size: 20px;
+        font-weight: normal;
+        color: white;
+        line-height: 1.2;
+        padding: 0px; /* Original style from konn.html */
+        /* cursor: default; already handled by global rule */
+        /* margin-top: -4px; /* Optional: if needed for alignment */
+        box-sizing: border-box;
+        grid-column: 2; /* Center column on desktop (3-col) */
+    }
+     .text-column > p:first-child {
+        margin-top: 0; /* Ensure no extra margin at the top of the text */
+    }
+
+    .image-column {
+        width: 100%;
+        box-sizing: border-box;
+        grid-column: 3; /* Right column on desktop (3-col) */
+    }
+    .image-column img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    /* Media Queries for Header Elements (copied from progetti/konn.html and adjusted if needed) */
+    @media (max-width: 992px) {
+        .main-title-name,
+        .sub-links-block { left: 10px; }
+        .title-gallery { left: calc(10px + (100vw - 28px) / 2 + 8px); }
+        .header-line { left: 10px; right: 10px; }
+
+        .content-wrapper {
+            /* Two equal columns aligned to site grid with 10px sides and 8px gap */
+            grid-template-columns: repeat(2, calc((100vw - 28px) / 2));
+            column-gap: 8px;
+            padding: 10px;
+            padding-top: 150px; /* Consistent with default for 2-link menu */
+        }
+        .text-column { grid-column: 1; }
+        .image-column { grid-column: 2; }
+    }
+
+    @media (max-width: 576px) {
+        .main-title-name,
+        .sub-links-block { left: 10px; }
+        .title-gallery { /* "Bio" title positioning when menu open */
+            top: calc(
+                ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
+                + (20px * 1.2 * 2) /* 2 links = 48px */
+                + (8px * 1)        /* 1 gap = 8px */
+                + 10px             /* Padding */
+                + 1px              /* line-2 height */
+                + 10px             /* Gap before title */
+            ); /* 137px */
+            left: 10px;
+            transition: top 0.6s ease-out;
+        }
+
+        .content-wrapper {
+            grid-template-columns: 1fr; /* Single column */
+            row-gap: 20px; /* Space between stacked text and image */
+            padding-top: calc(
+                137px            /* .title-gallery top (new) */
+                + (20px * 1.2)   /* "Bio" title height = 24px */
+                + 15px           /* Gap before content (consistent with Galleria 2-link) */
+            ); /* 176px (menu open) */
+            transition: padding-top 0.6s ease-out;
+        }
+        .text-column { grid-column: 1; grid-row: 1; } /* Text on top */
+        .image-column { grid-column: 1; grid-row: 2; } /* Image below */
+
+        .title-gallery.menu-closed {
+            top: calc( (15px + (20px * 1.2) + 10px) + 1px + 10px); /* 60px */
+        }
+        .content-wrapper.menu-closed {
+             /* To prevent jump, padding-top should be 176px, same as when menu open */
+             padding-top: 176px;
+        }
+    }
+
+    /* Animazioni */
+    @keyframes fadeInFromTop { from { opacity: 0; transform: translateY(-25px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-on-load { opacity: 0; animation: fadeInFromTop 0.8s ease-out forwards; }
+    .animate-delay-img { animation-delay: 1.2s; } /* Changed from 0.4s to 1.2s */
+    .animate-delay-bio-text { animation-delay: 0.8s; } /* Delay for bio text column */
+
+    @keyframes fadeInFromTopMenu { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOutToTopMenu { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
+    .sub-links-block.animate-menu-open,
+    #line-2.animate-menu-open { opacity: 0; animation: fadeInFromTopMenu 0.6s ease-out forwards; pointer-events: auto; }
+    .sub-links-block.animate-menu-close,
+    #line-2.animate-menu-close { opacity: 1; animation: fadeOutToTopMenu 0.6s ease-out forwards; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="custom-cursor"></div>
+
+<header class="fixed-header">
+    <h1 class="header-text main-title-name animate-on-load" id="menu-trigger">Samuele De March</h1>
+    <div class="header-line animate-on-load" id="line-1"></div>
+
+    <div class="sub-links-block" id="dropdown-links">
+    <a href="../index.html" class="header-text sub-title-link">Home</a>
+    <a href="../Galleria/index.html" class="header-text sub-title-link">Galleria</a>
+    </div>
+    <div class="header-line" id="line-2"></div>
+    <span class="header-text title-gallery animate-on-load">Bio</span>
+</header>
+
+<div class="content-wrapper">
+    <div class="text-column animate-on-load animate-delay-bio-text">
+        <p>Questo è un testo di esempio per la pagina Bio. Qui verranno inserite informazioni sulla biografia.</p>
+        <p>Ulteriori dettagli possono essere aggiunti qui, organizzati in paragrafi per una migliore leggibilità.</p>
+        <p>Si possono includere esperienze, studi, filosofia di design, ecc. Questo testo è un po' più lungo per simulare un contenuto reale e vedere come si adatta allo spazio disponibile. Assicuriamoci che la colonna di testo e quella dell'immagine si allineino correttamente e che la responsività sia gestita come previsto nelle media query.</p>
+    </div>
+    <div class="image-column animate-on-load animate-delay-img">
+    <img src="../Galleria/_MG_8652-2.jpg" alt="Immagine Bio">
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const menuTrigger = document.getElementById('menu-trigger');
+    const dropdownLinks = document.getElementById('dropdown-links');
+    const line2 = document.getElementById('line-2');
+    const titleGallery = document.querySelector('.title-gallery'); // Will select the "Bio" title
+    const contentWrapper = document.querySelector('.content-wrapper');
+    let menuAnimating = false;
+
+    function updateMenuTriggerCursor() {
+        if (!menuTrigger) return;
+        if (window.scrollY === 0) {
+            menuTrigger.classList.remove('clickable');
+        } else {
+            menuTrigger.classList.add('clickable');
+        }
+    }
+
+    function applyOpenStyles(element, displayType) {
+        if (!element) return;
+        element.style.display = displayType;
+        element.classList.remove('animate-menu-close');
+        element.classList.add('animate-menu-open');
+        element.classList.add('is-open');
+        element.style.pointerEvents = 'auto';
+        menuAnimating = true;
+    }
+
+    function applyCloseStyles(element) {
+        if (!element) return;
+        element.classList.remove('animate-menu-open');
+        element.classList.add('animate-menu-close');
+        element.style.pointerEvents = 'none';
+        menuAnimating = true;
+    }
+
+    function onOpenAnimationEnd(event) {
+        if ((event.target === dropdownLinks || event.target === line2) && event.animationName === 'fadeInFromTopMenu') {
+            event.target.classList.remove('animate-menu-open');
+            if (dropdownLinks && line2 && !dropdownLinks.classList.contains('animate-menu-open') && !line2.classList.contains('animate-menu-open')) {
+                menuAnimating = false;
+            }
+        }
+    }
+    
+    function updateGalleryPositioning() { // Renaming this to updateContentPositioning might be better
+        if (!titleGallery || !contentWrapper) return;
+
+        if (window.innerWidth <= 576) {
+            if (dropdownLinks && dropdownLinks.classList.contains('is-open')) {
+                titleGallery.classList.remove('menu-closed');
+                contentWrapper.classList.remove('menu-closed');
+            } else {
+                titleGallery.classList.add('menu-closed');
+                contentWrapper.classList.add('menu-closed');
+            }
+        } else {
+            titleGallery.classList.remove('menu-closed');
+            contentWrapper.classList.remove('menu-closed');
+        }
+    }
+
+    function refinedOnCloseAnimationEnd(event) {
+        if ((event.target === dropdownLinks || event.target === line2) && event.animationName === 'fadeOutToTopMenu') {
+            event.target.style.display = 'none';
+            event.target.classList.remove('is-open');
+            event.target.classList.remove('animate-menu-close');
+            if (dropdownLinks && line2 && !dropdownLinks.classList.contains('animate-menu-close') && !line2.classList.contains('animate-menu-close')) {
+                menuAnimating = false;
+            }
+            if (dropdownLinks && !dropdownLinks.classList.contains('is-open') && line2 && !line2.classList.contains('is-open')) {
+                updateGalleryPositioning();
+            }
+        }
+    }
+
+    if (dropdownLinks) {
+        dropdownLinks.addEventListener('animationend', (e) => {
+            if (e.animationName === 'fadeInFromTopMenu') onOpenAnimationEnd(e);
+            if (e.animationName === 'fadeOutToTopMenu') refinedOnCloseAnimationEnd(e);
+        });
+    }
+    if (line2) {
+        line2.addEventListener('animationend', (e) => {
+            if (e.animationName === 'fadeInFromTopMenu') onOpenAnimationEnd(e);
+            if (e.animationName === 'fadeOutToTopMenu') refinedOnCloseAnimationEnd(e);
+        });
+    }
+
+    function openMenu() {
+        if (menuAnimating || (dropdownLinks && dropdownLinks.classList.contains('is-open'))) return;
+        applyOpenStyles(dropdownLinks, 'flex');
+        applyOpenStyles(line2, 'block');
+        updateGalleryPositioning();
+    }
+
+    function closeMenu() {
+        if (menuAnimating || !(dropdownLinks && dropdownLinks.classList.contains('is-open'))) return;
+        applyCloseStyles(dropdownLinks);
+        applyCloseStyles(line2);
+
+        if (window.innerWidth <= 576 && titleGallery) {
+            titleGallery.classList.add('menu-closed');
+        }
+    }
+    
+    if (dropdownLinks && line2) {
+        const initialMenuLoadDelay = 400;
+        setTimeout(function() {
+            openMenu();
+            updateMenuTriggerCursor();
+        }, initialMenuLoadDelay);
+    } else {
+        console.warn('Elementi dropdownLinks o line2 non trovati per apertura iniziale.');
+    }
+
+    if (menuTrigger && dropdownLinks && line2) {
+        menuTrigger.addEventListener('click', function() {
+            if (dropdownLinks.classList.contains('is-open')) {
+                if (window.scrollY !== 0) {
+                    closeMenu();
+                }
+            } else {
+                openMenu();
+            }
+        });
+    } else {
+        console.error('Elementi del menu (trigger, dropdown, line2) non trovati per il toggle.');
+    }
+
+    // Removed masonry item animation logic
+
+    window.addEventListener('scroll', function() {
+        if (!dropdownLinks || !line2) return;
+        if (menuAnimating) return;
+        updateMenuTriggerCursor();
+        if (window.scrollY === 0) {
+            if (!dropdownLinks.classList.contains('is-open')) {
+                openMenu();
+            }
+        } else {
+            if (dropdownLinks.classList.contains('is-open')) {
+                closeMenu();
+            }
+        }
+    });
+
+    window.addEventListener('resize', updateGalleryPositioning);
+    updateMenuTriggerCursor();
+
+    // --- Custom Cursor Logic ---
+    const customCursorDiv = document.getElementById('custom-cursor');
+    if (customCursorDiv) {
+        document.addEventListener('mousemove', function(e) {
+            customCursorDiv.style.display = 'block';
+            customCursorDiv.style.left = e.clientX + 'px';
+            customCursorDiv.style.top = e.clientY + 'px';
+        });
+        document.addEventListener('mouseleave', function() { customCursorDiv.style.display = 'none'; });
+        document.addEventListener('mouseenter', function() { customCursorDiv.style.display = 'block'; });
+        const hoverables = document.querySelectorAll('a, button, #menu-trigger');
+        hoverables.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                let applyHover = false;
+                if (el.tagName === 'A' || el.tagName === 'BUTTON') {
+                    applyHover = true;
+                } else if (el.id === 'menu-trigger') {
+                    if (el.classList.contains('clickable')) {
+                        applyHover = true;
+                    }
+                }
+                if (applyHover) {
+                    customCursorDiv.classList.add('hover');
+                    el.classList.add('hover-underline');
+                }
+            });
+            el.addEventListener('mouseleave', () => {
+                customCursorDiv.classList.remove('hover');
+                el.classList.remove('hover-underline');
+            });
+        });
+    }
+});
+</script>
+</body>
+</html>
