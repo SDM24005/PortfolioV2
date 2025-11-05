@@ -623,10 +623,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 const baseDelayForImages = 0.9;
                 entries.forEach((src, index) => {
                     const file = src.split('/').pop();
-                    // Convert relative path to absolute path from root
-                    let absolutePath = src.replace(/^\.\.\//, '/');
-                    // Encode spaces in path for URL (but keep / separators)
-                    absolutePath = absolutePath.split('/').map(segment => encodeURIComponent(segment)).join('/');
+                    // Use relative path directly like in gallery - convert from "../Progetti/Progetto 2/img/file" to "img/file"
+                    let relativePath = src;
+                    if (relativePath.includes('/img/')) {
+                        // Extract just the img/filename part
+                        relativePath = 'img/' + file;
+                    } else {
+                        // Fallback: remove ../Progetti/Progetto X/ part
+                        relativePath = relativePath.replace(/^\.\.\/Progetti[^\/]*\//, '').replace(/^\.\.\/Progetti Open[^\/]*\//, '');
+                    }
                     const lower = file.toLowerCase();
                     const item = document.createElement('div');
                     item.className = 'masonry-item';
@@ -653,7 +658,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             video.preload = 'metadata';
                         }
                         const source = document.createElement('source');
-                        source.src = absolutePath;
+                        source.src = relativePath;
                         source.type = lower.endsWith('.mp4') ? 'video/mp4' : 'video/webm';
                         video.appendChild(source);
                         video.classList.add('fade-up');
@@ -667,7 +672,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else if (lower.endsWith('.pdf')) {
                         // Use iframe for better mobile compatibility
                         const iframe = document.createElement('iframe');
-                        iframe.src = `${absolutePath}#toolbar=0&navpanes=0`;
+                        iframe.src = `${relativePath}#toolbar=0&navpanes=0`;
                         iframe.className = 'pdf-view fade-up blur-up-media';
                         iframe.classList.add('animate-on-load');
                         iframe.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
@@ -680,7 +685,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         item.appendChild(iframe);
                     } else {
                         const img = document.createElement('img');
-                        img.src = absolutePath;
+                        img.src = relativePath;
                         img.alt = file;
                         img.loading = 'lazy';
                         img.decoding = 'async';
