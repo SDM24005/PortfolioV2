@@ -621,14 +621,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const baseDelayForImages = 0.9;
                 entries.forEach((src, index) => {
                     const file = src.split('/').pop();
-                    // Use relative path directly like in gallery - extract img/ part
-                    let relativePath = src;
-                    const imgIndex = relativePath.indexOf('/img/');
-                    if (imgIndex !== -1) {
-                        relativePath = relativePath.substring(imgIndex + 1); // Gets "img/file.jpg"
-                    } else {
-                        relativePath = 'img/' + file;
-                    }
+                    // Convert relative path from projects.js to absolute path from repository root
+                    // "../Progetti Open/Progetto 2/img/file.jpg" -> "/Progetti Open/Progetto 2/img/file.jpg"
+                    let absolutePath = src.replace(/^\.\.\//, '/');
                     const lower = file.toLowerCase();
                     const item = document.createElement('div');
                     item.className = 'masonry-item';
@@ -655,7 +650,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             video.preload = 'metadata';
                         }
                         const source = document.createElement('source');
-                        source.src = relativePath;
+                        source.src = absolutePath;
                         source.type = lower.endsWith('.mp4') ? 'video/mp4' : 'video/webm';
                         video.appendChild(source);
                         video.classList.add('fade-up');
@@ -669,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else if (lower.endsWith('.pdf')) {
                         // Use iframe for better mobile compatibility
                         const iframe = document.createElement('iframe');
-                        iframe.src = `${relativePath}#toolbar=0&navpanes=0`;
+                        iframe.src = `${absolutePath}#toolbar=0&navpanes=0`;
                         iframe.className = 'pdf-view fade-up blur-up-media';
                         iframe.classList.add('animate-on-load');
                         iframe.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
@@ -682,7 +677,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         item.appendChild(iframe);
                     } else {
                         const img = document.createElement('img');
-                        img.src = relativePath;
+                        img.src = absolutePath;
                         img.alt = file;
                         img.loading = 'lazy';
                         img.decoding = 'async';
