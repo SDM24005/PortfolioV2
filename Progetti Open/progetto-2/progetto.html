@@ -15,7 +15,7 @@ font-style: normal;
     body {
         margin: 0;
         font-family: sans-serif;
-        background-color: #000000;
+        background-color: #ffffff;
         cursor: none !important; /* Hide system cursor for the body */
     }
 
@@ -46,7 +46,7 @@ font-style: normal;
     #custom-cursor.hover {
         width: 24px;
         height: 24px;
-        background-color: white;
+        background-color: black;
     }
 
 
@@ -55,7 +55,7 @@ font-style: normal;
         font-family: 'FormaDJRDisplay', sans-serif;
         font-size: 20px;
         font-weight: normal;
-        color: white;
+        color: #000000;
         line-height: 1.2; /* Altezza riga effettiva ~24px */
         margin: 0;
         text-decoration: none;
@@ -67,24 +67,20 @@ font-style: normal;
         top: 15px;
         z-index: 1001;
         /* cursor: pointer; Now overridden by global rule */
-        mix-blend-mode: difference; /* Negative style over images */
+        mix-blend-mode: difference;
+        color: #ffffff;
     }
 
     .header-line {
         position: fixed;
-        background-color: white;
+        background-color: #000000;
         height: 1px;
         z-index: 1000;
     }
 
-    /* Apply negative blend to all header texts */
-    .fixed-header .header-text { mix-blend-mode: difference; }
-    /* Ensure dropdown menu links also blend (override if needed) */
-    .sub-links-block .header-text { mix-blend-mode: difference !important; }
-
     /* Project tags bar (below header, above images) */
     .project-tags { padding: 8px; }
-    .tag-chip { display: inline-block; border: 1px solid #fff; color: #fff; padding: 2px 8px; margin-right: 6px; margin-bottom: 6px; text-decoration: none; }
+    .tag-chip { display: inline-block; border: 1px solid #000; color: #000; padding: 2px 8px; margin-right: 6px; margin-bottom: 6px; text-decoration: none; }
     @media (max-width: 992px) { .project-tags { padding: 10px; } }
 
     #line-1 {
@@ -116,6 +112,8 @@ font-style: normal;
         z-index: 1001;
         display: block;
         cursor: default; /* Prevent text selection cursor */
+        mix-blend-mode: difference;
+        color: #ffffff;
         /* La transizione per 'top' verrà definita specificamente per max-width: 576px */
     }
 
@@ -154,7 +152,7 @@ font-style: normal;
 
     /* Footer divider and back-to-top alignment */
     .gallery-footer { padding-bottom: 24px; }
-    .footer-line { height: 1px; background-color: #ffffff; margin-left: 8px; margin-right: 8px; }
+    .footer-line { height: 1px; background-color: #000000; margin-left: 8px; margin-right: 8px; }
     .back-to-top { display: block; margin-top: 6px; text-decoration: none; }
     /* Default (desktop): align to left edge of second content column */
     .back-to-top { margin-left: calc(8px + (2 * ((100vw - 32px) / 3) + 8px) + 8px); }
@@ -165,7 +163,7 @@ font-style: normal;
         font-family: 'FormaDJRDisplay', sans-serif;
         font-size: 20px;
         font-weight: normal;
-        color: white;
+        color: #000000;
         line-height: 1.2;
         padding: 0px; /* User previously set this, ensures all paddings are 0 */
         padding-top: 0; /* Explicitly set padding-top to 0 */
@@ -624,14 +622,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 entries.forEach((src, index) => {
                     const file = src.split('/').pop();
                     // Use relative path from current project directory
-                    // "../Progetti/Progetto 2/img/file.jpg" -> "./img/file.jpg" (relative to current file)
-                    // Using ./ prefix ensures proper relative path resolution even with spaces in folder names
+                    // "../Progetti Open/Progetto 2/img/file.jpg" -> "img/file.jpg" (relative to current file)
                     let relativePath = src;
                     const imgIndex = relativePath.indexOf('/img/');
                     if (imgIndex !== -1) {
-                        relativePath = './' + relativePath.substring(imgIndex + 1); // Gets "./img/file.jpg"
+                        relativePath = relativePath.substring(imgIndex + 1); // Gets "img/file.jpg"
                     } else {
-                        relativePath = './img/' + file;
+                        relativePath = 'img/' + file;
                     }
                     const lower = file.toLowerCase();
                     const item = document.createElement('div');

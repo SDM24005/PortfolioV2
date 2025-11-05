@@ -49,7 +49,9 @@ font-style: normal;
         background-color: black;
     }
 
-
+    .fixed-header {
+        /* Contenitore semantico */
+    }
 
     .header-text {
         font-family: 'FormaDJRDisplay', sans-serif;
@@ -78,11 +80,6 @@ font-style: normal;
         z-index: 1000;
     }
 
-    /* Project tags bar (below header, above images) */
-    .project-tags { padding: 8px; }
-    .tag-chip { display: inline-block; border: 1px solid #000; color: #000; padding: 2px 8px; margin-right: 6px; margin-bottom: 6px; text-decoration: none; }
-    @media (max-width: 992px) { .project-tags { padding: 10px; } }
-
     #line-1 {
         top: calc(15px + (20px * 1.2) + 10px); /* 15px (margin) + 24px (text) + 10px (gap) = 49px */
     }
@@ -110,10 +107,10 @@ font-style: normal;
         position: fixed;
         top: 15px; /* Posizione default per schermi larghi */
         z-index: 1001;
-        display: block;
-        cursor: default; /* Prevent text selection cursor */
         mix-blend-mode: difference;
         color: #ffffff;
+        display: block;
+        cursor: default; /* Prevent text selection cursor */
         /* La transizione per 'top' verrà definita specificamente per max-width: 576px */
     }
 
@@ -172,37 +169,17 @@ font-style: normal;
         cursor: default; /* Prevent text selection cursor */
     }
 
-    /* Make tags/meta unselectable */
-    #project-meta, #project-meta * { -webkit-user-select: none; -ms-user-select: none; user-select: none; }
-
     .text-column > p:first-child {
         margin-top: 0;
     }
 
     .masonry-item { display: inline-block; width: 100%; margin-bottom: 4px; overflow: hidden; break-inside: avoid; -webkit-column-break-inside: avoid; page-break-inside: avoid; position: relative; }
-    .masonry-item.hidden-before-anim { opacity: 0; visibility: hidden; }
     .masonry-item a { display: block; text-decoration: none; }
     .masonry-item img { width: 100%; height: auto; display: block; transition: transform 0.3s ease, filter 0.3s ease; }
 
     /* Blur-up effect for images */
     .blur-up { filter: blur(20px); transform: scale(1.02); }
     .blur-up.loaded { filter: blur(0); transform: scale(1); transition: filter 0.4s ease, transform 0.4s ease; }
-
-    /* Responsive media */
-    .masonry-item video { width: 100%; height: auto; display: block; }
-    .masonry-item embed.pdf-view { width: 100%; height: 75vh; display: block; background: #111; }
-    /* PDF iframe for better mobile compatibility */
-    .masonry-item iframe.pdf-view { width: 100%; height: 75vh; display: block; border: none; background: #111; }
-    @media (max-width: 576px) {
-        .masonry-item iframe.pdf-view { height: 60vh; }
-    }
-
-    /* Generic fade-up for non-image media */
-    .fade-up { opacity: 0; transform: translateY(12px); }
-    .fade-up.loaded { opacity: 1; transform: translateY(0); transition: opacity 0.5s ease, transform 0.5s ease; }
-    .blur-up-media { filter: blur(10px); transform: scale(1.01); }
-    .blur-up-media.loaded { filter: blur(0); transform: scale(1); transition: filter 0.4s ease, transform 0.4s ease; }
-    .hidden-before-anim { opacity: 0 !important; visibility: hidden; }
 
     /* --- Media Query per schermi più stretti --- */
 
@@ -300,7 +277,7 @@ font-style: normal;
             transition: none;
             grid-row: 2;
         }
-        /* Stack and add spacing to avoid overlap */
+        /* Align back-to-top to left of the single column */
         .back-to-top { margin-left: 10px; margin-top: 6px; }
         .contact-info { margin-left: 10px; margin-top: 10px; }
 
@@ -313,7 +290,9 @@ font-style: normal;
             top: calc( (15px + (20px * 1.2) + 10px) + 1px + 10px); /* 60px */
         }
 
-
+        .masonry-container.menu-closed {
+            /* padding-top: calc(...); Removed */
+        }
     }
 
     /* Animazioni (invariate) */
@@ -331,6 +310,11 @@ font-style: normal;
     #line-2.animate-menu-open { opacity: 0; animation: fadeInFromTopMenu 0.6s ease-out forwards; pointer-events: auto; }
     .sub-links-block.animate-menu-close,
     #line-2.animate-menu-close { opacity: 1; animation: fadeOutToTopMenu 0.6s ease-out forwards; pointer-events: none; }
+
+    /* Project tags bar (below header, above images) */
+    .project-tags { padding: 8px; }
+    .tag-chip { display: inline-block; border: 1px solid #000; color: #000; padding: 2px 8px; margin-right: 6px; margin-bottom: 6px; text-decoration: none; }
+    @media (max-width: 992px) { .project-tags { padding: 10px; } }
 
     @media (pointer: coarse) {
         #custom-cursor {
@@ -381,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const meta = document.getElementById('project-meta');
         if (textCol && meta && typeof projects !== 'undefined') {
             const pathParts = window.location.pathname.split('/').filter(Boolean);
-            const projectFolder = decodeURIComponent(pathParts.slice(-2, -1)[0]);
+            const projectFolder = decodeURIComponent(pathParts.slice(-2, -1)[0]); // e.g., "Progetto 1"
             const data = projects.find(p => p.page.includes(projectFolder));
             if (data) {
                 const dateText = (data.startDate || data.endDate) ? `${data.startDate || ''}${data.startDate && data.endDate ? ' – ' : ''}${data.endDate || ''}` : '';
@@ -389,7 +373,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (dateText) parts.push(`${dateText}`);
                 meta.innerHTML = parts.join('<br>');
 
-                // Populate tags bar
                 const bar = document.getElementById('project-tags-bar');
                 if (bar) {
                     bar.style.display = 'none';
@@ -612,99 +595,36 @@ document.addEventListener('DOMContentLoaded', function() {
             const descEl = document.getElementById('project-description');
             if (descEl && data.description) descEl.textContent = data.description;
 
-            // Images/Media -> render gallery
-            if (masonryContainer) {
+            // Images -> local img folder
+            if (masonryContainer && Array.isArray(data.images)) {
                 masonryContainer.innerHTML = '';
-                const entries = [];
-                if (Array.isArray(data.images)) entries.push(...data.images);
-                if (Array.isArray(data.media)) entries.push(...data.media);
                 const baseDelayForImages = 0.9;
-                entries.forEach((src, index) => {
+                data.images.forEach((src, index) => {
                     const file = src.split('/').pop();
                     // Use relative path from current project directory
-                    // "../Progetti Open/Progetto 2/img/file.jpg" -> "./img/file.jpg" (relative to current file)
-                    // Using ./ prefix ensures proper relative path resolution even with spaces in folder names
+                    // "../Progetti Open/Progetto 1/img/file.jpg" -> "img/file.jpg" (relative to current file)
                     let relativePath = src;
                     const imgIndex = relativePath.indexOf('/img/');
                     if (imgIndex !== -1) {
-                        relativePath = './' + relativePath.substring(imgIndex + 1); // Gets "./img/file.jpg"
+                        relativePath = relativePath.substring(imgIndex + 1); // Gets "img/file.jpg"
                     } else {
-                        relativePath = './img/' + file;
+                        relativePath = 'img/' + file;
                     }
-                    const lower = file.toLowerCase();
                     const item = document.createElement('div');
                     item.className = 'masonry-item';
-                    item.classList.add('animate-on-load');
-                    item.classList.add('hidden-before-anim');
-                    item.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
-
-                    if (lower.endsWith('.mp4') || lower.endsWith('.webm')) {
-                        const video = document.createElement('video');
-                        // Check if video is loop type (contains "_loop" in filename)
-                        const isLoop = lower.includes('_loop') || lower.includes('-loop');
-                        if (isLoop) {
-                            // Loop type: autoplay, loop, muted, no controls
-                            video.autoplay = true;
-                            video.loop = true;
-                            video.muted = true;
-                            video.playsInline = true;
-                            video.controls = false;
-                            video.preload = 'auto';
-                        } else {
-                            // Normal type: with controls
-                            video.controls = true;
-                            video.playsInline = true;
-                            video.preload = 'metadata';
-                        }
-                        const source = document.createElement('source');
-                        source.src = relativePath;
-                        source.type = lower.endsWith('.mp4') ? 'video/mp4' : 'video/webm';
-                        video.appendChild(source);
-                        video.classList.add('fade-up');
-                        video.classList.add('blur-up-media');
-                        video.classList.add('animate-on-load');
-                        video.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
-                        video.addEventListener('loadedmetadata', () => {
-                            video.classList.add('loaded');
-                        });
-                        item.appendChild(video);
-                    } else if (lower.endsWith('.pdf')) {
-                        // Use iframe for better mobile compatibility
-                        const iframe = document.createElement('iframe');
-                        iframe.src = `${relativePath}#toolbar=0&navpanes=0`;
-                        iframe.className = 'pdf-view fade-up blur-up-media';
-                        iframe.classList.add('animate-on-load');
-                        iframe.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
-                        iframe.setAttribute('type', 'application/pdf');
-                        iframe.setAttribute('loading', 'lazy');
-                        const markLoaded = () => { iframe.classList.add('loaded'); };
-                        iframe.addEventListener('load', markLoaded, { once: true });
-                        // Fallback in case 'load' doesn't fire consistently for PDF
-                        setTimeout(markLoaded, 700);
-                        item.appendChild(iframe);
-                    } else {
-                        const img = document.createElement('img');
-                        img.src = relativePath;
-                        img.alt = file;
-                        img.loading = 'lazy';
-                        img.decoding = 'async';
-                        img.classList.add('blur-up');
-                        img.classList.add('animate-on-load');
-                        img.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
-                        img.addEventListener('load', () => {
-                            img.classList.add('loaded');
-                        });
-                        item.appendChild(img);
-                    }
-                    masonryContainer.appendChild(item);
-
-                    // Reveal wrapper on next frame to avoid initial flash before animation
-                    requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            item.classList.remove('hidden-before-anim');
-                            item.style.visibility = 'visible';
-                        });
+                    const img = document.createElement('img');
+                    img.src = relativePath;
+                    img.alt = file;
+                    img.loading = 'lazy';
+                    img.decoding = 'async';
+                    img.classList.add('blur-up');
+                    img.classList.add('animate-on-load');
+                    img.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
+                    img.addEventListener('load', () => {
+                        img.classList.add('loaded');
                     });
+                    item.appendChild(img);
+                    masonryContainer.appendChild(item);
                 });
             }
         }
