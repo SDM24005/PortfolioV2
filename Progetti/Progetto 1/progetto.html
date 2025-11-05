@@ -602,7 +602,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 data.images.forEach((src, index) => {
                     const file = src.split('/').pop();
                     // Convert relative path to absolute path from root
-                    const absolutePath = src.replace(/^\.\.\//, '/');
+                    let absolutePath = src.replace(/^\.\.\//, '/');
+                    // Encode spaces in path for URL (but keep / separators)
+                    absolutePath = absolutePath.split('/').map(segment => encodeURIComponent(segment)).join('/');
                     const item = document.createElement('div');
                     item.className = 'masonry-item';
                     const img = document.createElement('img');

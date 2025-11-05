@@ -159,6 +159,36 @@ font-style: normal;
         opacity: 1;
     }
 
+    .tag-filter-btn.mode-btn {
+        opacity: 0.6;
+    }
+
+    .tag-filter-btn.mode-btn.active {
+        opacity: 1;
+    }
+
+    /* Tag buttons container - initially hidden */
+    .tag-buttons-container {
+        display: none;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: flex-start;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .tag-buttons-container.visible {
+        display: flex;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .tag-buttons-container.hiding {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
     .title-gallery {
         position: fixed;
         top: 15px;
@@ -410,6 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const customCursorDiv = document.getElementById('custom-cursor');
     let menuAnimating = false;
     let selectedTags = [];
+    let filterMode = 'all'; // 'all', 'or' (+), 'and' (-)
 
     function adjustMasonryPadding() {
         if (!masonryContainer || !tagFilterContainer) return;
@@ -421,7 +452,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const tagContainerRect = tagFilterContainer.getBoundingClientRect();
-        const newPaddingTop = tagContainerRect.bottom + 20;
+        const tagButtonsContainer = tagFilterContainer.querySelector('.tag-buttons-container');
+        let newPaddingTop = tagContainerRect.bottom + 20;
+        
+        // If tag buttons are visible, add their height
+        if (tagButtonsContainer && tagButtonsContainer.classList.contains('visible')) {
+            const tagButtonsRect = tagButtonsContainer.getBoundingClientRect();
+            newPaddingTop = tagButtonsRect.bottom + 20;
+        }
 
         masonryContainer.style.paddingTop = `${newPaddingTop}px`;
 
@@ -589,6 +627,41 @@ document.addEventListener('DOMContentLoaded', function() {
         return Array.from(tagsSet).sort();
     }
 
+    function showTagButtons() {
+        const tagButtonsContainer = tagFilterContainer.querySelector('.tag-buttons-container');
+        if (!tagButtonsContainer) return;
+        
+        // Remove hiding class if present
+        tagButtonsContainer.classList.remove('hiding');
+        
+        // Use setTimeout to ensure display change happens
+        setTimeout(() => {
+            tagButtonsContainer.classList.add('visible');
+            // Adjust padding after animation starts
+            setTimeout(() => {
+                adjustMasonryPadding();
+            }, 50);
+        }, 10);
+    }
+
+    function hideTagButtons() {
+        const tagButtonsContainer = tagFilterContainer.querySelector('.tag-buttons-container');
+        if (!tagButtonsContainer) return;
+        
+        tagButtonsContainer.classList.add('hiding');
+        tagButtonsContainer.classList.remove('visible');
+        
+        // Adjust padding immediately when hiding
+        adjustMasonryPadding();
+        
+        // Remove from DOM after animation
+        setTimeout(() => {
+            tagButtonsContainer.classList.remove('hiding');
+            tagButtonsContainer.style.display = 'none';
+            adjustMasonryPadding();
+        }, 400);
+    }
+
     function renderTagFilter(tags) {
         if (!tagFilterContainer) return;
         tagFilterContainer.innerHTML = '';
@@ -596,14 +669,62 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add "All" button
         const allBtn = document.createElement('button');
         allBtn.className = 'tag-filter-btn all-tags active';
-        allBtn.textContent = 'All';
+        allBtn.textContent = 'all';
         allBtn.addEventListener('click', () => {
+            filterMode = 'all';
             selectedTags = [];
+            hideTagButtons();
             updateTagButtons();
             filterAndRender();
         });
         tagFilterContainer.appendChild(allBtn);
 
+        // Add "+" button
+        const plusBtn = document.createElement('button');
+        plusBtn.className = 'tag-filter-btn mode-btn';
+        plusBtn.textContent = '+';
+        plusBtn.dataset.mode = 'or';
+        plusBtn.addEventListener('click', () => {
+            if (filterMode === 'and') {
+                // Deselect "-" if active
+                const minusBtn = tagFilterContainer.querySelector('[data-mode="and"]');
+                if (minusBtn) minusBtn.classList.remove('active');
+            }
+            filterMode = 'or';
+            if (selectedTags.length === 0) {
+                selectedTags = [];
+            }
+            showTagButtons();
+            updateTagButtons();
+            filterAndRender();
+        });
+        tagFilterContainer.appendChild(plusBtn);
+
+        // Add "-" button
+        const minusBtn = document.createElement('button');
+        minusBtn.className = 'tag-filter-btn mode-btn';
+        minusBtn.textContent = '-';
+        minusBtn.dataset.mode = 'and';
+        minusBtn.addEventListener('click', () => {
+            if (filterMode === 'or') {
+                // Deselect "+" if active
+                const plusBtn = tagFilterContainer.querySelector('[data-mode="or"]');
+                if (plusBtn) plusBtn.classList.remove('active');
+            }
+            filterMode = 'and';
+            if (selectedTags.length === 0) {
+                selectedTags = [];
+            }
+            showTagButtons();
+            updateTagButtons();
+            filterAndRender();
+        });
+        tagFilterContainer.appendChild(minusBtn);
+
+        // Create container for tag buttons (initially hidden)
+        const tagButtonsContainer = document.createElement('div');
+        tagButtonsContainer.className = 'tag-buttons-container';
+        
         // Add individual tag buttons
         tags.forEach(tag => {
             const btn = document.createElement('button');
@@ -623,8 +744,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateTagButtons();
                 filterAndRender();
             });
-            tagFilterContainer.appendChild(btn);
+            tagButtonsContainer.appendChild(btn);
         });
+        
+        tagFilterContainer.appendChild(tagButtonsContainer);
         adjustMasonryPadding();
     }
 
@@ -633,8 +756,13 @@ document.addEventListener('DOMContentLoaded', function() {
         buttons.forEach(btn => {
             btn.classList.remove('active');
             if (btn.classList.contains('all-tags')) {
-                // "All" button is active only when no tags are selected
-                if (selectedTags.length === 0) {
+                // "All" button is active when filterMode is 'all'
+                if (filterMode === 'all') {
+                    btn.classList.add('active');
+                }
+            } else if (btn.classList.contains('mode-btn')) {
+                // Mode buttons are active when their mode matches filterMode
+                if (btn.dataset.mode === filterMode) {
                     btn.classList.add('active');
                 }
             } else if (btn.dataset.tag && selectedTags.includes(btn.dataset.tag)) {
@@ -645,14 +773,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function filterProjects(projects) {
-        // If no tags selected, return all projects
-        if (selectedTags.length === 0) return projects;
+        // If mode is 'all' or no tags selected, return all projects
+        if (filterMode === 'all' || selectedTags.length === 0) {
+            return projects;
+        }
         
-        // Filter projects that have ALL selected tags (intersection)
+        // Filter based on mode
         return projects.filter(p => {
             if (!Array.isArray(p.tags)) return false;
-            // Check if project has all selected tags
-            return selectedTags.every(tag => p.tags.includes(tag));
+            
+            if (filterMode === 'or') {
+                // OR mode: project has at least one of the selected tags
+                return selectedTags.some(tag => p.tags.includes(tag));
+            } else if (filterMode === 'and') {
+                // AND mode: project has all selected tags
+                return selectedTags.every(tag => p.tags.includes(tag));
+            }
+            
+            return false;
         });
     }
 

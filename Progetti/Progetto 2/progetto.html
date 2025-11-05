@@ -624,7 +624,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 entries.forEach((src, index) => {
                     const file = src.split('/').pop();
                     // Convert relative path to absolute path from root
-                    const absolutePath = src.replace(/^\.\.\//, '/');
+                    let absolutePath = src.replace(/^\.\.\//, '/');
+                    // Encode spaces in path for URL (but keep / separators)
+                    absolutePath = absolutePath.split('/').map(segment => encodeURIComponent(segment)).join('/');
                     const lower = file.toLowerCase();
                     const item = document.createElement('div');
                     item.className = 'masonry-item';
@@ -634,9 +636,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (lower.endsWith('.mp4') || lower.endsWith('.webm')) {
                         const video = document.createElement('video');
-                        video.controls = true;
-                        video.playsInline = true;
-                        video.preload = 'metadata';
+                        // Check if video is loop type (contains "_loop" in filename)
+                        const isLoop = lower.includes('_loop') || lower.includes('-loop');
+                        if (isLoop) {
+                            // Loop type: autoplay, loop, muted, no controls
+                            video.autoplay = true;
+                            video.loop = true;
+                            video.muted = true;
+                            video.playsInline = true;
+                            video.controls = false;
+                            video.preload = 'auto';
+                        } else {
+                            // Normal type: with controls
+                            video.controls = true;
+                            video.playsInline = true;
+                            video.preload = 'metadata';
+                        }
                         const source = document.createElement('source');
                         source.src = absolutePath;
                         source.type = lower.endsWith('.mp4') ? 'video/mp4' : 'video/webm';
@@ -650,17 +665,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                         item.appendChild(video);
                     } else if (lower.endsWith('.pdf')) {
-                        const embed = document.createElement('embed');
-                        embed.src = `${absolutePath}#toolbar=0&navpanes=0`;
-                        embed.type = 'application/pdf';
-                        embed.className = 'pdf-view fade-up blur-up-media';
-                        embed.classList.add('animate-on-load');
-                        embed.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
-                        const markLoaded = () => { embed.classList.add('loaded'); };
-                        embed.addEventListener('load', markLoaded, { once: true });
+                        // Use iframe for better mobile compatibility
+                        const iframe = document.createElement('iframe');
+                        iframe.src = `${absolutePath}#toolbar=0&navpanes=0`;
+                        iframe.className = 'pdf-view fade-up blur-up-media';
+                        iframe.classList.add('animate-on-load');
+                        iframe.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
+                        iframe.setAttribute('type', 'application/pdf');
+                        iframe.setAttribute('loading', 'lazy');
+                        const markLoaded = () => { iframe.classList.add('loaded'); };
+                        iframe.addEventListener('load', markLoaded, { once: true });
                         // Fallback in case 'load' doesn't fire consistently for PDF
                         setTimeout(markLoaded, 700);
-                        item.appendChild(embed);
+                        item.appendChild(iframe);
                     } else {
                         const img = document.createElement('img');
                         img.src = absolutePath;

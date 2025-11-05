@@ -240,7 +240,8 @@ font-style: normal;
         z-index: 99998;
         padding: 0;
         text-decoration: none;
-        display: none; /* Hidden as requested */
+        opacity: 0; /* Invisible but still clickable */
+        pointer-events: auto; /* Ensure it's clickable */
         mix-blend-mode: difference;
     }
     .open-gallery-btn:hover {

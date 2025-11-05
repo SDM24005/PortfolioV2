@@ -24,7 +24,7 @@ const projects = [
 		startDate: "2023-10",
 		endDate: "2023-12",
 		media: [
-			"../Progetti/Progetto 2/img/578079302214894359.mp4",
+			"../Progetti/Progetto 2/img/578079302214894359-loop.mp4",
 			"../Progetti/Progetto 2/img/segno contrasti.pdf"
 		],
 		images: [
