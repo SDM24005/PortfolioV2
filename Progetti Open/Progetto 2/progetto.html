@@ -622,13 +622,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 entries.forEach((src, index) => {
                     const file = src.split('/').pop();
                     // Use relative path from current project directory
-                    // "../Progetti Open/Progetto 2/img/file.jpg" -> "img/file.jpg" (relative to current file)
+                    // "../Progetti Open/Progetto 2/img/file.jpg" -> "./img/file.jpg" (relative to current file)
+                    // Using ./ prefix ensures proper relative path resolution even with spaces in folder names
                     let relativePath = src;
                     const imgIndex = relativePath.indexOf('/img/');
                     if (imgIndex !== -1) {
-                        relativePath = relativePath.substring(imgIndex + 1); // Gets "img/file.jpg"
+                        relativePath = './' + relativePath.substring(imgIndex + 1); // Gets "./img/file.jpg"
                     } else {
-                        relativePath = 'img/' + file;
+                        relativePath = './img/' + file;
                     }
                     const lower = file.toLowerCase();
                     const item = document.createElement('div');
