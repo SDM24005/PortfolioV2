@@ -7,7 +7,7 @@
 <style>
 @font-face {
 font-family: 'FormaDJRDisplay';
-src: url('../../Fonts/FormaDJRDisplay-Regular-Testing.otf') format('opentype');
+src: url('/fonts/FormaDJRDisplay-Regular-Testing.otf') format('opentype'); /* Assicurati che il percorso sia corretto */
 font-weight: normal;
 font-style: normal;
 }
@@ -601,9 +601,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const baseDelayForImages = 0.9;
                 data.images.forEach((src, index) => {
                     const file = src.split('/').pop();
-                    // Convert relative path from projects.js to absolute path from repository root
-                    // "../Progetti/Progetto 1/img/file.jpg" -> "/Progetti/Progetto 1/img/file.jpg"
-                    let absolutePath = src.replace(/^\.\.\//, '/');
+                    // Convert relative path to absolute path from root
+                    const absolutePath = src.replace(/^\.\.\//, '/');
                     const item = document.createElement('div');
                     item.className = 'masonry-item';
                     const img = document.createElement('img');
