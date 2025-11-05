@@ -621,14 +621,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 const baseDelayForImages = 0.9;
                 entries.forEach((src, index) => {
                     const file = src.split('/').pop();
-                    // Use relative path directly like in gallery - convert from "../Progetti Open/Progetto 2/img/file" to "img/file"
+                    // Use relative path directly like in gallery - extract img/ part
                     let relativePath = src;
-                    if (relativePath.includes('/img/')) {
-                        // Extract just the img/filename part
-                        relativePath = 'img/' + file;
+                    const imgIndex = relativePath.indexOf('/img/');
+                    if (imgIndex !== -1) {
+                        relativePath = relativePath.substring(imgIndex + 1); // Gets "img/file.jpg"
                     } else {
-                        // Fallback: remove ../Progetti/Progetto X/ part
-                        relativePath = relativePath.replace(/^\.\.\/Progetti[^\/]*\//, '').replace(/^\.\.\/Progetti Open[^\/]*\//, '');
+                        relativePath = 'img/' + file;
                     }
                     const lower = file.toLowerCase();
                     const item = document.createElement('div');

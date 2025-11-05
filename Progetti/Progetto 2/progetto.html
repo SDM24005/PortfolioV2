@@ -623,14 +623,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 const baseDelayForImages = 0.9;
                 entries.forEach((src, index) => {
                     const file = src.split('/').pop();
-                    // Use relative path directly like in gallery - convert from "../Progetti/Progetto 2/img/file" to "img/file"
+                    // Use relative path directly like in gallery - convert from "../Progetti/Progetto 2/img/file" to relative from current file
+                    // Since we're in Progetti/Progetto 2/progetto.html, "../Progetti/Progetto 2/img/file" becomes "img/file"
                     let relativePath = src;
-                    if (relativePath.includes('/img/')) {
-                        // Extract just the img/filename part
-                        relativePath = 'img/' + file;
+                    // Extract path after img/ and use it relative to current directory
+                    const imgIndex = relativePath.indexOf('/img/');
+                    if (imgIndex !== -1) {
+                        relativePath = relativePath.substring(imgIndex + 1); // Gets "img/file.jpg"
                     } else {
-                        // Fallback: remove ../Progetti/Progetto X/ part
-                        relativePath = relativePath.replace(/^\.\.\/Progetti[^\/]*\//, '').replace(/^\.\.\/Progetti Open[^\/]*\//, '');
+                        // Fallback: just use filename
+                        relativePath = 'img/' + file;
                     }
                     const lower = file.toLowerCase();
                     const item = document.createElement('div');
