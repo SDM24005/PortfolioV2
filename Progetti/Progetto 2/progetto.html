@@ -7,7 +7,7 @@
 <style>
 @font-face {
 font-family: 'FormaDJRDisplay';
-src: url('/fonts/FormaDJRDisplay-Regular-Testing.otf') format('opentype'); /* Assicurati che il percorso sia corretto */
+src: url('/Fonts/FormaDJRDisplay-Regular-Testing.otf') format('opentype');
 font-weight: normal;
 font-style: normal;
 }
@@ -623,8 +623,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 const baseDelayForImages = 0.9;
                 entries.forEach((src, index) => {
                     const file = src.split('/').pop();
-                    // Convert relative path to absolute path from root
-                    const absolutePath = src.replace(/^\.\.\//, '/');
+                    // Use relative path from current project directory
+                    // "../Progetti/Progetto 2/img/file.jpg" -> "img/file.jpg" (relative to current file)
+                    let relativePath = src;
+                    const imgIndex = relativePath.indexOf('/img/');
+                    if (imgIndex !== -1) {
+                        relativePath = relativePath.substring(imgIndex + 1); // Gets "img/file.jpg"
+                    } else {
+                        relativePath = 'img/' + file;
+                    }
                     const lower = file.toLowerCase();
                     const item = document.createElement('div');
                     item.className = 'masonry-item';
@@ -651,7 +658,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             video.preload = 'metadata';
                         }
                         const source = document.createElement('source');
-                        source.src = absolutePath;
+                        source.src = relativePath;
                         source.type = lower.endsWith('.mp4') ? 'video/mp4' : 'video/webm';
                         video.appendChild(source);
                         video.classList.add('fade-up');
@@ -665,7 +672,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else if (lower.endsWith('.pdf')) {
                         // Use iframe for better mobile compatibility
                         const iframe = document.createElement('iframe');
-                        iframe.src = `${absolutePath}#toolbar=0&navpanes=0`;
+                        iframe.src = `${relativePath}#toolbar=0&navpanes=0`;
                         iframe.className = 'pdf-view fade-up blur-up-media';
                         iframe.classList.add('animate-on-load');
                         iframe.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
@@ -678,7 +685,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         item.appendChild(iframe);
                     } else {
                         const img = document.createElement('img');
-                        img.src = absolutePath;
+                        img.src = relativePath;
                         img.alt = file;
                         img.loading = 'lazy';
                         img.decoding = 'async';

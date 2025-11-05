@@ -7,7 +7,7 @@
 <style>
 @font-face {
 font-family: 'FormaDJRDisplay';
-src: url('/fonts/FormaDJRDisplay-Regular-Testing.otf') format('opentype'); /* Assicurati che il percorso sia corretto */
+src: url('/Fonts/FormaDJRDisplay-Regular-Testing.otf') format('opentype');
 font-weight: normal;
 font-style: normal;
 }
@@ -601,12 +601,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 const baseDelayForImages = 0.9;
                 data.images.forEach((src, index) => {
                     const file = src.split('/').pop();
-                    // Convert relative path to absolute path from root
-                    const absolutePath = src.replace(/^\.\.\//, '/');
+                    // Use relative path from current project directory
+                    // "../Progetti Open/Progetto 1/img/file.jpg" -> "img/file.jpg" (relative to current file)
+                    let relativePath = src;
+                    const imgIndex = relativePath.indexOf('/img/');
+                    if (imgIndex !== -1) {
+                        relativePath = relativePath.substring(imgIndex + 1); // Gets "img/file.jpg"
+                    } else {
+                        relativePath = 'img/' + file;
+                    }
                     const item = document.createElement('div');
                     item.className = 'masonry-item';
                     const img = document.createElement('img');
-                    img.src = absolutePath;
+                    img.src = relativePath;
                     img.alt = file;
                     img.loading = 'lazy';
                     img.decoding = 'async';
