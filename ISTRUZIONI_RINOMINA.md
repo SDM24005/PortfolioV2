@@ -34,3 +34,4 @@ Le cartelle devono essere rinominate manualmente perché contengono file che pot
 - I file HTML dei progetti usano `window.location.pathname` per trovare la cartella, quindi si adatteranno automaticamente dopo la rinomina
 - Assicurati che il file video in `Progetti/Progetto 2/img/` si chiami `578079302214894359-loop.mp4` (con `-loop`) per funzionare come video loop
 
+

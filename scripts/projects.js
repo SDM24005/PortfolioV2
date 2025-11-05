@@ -9,10 +9,10 @@ const projects = [
 		startDate: "2024-01",
 		endDate: "2024-03",
 		images: [
-			"../Progetti/progetto-1/img/_MG_8638.jpg",
-			"../Progetti/progetto-1/img/_MG_8646.jpg",
-			"../Progetti/progetto-1/img/_MG_8652-2.jpg",
-			"../Progetti/progetto-1/img/_MG_8669.jpg"
+			"../Progetti/progetto-1/img/MG_8638.jpg",
+			"../Progetti/progetto-1/img/MG_8646.jpg",
+			"../Progetti/progetto-1/img/MG_8652-2.jpg",
+			"../Progetti/progetto-1/img/MG_8669.jpg"
 		]
 	},
 	{
@@ -28,10 +28,10 @@ const projects = [
 			"../Progetti/progetto-2/img/segno contrasti.pdf"
 		],
 		images: [
-			"../Progetti/progetto-2/img/_MG_8638.jpg",
-			"../Progetti/progetto-2/img/_MG_8646.jpg",
-			"../Progetti/progetto-2/img/_MG_8652-2.jpg",
-			"../Progetti/progetto-2/img/_MG_8669.jpg"
+			"../Progetti/progetto-2/img/MG_8638.jpg",
+			"../Progetti/progetto-2/img/MG_8646.jpg",
+			"../Progetti/progetto-2/img/MG_8652-2.jpg",
+			"../Progetti/progetto-2/img/MG_8669.jpg"
 		]
 	}
 ];
@@ -56,10 +56,10 @@ const openProjects = [
 		startDate: "2024-01",
 		endDate: "2024-03",
 		images: [
-			"../Progetti Open/progetto-1/img/_MG_8638.jpg",
-			"../Progetti Open/progetto-1/img/_MG_8646.jpg",
-			"../Progetti Open/progetto-1/img/_MG_8652-2.jpg",
-			"../Progetti Open/progetto-1/img/_MG_8669.jpg"
+			"../Progetti Open/progetto-1/img/MG_8638.jpg",
+			"../Progetti Open/progetto-1/img/MG_8646.jpg",
+			"../Progetti Open/progetto-1/img/MG_8652-2.jpg",
+			"../Progetti Open/progetto-1/img/MG_8669.jpg"
 		]
 	},
 	{
@@ -75,10 +75,10 @@ const openProjects = [
 			"../Progetti Open/progetto-2/img/segno contrasti.pdf"
 		],
 		images: [
-			"../Progetti Open/progetto-2/img/_MG_8638.jpg",
-			"../Progetti Open/progetto-2/img/_MG_8646.jpg",
-			"../Progetti Open/progetto-2/img/_MG_8652-2.jpg",
-			"../Progetti Open/progetto-2/img/_MG_8669.jpg"
+			"../Progetti Open/progetto-2/img/MG_8638.jpg",
+			"../Progetti Open/progetto-2/img/MG_8646.jpg",
+			"../Progetti Open/progetto-2/img/MG_8652-2.jpg",
+			"../Progetti Open/progetto-2/img/MG_8669.jpg"
 		]
 	}
 ];
