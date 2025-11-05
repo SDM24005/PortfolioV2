@@ -229,6 +229,12 @@ font-style: normal;
     #line-2.animate-menu-open { opacity: 0; animation: fadeInFromTopMenu 0.6s ease-out forwards; pointer-events: auto; }
     .sub-links-block.animate-menu-close,
     #line-2.animate-menu-close { opacity: 1; animation: fadeOutToTopMenu 0.6s ease-out forwards; pointer-events: none; }
+
+    @media (pointer: coarse) {
+        #custom-cursor {
+            display: none !important;
+        }
+    }
 </style>
 </head>
 <body>
