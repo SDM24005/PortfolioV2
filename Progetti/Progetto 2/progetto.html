@@ -193,6 +193,11 @@ font-style: normal;
     /* Responsive media */
     .masonry-item video { width: 100%; height: auto; display: block; }
     .masonry-item embed.pdf-view { width: 100%; height: 75vh; display: block; background: #111; }
+    /* PDF iframe for better mobile compatibility */
+    .masonry-item iframe.pdf-view { width: 100%; height: 75vh; display: block; border: none; background: #111; }
+    @media (max-width: 576px) {
+        .masonry-item iframe.pdf-view { height: 60vh; }
+    }
 
     /* Generic fade-up for non-image media */
     .fade-up { opacity: 0; transform: translateY(12px); }
@@ -618,6 +623,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const baseDelayForImages = 0.9;
                 entries.forEach((src, index) => {
                     const file = src.split('/').pop();
+                    // Convert relative path to absolute path from root
+                    const absolutePath = src.replace(/^\.\.\//, '/');
                     const lower = file.toLowerCase();
                     const item = document.createElement('div');
                     item.className = 'masonry-item';
@@ -631,7 +638,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         video.playsInline = true;
                         video.preload = 'metadata';
                         const source = document.createElement('source');
-                        source.src = `img/${file}`;
+                        source.src = absolutePath;
                         source.type = lower.endsWith('.mp4') ? 'video/mp4' : 'video/webm';
                         video.appendChild(source);
                         video.classList.add('fade-up');
@@ -644,7 +651,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         item.appendChild(video);
                     } else if (lower.endsWith('.pdf')) {
                         const embed = document.createElement('embed');
-                        embed.src = `img/${file}#toolbar=0&navpanes=0`;
+                        embed.src = `${absolutePath}#toolbar=0&navpanes=0`;
                         embed.type = 'application/pdf';
                         embed.className = 'pdf-view fade-up blur-up-media';
                         embed.classList.add('animate-on-load');
@@ -656,7 +663,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         item.appendChild(embed);
                     } else {
                         const img = document.createElement('img');
-                        img.src = `img/${file}`;
+                        img.src = absolutePath;
                         img.alt = file;
                         img.loading = 'lazy';
                         img.decoding = 'async';

@@ -601,10 +601,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 const baseDelayForImages = 0.9;
                 data.images.forEach((src, index) => {
                     const file = src.split('/').pop();
+                    // Convert relative path to absolute path from root
+                    const absolutePath = src.replace(/^\.\.\//, '/');
                     const item = document.createElement('div');
                     item.className = 'masonry-item';
                     const img = document.createElement('img');
-                    img.src = `img/${file}`;
+                    img.src = absolutePath;
                     img.alt = file;
                     img.loading = 'lazy';
                     img.decoding = 'async';
