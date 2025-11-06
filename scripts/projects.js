@@ -1,18 +1,18 @@
 // Script per gestire i percorsi delle immagini e delle pagine dei progetti
 const projects = [
 	{
-		name: "Progetto 1",
-		page: "../Progetti/progetto-1/progetto.html",
-		preview: "../Progetti/progetto-1/img/preview.jpg",
+		name: "Albero",
+		page: "../Progetti/test_albero/progetto.html",
+		preview: "../Progetti/test_albero/img/preview.jpg",
 		description: "Questo è il testo descrittivo del Progetto 1.",
 		tags: ["fotografia", "architettura"],
 		startDate: "2024-01",
 		endDate: "2024-03",
 		images: [
-			"../Progetti/progetto-1/img/MG_8638.jpg",
-			"../Progetti/progetto-1/img/MG_8646.jpg",
-			"../Progetti/progetto-1/img/MG_8652-2.jpg",
-			"../Progetti/progetto-1/img/MG_8669.jpg"
+			"../Progetti/test_albero/img/MG_8638.jpg",
+			"../Progetti/test_albero/img/MG_8646.jpg",
+			"../Progetti/test_albero/img/MG_8652-2.jpg",
+			"../Progetti/test_albero/img/MG_8669.jpg"
 		]
 	},
 	{
