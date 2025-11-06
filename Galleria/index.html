@@ -215,6 +215,12 @@ font-style: normal;
             /* padding-top when menu is closed, should match open state to prevent jump */
             padding-top: 176px; /* Adjusted to new open state height */
         }
+        
+        /* Titles always visible on mobile */
+        .image-hover-text {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
     }
 
     /* Animazioni */
@@ -454,10 +460,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Custom Cursor Logic ---
     const customCursorDiv = document.getElementById('custom-cursor');
-    // Disable custom cursor on touch devices
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    // Disable custom cursor on touch devices using media query
+    const prefersCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
 
-    if (customCursorDiv && !isTouchDevice) {
+    if (customCursorDiv && !prefersCoarsePointer) {
         document.addEventListener('mousemove', function(e) {
             customCursorDiv.style.display = 'block'; // Show on first move
             customCursorDiv.style.left = e.clientX + 'px';

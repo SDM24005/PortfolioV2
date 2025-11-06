@@ -7,7 +7,7 @@
 <style>
 @font-face {
 font-family: 'FormaDJRDisplay';
-src: url('/Fonts/FormaDJRDisplay-Regular-Testing.otf') format('opentype');
+src: url('../Fonts/FormaDJRDisplay-Regular-Testing.otf') format('opentype');
 font-weight: normal;
 font-style: normal;
 }
@@ -49,6 +49,8 @@ font-style: normal;
     }
 
 
+
+
     .header-text {
         font-family: 'FormaDJRDisplay', sans-serif;
         font-size: 20px;
@@ -65,6 +67,8 @@ font-style: normal;
         top: 15px;
         z-index: 1001;
         /* cursor: pointer;  Will be managed by JS, now overridden by global rule */
+        mix-blend-mode: difference;
+        color: #ffffff;
     }
 
     .header-line {
@@ -100,18 +104,111 @@ font-style: normal;
         display: none;
     }
 
+    .tag-filter-container {
+        position: fixed;
+        top: calc(
+            ( (15px + (20px * 1.2) + 10px) + 1px + 10px ) /* 60px */
+            + (20px * 1.2)  /* Home = 24px */
+            + 8px           /* Gap */
+            + (20px * 1.2)  /* Bio = 24px */
+            + 10px          /* Padding sotto i link */
+            + 1px           /* line-2 height */
+            + 10px          /* Spazio dopo line-2 */
+        ); /* 137px */
+        z-index: 1001;
+        display: none;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .tag-filter-container.is-open {
+        display: flex;
+        opacity: 0;
+        animation: fadeInFromTopMenu 0.6s ease-out forwards;
+    }
+
+    .tag-filter-btn {
+        font-family: 'FormaDJRDisplay', sans-serif;
+        font-size: 16px;
+        font-weight: normal;
+        color: #000000;
+        line-height: 1.2;
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin: 0;
+        cursor: none !important;
+        text-decoration: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .tag-filter-btn:hover {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    .tag-filter-btn.active {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    .tag-filter-btn.all-tags {
+        opacity: 0.6;
+    }
+
+    .tag-filter-btn.all-tags.active {
+        opacity: 1;
+    }
+
+    .tag-filter-btn.mode-btn {
+        opacity: 0.6;
+    }
+
+    .tag-filter-btn.mode-btn.active {
+        opacity: 1;
+    }
+
+    /* Tag buttons container - initially hidden */
+    .tag-buttons-container {
+        display: none;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: flex-start;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .tag-buttons-container.visible {
+        display: flex;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .tag-buttons-container.hiding {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
     .title-gallery {
         position: fixed;
         top: 15px;
         z-index: 1001;
         display: block;
         cursor: default; /* Prevent text selection cursor */
+        mix-blend-mode: difference;
+        color: #ffffff;
     }
 
     /* --- Default Alignments (3 Columns) --- */
     .main-title-name,
     .sub-links-block {
         left: calc(8px + (100vw - 32px) / 3 + 8px);
+    }
+    .tag-filter-container {
+        left: calc(8px + (100vw - 32px) / 3 + 8px);
+        max-width: calc((100vw - 32px) / 3);
     }
     .title-gallery {
         left: calc(8px + 2 * ((100vw - 32px) / 3) + 2 * 8px);
@@ -122,21 +219,56 @@ font-style: normal;
     }
 
     .masonry-container {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
+        column-count: 3;
+        column-gap: 8px;
         padding: 8px; /* Base padding */
         width: 100%;
         box-sizing: border-box;
-        padding-top: 150px; /* Adjusted for 2-link menu: 126px (line-2 top) + 24px (approx for title/gap) */
         transition: padding-top 0.6s ease-out; /* For smooth transition with menu */
     }
-    .masonry-item { display: block; width: 100%; overflow: hidden; break-inside: avoid; -webkit-column-break-inside: avoid; page-break-inside: avoid; position: relative; }
-    .masonry-item a { display: block; text-decoration: none; }
-    .masonry-item img { width: 100%; height: auto; display: block; transition: transform 0.3s ease, filter 0.3s ease; }
-    .masonry-item:hover img { transform: scale(1.05); filter: brightness(115%); }
-    .image-hover-text { position: absolute; bottom: 8px; left: 8px; font-family: 'FormaDJRDisplay', sans-serif; font-size: 20px; color: #000000; line-height: 1.2; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; pointer-events: none; z-index: 2; }
+    .masonry-item { 
+        display: inline-block; 
+        width: 100%;
+        margin-bottom: 8px;
+        break-inside: avoid; 
+        -webkit-column-break-inside: avoid; 
+        page-break-inside: avoid; 
+        position: relative; 
+    }
+    .masonry-item a { 
+        display: block; 
+        text-decoration: none; 
+        overflow: hidden;
+    }
+    .masonry-item img { 
+        width: 100%; 
+        height: auto; 
+        display: block; 
+        transition: transform 0.3s ease, filter 0.3s ease;
+        object-fit: cover;
+    }
+    .masonry-item:hover img { 
+        transform: scale(1.1); 
+        filter: brightness(115%); 
+    }
+    .image-hover-text { 
+        position: absolute; 
+        bottom: 8px; 
+        left: 8px; 
+        font-family: 'FormaDJRDisplay', sans-serif; 
+        font-size: 20px; 
+        line-height: 1.2; 
+        opacity: 0; 
+        visibility: hidden; 
+        transition: color 0.3s ease, opacity 0.3s ease, visibility 0.3s ease; 
+        pointer-events: none; 
+        z-index: 2;
+    }
+    .image-hover-text.light-text { color: #ffffff; }
+    .image-hover-text.dark-text { color: #000000; }
+    .image-hover-text span { opacity: 0.7; transition: opacity 0.3s ease; }
     .masonry-item:hover .image-hover-text { opacity: 1; visibility: visible; }
+    .masonry-item:hover .image-hover-text span { opacity: 1; }
 
     /* Footer divider and back-to-top alignment */
     .gallery-footer { padding-bottom: 24px; }
@@ -171,6 +303,10 @@ font-style: normal;
         .sub-links-block {
             left: 10px;
         }
+        .tag-filter-container {
+            left: 10px;
+            max-width: calc((100vw - 28px) / 2);
+        }
         .title-gallery {
             left: calc(10px + (100vw - 28px) / 2 + 8px);
         }
@@ -179,9 +315,12 @@ font-style: normal;
             right: 10px;
         }
         .masonry-container {
-            grid-template-columns: repeat(2, 1fr);
+            column-count: 2;
+            column-gap: 10px;
             padding: 10px; /* Page padding */
-            padding-top: 150px; /* Consistent with default for 2-link menu */
+        }
+        .masonry-item {
+            margin-bottom: 10px;
         }
         .footer-line { margin-left: 10px; margin-right: 10px; }
         /* Back to top on right column, contacts on left column */
@@ -202,20 +341,31 @@ font-style: normal;
                 + (8px * 1)        /* Gap tra i link = 8px */
                 + 10px             /* Spazio sotto i link (prima di line-2) */
                 + 1px              /* Altezza di line-2 */
-                + 10px             /* Spazio aggiuntivo prima di "Galleria" */
-            ); /* 60 + 48 + 8 + 10 + 1 + 10 = 137px */
+                + 10px             /* Spazio dopo line-2 */
+            ); /* 137px */
             left: 10px;
             transition: top 0.6s ease-out;
         }
+        .tag-filter-container {
+            left: 10px;
+            max-width: calc(100vw - 20px);
+            top: calc(
+                137px + 24px + 10px
+            ); /* 171px */
+        }
 
         .masonry-container {
-            grid-template-columns: 1fr;
+            column-count: 1;
+            column-gap: 10px;
             padding: 10px; /* Page padding */
-            padding-top: calc(
-                137px            /* .title-gallery top (new) */
-                + (20px * 1.2)   /* Altezza di "Galleria" stessa = 24px */
-                + 15px           /* Spazio aggiuntivo sotto "Galleria" (original gap) */
-            ); /* 137 + 24 + 15 = 176px (menu open) */
+        }
+        .masonry-item {
+            margin-bottom: 10px;
+        }
+        /* Titles always visible on mobile */
+        .image-hover-text {
+            opacity: 1 !important;
+            visibility: visible !important;
         }
         /* Align back-to-top and contact to left of the single column */
         .back-to-top { margin-left: 10px; margin-top: 6px; }
@@ -227,7 +377,6 @@ font-style: normal;
 
         .masonry-container.menu-closed {
             /* padding-top when menu is closed, should match open state to prevent jump */
-            padding-top: 176px; /* Adjusted to new open state height */
         }
     }
 
@@ -241,6 +390,12 @@ font-style: normal;
     #line-2.animate-menu-open { opacity: 0; animation: fadeInFromTopMenu 0.6s ease-out forwards; pointer-events: auto; }
     .sub-links-block.animate-menu-close,
     #line-2.animate-menu-close { opacity: 1; animation: fadeOutToTopMenu 0.6s ease-out forwards; pointer-events: none; }
+
+    @media (pointer: coarse) {
+        #custom-cursor {
+            display: none !important;
+        }
+    }
 </style>
 </head>
 <body>
@@ -258,6 +413,9 @@ font-style: normal;
         <!-- Progetti link removed -->
     </div>
     <div class="header-line" id="line-2"></div>
+    <div class="tag-filter-container" id="tag-filter-container">
+        <!-- Tag buttons will be inserted here by JavaScript -->
+    </div>
     <span class="header-text title-gallery animate-on-load">Open</span>
 </header>
 
@@ -266,7 +424,7 @@ font-style: normal;
 
 <div class="gallery-footer">
     <div class="footer-line"></div>
-    <a href="#" class="header-text back-to-top">&#8593; Back to the top</a>
+    <a href="#" class="header-text back-to-top">&#8593;</a>
     <span class="header-text contact-info">Contatti
 Email: samuele.demarch@gmail.com
 Instagram @samueledemarch</span>
@@ -279,8 +437,63 @@ document.addEventListener('DOMContentLoaded', function() {
     const dropdownLinks = document.getElementById('dropdown-links');
     const line2 = document.getElementById('line-2');
     const titleGallery = document.querySelector('.title-gallery');
-    const masonryContainer = document.querySelector('.masonry-container'); 
+    const masonryContainer = document.querySelector('.masonry-container');
+    const tagFilterContainer = document.getElementById('tag-filter-container');
+    const customCursorDiv = document.getElementById('custom-cursor');
     let menuAnimating = false;
+    let selectedTags = [];
+    let filterMode = 'all'; // 'all', 'or' (+), 'and' (-)
+
+    // Disable custom cursor on touch devices using media query
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+
+    function adjustMasonryPadding() {
+        if (!masonryContainer || !tagFilterContainer) return;
+
+        const isHidden = window.getComputedStyle(tagFilterContainer).display === 'none';
+        if (isHidden) {
+            tagFilterContainer.style.display = 'flex';
+            tagFilterContainer.style.visibility = 'hidden';
+        }
+
+        const tagContainerRect = tagFilterContainer.getBoundingClientRect();
+        const tagButtonsContainer = tagFilterContainer.querySelector('.tag-buttons-container');
+        let newPaddingTop = tagContainerRect.bottom + 20;
+        
+        // If tag buttons are visible, add their height
+        if (tagButtonsContainer && tagButtonsContainer.classList.contains('visible')) {
+            const tagButtonsRect = tagButtonsContainer.getBoundingClientRect();
+            newPaddingTop = tagButtonsRect.bottom + 20;
+        }
+
+        masonryContainer.style.paddingTop = `${newPaddingTop}px`;
+
+        if (isHidden) {
+            tagFilterContainer.style.display = '';
+            tagFilterContainer.style.visibility = '';
+        }
+    }
+    
+    // Function to add hover effects to masonry items (images)
+    function addHoverEffectsToMasonryItems() {
+        const prefersCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+        if (!customCursorDiv || prefersCoarsePointer) return;
+        const masonryItems = document.querySelectorAll('.masonry-item');
+        masonryItems.forEach(item => {
+            if (item.dataset.hasHoverListener === 'true') return;
+            
+            const link = item.querySelector('a');
+            if (link) {
+                link.addEventListener('mouseenter', () => {
+                    customCursorDiv.classList.add('hover');
+                });
+                link.addEventListener('mouseleave', () => {
+                    customCursorDiv.classList.remove('hover');
+                });
+            }
+            item.dataset.hasHoverListener = 'true';
+        });
+    }
 
     function updateMenuTriggerCursor() {
         if (!menuTrigger) return;
@@ -333,6 +546,7 @@ document.addEventListener('DOMContentLoaded', function() {
             titleGallery.classList.remove('menu-closed');
             masonryContainer.classList.remove('menu-closed'); 
         }
+        adjustMasonryPadding();
     }
 
     function refinedOnCloseAnimationEnd(event) {
@@ -366,6 +580,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (menuAnimating || (dropdownLinks && dropdownLinks.classList.contains('is-open'))) return;
         applyOpenStyles(dropdownLinks, 'flex');
         applyOpenStyles(line2, 'block');
+        if (tagFilterContainer) {
+            tagFilterContainer.classList.add('is-open');
+        }
         updateGalleryPositioning();
     }
 
@@ -373,6 +590,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (menuAnimating || !(dropdownLinks && dropdownLinks.classList.contains('is-open'))) return;
         applyCloseStyles(dropdownLinks);
         applyCloseStyles(line2);
+        if (tagFilterContainer) {
+            tagFilterContainer.classList.remove('is-open');
+        }
 
         if (window.innerWidth <= 576 && titleGallery) {
             titleGallery.classList.add('menu-closed');
@@ -403,6 +623,261 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Elementi del menu (trigger, dropdown, line2) non trovati per il toggle.');
     }
 
+    function getUniqueTags(projects) {
+        const tagsSet = new Set();
+        projects.forEach(p => {
+            if (Array.isArray(p.tags)) {
+                p.tags.forEach(tag => tagsSet.add(tag));
+            }
+        });
+        return Array.from(tagsSet).sort();
+    }
+
+    function showTagButtons() {
+        const tagButtonsContainer = tagFilterContainer.querySelector('.tag-buttons-container');
+        if (!tagButtonsContainer) return;
+        
+        // Remove hiding class if present
+        tagButtonsContainer.classList.remove('hiding');
+        
+        // Use setTimeout to ensure display change happens
+        setTimeout(() => {
+            tagButtonsContainer.classList.add('visible');
+            // Adjust padding after animation starts
+            setTimeout(() => {
+                adjustMasonryPadding();
+            }, 50);
+        }, 10);
+    }
+
+    function hideTagButtons() {
+        const tagButtonsContainer = tagFilterContainer.querySelector('.tag-buttons-container');
+        if (!tagButtonsContainer) return;
+        
+        tagButtonsContainer.classList.add('hiding');
+        tagButtonsContainer.classList.remove('visible');
+        
+        // Adjust padding immediately when hiding
+        adjustMasonryPadding();
+        
+        // Remove from DOM after animation
+        setTimeout(() => {
+            tagButtonsContainer.classList.remove('hiding');
+            tagButtonsContainer.style.display = 'none';
+            adjustMasonryPadding();
+        }, 400);
+    }
+
+    function renderTagFilter(tags) {
+        if (!tagFilterContainer) return;
+        tagFilterContainer.innerHTML = '';
+        
+        // Add "All" button
+        const allBtn = document.createElement('button');
+        allBtn.className = 'tag-filter-btn all-tags active';
+        allBtn.textContent = 'all';
+        allBtn.addEventListener('click', () => {
+            filterMode = 'all';
+            selectedTags = [];
+            hideTagButtons();
+            updateTagButtons();
+            filterAndRender();
+        });
+        tagFilterContainer.appendChild(allBtn);
+
+        // Add "+" button
+        const plusBtn = document.createElement('button');
+        plusBtn.className = 'tag-filter-btn mode-btn';
+        plusBtn.textContent = '+';
+        plusBtn.dataset.mode = 'or';
+        plusBtn.addEventListener('click', () => {
+            if (filterMode === 'and') {
+                // Deselect "-" if active
+                const minusBtn = tagFilterContainer.querySelector('[data-mode="and"]');
+                if (minusBtn) minusBtn.classList.remove('active');
+            }
+            filterMode = 'or';
+            if (selectedTags.length === 0) {
+                selectedTags = [];
+            }
+            showTagButtons();
+            updateTagButtons();
+            filterAndRender();
+        });
+        tagFilterContainer.appendChild(plusBtn);
+
+        // Add "-" button
+        const minusBtn = document.createElement('button');
+        minusBtn.className = 'tag-filter-btn mode-btn';
+        minusBtn.textContent = '-';
+        minusBtn.dataset.mode = 'and';
+        minusBtn.addEventListener('click', () => {
+            if (filterMode === 'or') {
+                // Deselect "+" if active
+                const plusBtn = tagFilterContainer.querySelector('[data-mode="or"]');
+                if (plusBtn) plusBtn.classList.remove('active');
+            }
+            filterMode = 'and';
+            if (selectedTags.length === 0) {
+                selectedTags = [];
+            }
+            showTagButtons();
+            updateTagButtons();
+            filterAndRender();
+        });
+        tagFilterContainer.appendChild(minusBtn);
+
+        // Create container for tag buttons (initially hidden)
+        const tagButtonsContainer = document.createElement('div');
+        tagButtonsContainer.className = 'tag-buttons-container';
+        
+        // Add individual tag buttons
+        tags.forEach(tag => {
+            const btn = document.createElement('button');
+            btn.className = 'tag-filter-btn';
+            btn.textContent = tag;
+            btn.dataset.tag = tag;
+            btn.addEventListener('click', () => {
+                // Toggle tag selection
+                const index = selectedTags.indexOf(tag);
+                if (index > -1) {
+                    // Remove tag if already selected
+                    selectedTags.splice(index, 1);
+                } else {
+                    // Add tag if not selected
+                    selectedTags.push(tag);
+                }
+                updateTagButtons();
+                filterAndRender();
+            });
+            tagButtonsContainer.appendChild(btn);
+        });
+        
+        tagFilterContainer.appendChild(tagButtonsContainer);
+        adjustMasonryPadding();
+    }
+
+    function updateTagButtons() {
+        const buttons = tagFilterContainer.querySelectorAll('.tag-filter-btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.classList.contains('all-tags')) {
+                // "All" button is active when filterMode is 'all'
+                if (filterMode === 'all') {
+                    btn.classList.add('active');
+                }
+            } else if (btn.classList.contains('mode-btn')) {
+                // Mode buttons are active when their mode matches filterMode
+                if (btn.dataset.mode === filterMode) {
+                    btn.classList.add('active');
+                }
+            } else if (btn.dataset.tag && selectedTags.includes(btn.dataset.tag)) {
+                // Individual tag button is active if it's in selectedTags
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    function filterProjects(projects) {
+        // If mode is 'all' or no tags selected, return all projects
+        if (filterMode === 'all' || selectedTags.length === 0) {
+            return projects;
+        }
+        
+        // Filter based on mode
+        return projects.filter(p => {
+            if (!Array.isArray(p.tags)) return false;
+            
+            if (filterMode === 'or') {
+                // OR mode: project has at least one of the selected tags
+                return selectedTags.some(tag => p.tags.includes(tag));
+            } else if (filterMode === 'and') {
+                // AND mode: project has all selected tags
+                return selectedTags.every(tag => p.tags.includes(tag));
+            }
+            
+            return false;
+        });
+    }
+
+    function filterAndRender() {
+        const filtered = filterProjects(openProjects);
+        renderGallery(filtered);
+        adjustMasonryPadding();
+        // Scroll to top when filtering
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function getImageBrightness(img) {
+        return new Promise((resolve) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = img.width || img.naturalWidth || 100;
+            canvas.height = img.height || img.naturalHeight || 100;
+            
+            try {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                // Sample pixels from the bottom area (where text will be)
+                const sampleHeight = Math.min(100, canvas.height);
+                const sampleY = canvas.height - sampleHeight;
+                const imageData = ctx.getImageData(0, sampleY, canvas.width, sampleHeight);
+                const data = imageData.data;
+                
+                let totalBrightness = 0;
+                let pixelCount = 0;
+                
+                // Calculate average brightness (skip every 4th pixel for performance)
+                for (let i = 0; i < data.length; i += 16) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+                    // Calculate brightness using luminance formula
+                    const brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+                    totalBrightness += brightness;
+                    pixelCount++;
+                }
+                
+                const avgBrightness = totalBrightness / pixelCount;
+                resolve(avgBrightness);
+            } catch (e) {
+                // If there's an error (e.g., CORS), default to dark text
+                resolve(0.5);
+            }
+        });
+    }
+
+    function setTextColorBasedOnImage(img, textElement) {
+        if (img.complete && img.naturalWidth > 0) {
+            getImageBrightness(img).then(brightness => {
+                // If brightness > 0.5, image is light, use dark text
+                // If brightness <= 0.5, image is dark, use light text
+                textElement.classList.remove('light-text', 'dark-text');
+                if (brightness > 0.5) {
+                    textElement.classList.add('dark-text');
+                } else {
+                    textElement.classList.add('light-text');
+                }
+            });
+        } else {
+            // Image not loaded yet, wait for load event
+            img.addEventListener('load', function onLoad() {
+                img.removeEventListener('load', onLoad);
+                getImageBrightness(img).then(brightness => {
+                    textElement.classList.remove('light-text', 'dark-text');
+                    if (brightness > 0.5) {
+                        textElement.classList.add('dark-text');
+                    } else {
+                        textElement.classList.add('light-text');
+                    }
+                });
+            });
+            // Default to dark text while loading
+            textElement.classList.add('dark-text');
+        }
+    }
+
     function renderGallery(list) {
         if (!masonryContainer) return;
         masonryContainer.innerHTML = '';
@@ -416,11 +891,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const img = document.createElement('img');
             img.src = p.preview;
             img.alt = p.name;
+            img.crossOrigin = 'anonymous'; // Allow image analysis if CORS allows
 
             const hover = document.createElement('span');
             hover.className = 'image-hover-text';
             const tagsText = Array.isArray(p.tags) && p.tags.length ? p.tags.join(', ') : '';
             hover.innerHTML = `${p.name}${tagsText ? '<br><span style="font-size:14px; opacity:0.85;">' + tagsText + '</span>' : ''}`;
+
+            // Set text color based on image brightness
+            setTextColorBasedOnImage(img, hover);
 
             link.appendChild(img);
             link.appendChild(hover);
@@ -434,11 +913,17 @@ document.addEventListener('DOMContentLoaded', function() {
             item.classList.add('animate-on-load');
             item.style.animationDelay = `${baseDelayForMasonry + index * 0.08}s`; 
         });
+        
+        // Add hover effects to newly created masonry items
+        addHoverEffectsToMasonryItems();
     }
 
-    // Initial render with openProjects
+    // Initialize tag filter and render gallery
     if (Array.isArray(openProjects)) {
+        const uniqueTags = getUniqueTags(openProjects);
+        renderTagFilter(uniqueTags);
         renderGallery(openProjects);
+        adjustMasonryPadding();
     }
 
     window.addEventListener('scroll', function() {
@@ -462,9 +947,9 @@ document.addEventListener('DOMContentLoaded', function() {
     updateMenuTriggerCursor(); 
 
     // --- Custom Cursor Logic ---
-    const customCursorDiv = document.getElementById('custom-cursor');
-
-    if (customCursorDiv) {
+    // Only initialize cursor if not on touch device (pointer: coarse)
+    const prefersCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    if (customCursorDiv && !prefersCoarsePointer) {
         document.addEventListener('mousemove', function(e) {
             customCursorDiv.style.display = 'block'; // Show on first move
             customCursorDiv.style.left = e.clientX + 'px';
@@ -474,27 +959,53 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('mouseleave', function() { customCursorDiv.style.display = 'none'; });
         document.addEventListener('mouseenter', function() { customCursorDiv.style.display = 'block'; });
 
-        const hoverables = document.querySelectorAll('a, button, #menu-trigger');
-
-        hoverables.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                let applyHover = false;
-                if (el.tagName === 'A' || el.tagName === 'BUTTON') {
-                    applyHover = true;
-                } else if (el.id === 'menu-trigger') {
-                    if (el.classList.contains('clickable')) {
+        function addHoverEffectsToElements(elements) {
+            elements.forEach(el => {
+                // Skip if already has hover listeners (check for a data attribute)
+                if (el.dataset.hasHoverListener === 'true') return;
+                
+                el.addEventListener('mouseenter', () => {
+                    let applyHover = false;
+                    if (el.tagName === 'A' || el.tagName === 'BUTTON') {
                         applyHover = true;
+                    } else if (el.id === 'menu-trigger') {
+                        if (el.classList.contains('clickable')) {
+                            applyHover = true;
+                        }
                     }
-                }
-                if (applyHover) {
-                    customCursorDiv.classList.add('hover');
-                    el.classList.add('hover-underline');
-                }
-            });
+                    if (applyHover) {
+                        customCursorDiv.classList.add('hover');
+                        el.classList.add('hover-underline');
+                    }
+                });
 
-            el.addEventListener('mouseleave', () => {
+                el.addEventListener('mouseleave', () => {
+                    customCursorDiv.classList.remove('hover');
+                    el.classList.remove('hover-underline');
+                });
+                
+                // Mark as having listeners
+                el.dataset.hasHoverListener = 'true';
+            });
+        }
+
+        // Initial hover effects
+        const hoverables = document.querySelectorAll('a, button:not(.tag-filter-btn), #menu-trigger');
+        addHoverEffectsToElements(hoverables);
+        
+        // Add hover effects to existing masonry items (images)
+        addHoverEffectsToMasonryItems();
+
+        // Add hover effects to tag filter buttons
+        const tagButtons = tagFilterContainer.querySelectorAll('.tag-filter-btn');
+        tagButtons.forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                customCursorDiv.classList.add('hover');
+                btn.classList.add('hover-underline');
+            });
+            btn.addEventListener('mouseleave', () => {
                 customCursorDiv.classList.remove('hover');
-                el.classList.remove('hover-underline');
+                btn.classList.remove('hover-underline');
             });
         });
     }
@@ -517,15 +1028,16 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = 'index.html';
         });
         // Add hover effect
-        openGalleryBtn.addEventListener('mouseenter', () => {
-            if (customCursorDiv) customCursorDiv.classList.add('hover');
-        });
-        openGalleryBtn.addEventListener('mouseleave', () => {
-            if (customCursorDiv) customCursorDiv.classList.remove('hover');
-        });
+        if (!prefersCoarsePointer && customCursorDiv) {
+            openGalleryBtn.addEventListener('mouseenter', () => {
+                customCursorDiv.classList.add('hover');
+            });
+            openGalleryBtn.addEventListener('mouseleave', () => {
+                customCursorDiv.classList.remove('hover');
+            });
+        }
     }
 });
 </script>
 </body>
 </html>
-

@@ -548,10 +548,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Custom Cursor Logic ---
     const customCursorDiv = document.getElementById('custom-cursor');
-    // Disable custom cursor on touch devices
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    // Disable custom cursor on touch devices using media query
+    const prefersCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
 
-    if (customCursorDiv && !isTouchDevice) {
+    if (customCursorDiv && !prefersCoarsePointer) {
         document.addEventListener('mousemove', function(e) {
             customCursorDiv.style.display = 'block'; // Show on first move
             customCursorDiv.style.left = e.clientX + 'px';

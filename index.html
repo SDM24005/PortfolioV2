@@ -224,6 +224,14 @@ font-style: normal;
         object-fit: cover; /* This will cover the entire area, cropping if necessary */
         z-index: -1; /* Place it behind other content */
     }
+    
+    /* Ensure video background covers fullscreen */
+    #fullscreen-bg video,
+    #fullscreen-bg {
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover;
+    }
 
     /* Open gallery button */
     .open-gallery-btn {
@@ -259,7 +267,9 @@ font-style: normal;
 </head>
 <body>
 <div id="custom-cursor"></div>
-<img src="Galleria/MG_8652-2.jpg" alt="Kon Glass GIF" id="fullscreen-bg">
+<video id="fullscreen-bg" autoplay loop muted playsinline>
+    <source src="Progetti Open/progetto-2/img/578079302214894359-loop.mp4" type="video/mp4">
+</video>
 
 <header class="fixed-header">
     <h1 class="header-text main-title-name animate-on-load" id="menu-trigger">Samuele De March</h1>
@@ -392,16 +402,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // --- End Custom Cursor Logic ---
 
-    // --- Blur-up + fade-in for home background image ---
+    // --- Blur-up + fade-in for home background video ---
     const bg = document.getElementById('fullscreen-bg');
     if (bg) {
         bg.classList.add('blur-up');
         const onBgLoad = () => { bg.classList.add('loaded'); };
-        if (bg.complete) {
-            // If cached, apply immediately
-            onBgLoad();
+        // For video, use 'loadedmetadata' or 'canplay' event
+        if (bg.tagName === 'VIDEO') {
+            if (bg.readyState >= 2) {
+                // Video has loaded metadata
+                onBgLoad();
+            } else {
+                bg.addEventListener('loadedmetadata', onBgLoad, { once: true });
+                bg.addEventListener('canplay', onBgLoad, { once: true });
+            }
         } else {
-            bg.addEventListener('load', onBgLoad, { once: true });
+            // Fallback for images
+            if (bg.complete) {
+                onBgLoad();
+            } else {
+                bg.addEventListener('load', onBgLoad, { once: true });
+            }
         }
     }
 });
