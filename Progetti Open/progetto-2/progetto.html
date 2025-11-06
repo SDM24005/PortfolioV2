@@ -608,7 +608,14 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         const pathParts = window.location.pathname.split('/').filter(Boolean);
         const projectFolder = decodeURIComponent(pathParts.slice(-2, -1)[0]);
-        const data = (typeof projects !== 'undefined') ? projects.find(p => p.page.includes(projectFolder)) : null;
+        // Check both projects and openProjects arrays
+        let data = null;
+        if (typeof openProjects !== 'undefined') {
+            data = openProjects.find(p => p.page.includes(projectFolder));
+        }
+        if (!data && typeof projects !== 'undefined') {
+            data = projects.find(p => p.page.includes(projectFolder));
+        }
         if (data) {
             // Description
             const descEl = document.getElementById('project-description');
@@ -624,7 +631,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 entries.forEach((src, index) => {
                     const file = src.split('/').pop();
                     // Use relative path from current project directory
-                    // "../Progetti Open/Progetto 2/img/file.jpg" -> "img/file.jpg" (relative to current file)
+                    // "../Progetti Open/progetto-2/img/file.jpg" -> "img/file.jpg" (relative to current file)
                     let relativePath = src;
                     const imgIndex = relativePath.indexOf('/img/');
                     if (imgIndex !== -1) {
@@ -632,9 +639,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         relativePath = 'img/' + file;
                     }
-                    // Encode the path properly for URLs (handle spaces and special characters)
+                    // Encode only the filename part, not the directory path
+                    // This preserves the directory structure while encoding special characters in filenames
                     const pathParts = relativePath.split('/');
-                    const encodedParts = pathParts.map(part => encodeURIComponent(part));
+                    const encodedParts = pathParts.map((part, idx) => {
+                        // Don't encode directory names (like 'img'), only encode filenames
+                        if (idx === pathParts.length - 1) {
+                            return encodeURIComponent(part);
+                        }
+                        return part;
+                    });
                     const encodedPath = encodedParts.join('/');
                     const lower = file.toLowerCase();
                     const item = document.createElement('div');
