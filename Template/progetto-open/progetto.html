@@ -15,7 +15,7 @@
 body {
     margin: 0;
     font-family: sans-serif;
-    background-color: #000000;
+    background-color: #ffffff;
     cursor: none !important;
 }
 
@@ -43,14 +43,14 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
 #custom-cursor.hover {
     width: 24px;
     height: 24px;
-    background-color: white;
+    background-color: #000000;
 }
 
 .header-text {
     font-family: 'FormaDJRDisplay', sans-serif;
     font-size: 20px;
     font-weight: normal;
-    color: white;
+    color: #000000;
     line-height: 1.2;
     margin: 0;
     text-decoration: none;
@@ -61,21 +61,18 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
     position: fixed;
     top: 15px;
     z-index: 1001;
-    mix-blend-mode: difference;
 }
 
 .header-line {
     position: fixed;
-    background-color: white;
+    background-color: #000000;
     height: 1px;
     z-index: 1000;
 }
 
-.fixed-header .header-text { mix-blend-mode: difference; }
-.sub-links-block .header-text { mix-blend-mode: difference !important; }
 
 .project-tags { padding: 8px; }
-.tag-chip { display: inline-block; border: 1px solid #fff; color: #fff; padding: 2px 8px; margin-right: 6px; margin-bottom: 6px; text-decoration: none; }
+.tag-chip { display: inline-block; border: 1px solid #000000; color: #000000; padding: 2px 8px; margin-right: 6px; margin-bottom: 6px; text-decoration: none; }
 @media (max-width: 992px) { .project-tags { padding: 10px; } }
 
 #line-1 {
@@ -138,7 +135,7 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
 }
 
 .gallery-footer { padding-bottom: 24px; }
-.footer-line { height: 1px; background-color: #ffffff; margin-left: 8px; margin-right: 8px; }
+.footer-line { height: 1px; background-color: #000000; margin-left: 8px; margin-right: 8px; }
 .back-to-top { display: block; margin-top: 6px; text-decoration: none; }
 .back-to-top { margin-left: calc(8px + (2 * ((100vw - 32px) / 3) + 8px) + 8px); }
 .contact-info { display: block; margin-top: -20px; white-space: pre-line; margin-left: calc(8px + ((100vw - 32px) / 3) + 8px); }
@@ -147,7 +144,7 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
     font-family: 'FormaDJRDisplay', sans-serif;
     font-size: 20px;
     font-weight: normal;
-    color: white;
+    color: #000000;
     line-height: 1.2;
     padding: 0px;
     padding-top: 0;
@@ -171,13 +168,13 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
 }
 .masonry-item.hidden-before-anim { opacity: 0; visibility: hidden; }
 .masonry-item a { display: block; text-decoration: none; }
-.masonry-item img { width: 100%; height: auto; display: block; transition: transform 0.3s ease, filter 0.3s ease; }
+.masonry-item img { width: 100%; height: auto; display: block; transition: transform 0.3s ease, filter 0.3s ease; mix-blend-mode: difference; }
 
 .blur-up { filter: blur(20px); transform: scale(1.02); }
 .blur-up.loaded { filter: blur(0); transform: scale(1); transition: filter 0.4s ease, transform 0.4s ease; }
 
-.masonry-item video { width: 100%; height: auto; display: block; }
-.masonry-item iframe.pdf-view { width: 100%; height: 75vh; display: block; border: none; background: #111; }
+.masonry-item video { width: 100%; height: auto; display: block; mix-blend-mode: difference; }
+.masonry-item iframe.pdf-view { width: 100%; height: 75vh; display: block; border: none; background: #ffffff; mix-blend-mode: difference; }
 @media (max-width: 576px) {
     .masonry-item iframe.pdf-view { height: 60vh; }
 }
@@ -278,7 +275,7 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
     <h1 class="header-text main-title-name animate-on-load" id="menu-trigger">Samuele De March</h1>
     <div class="header-line animate-on-load" id="line-1"></div>
     <div class="sub-links-block" id="dropdown-links">
-        <a href="#" class="header-text sub-title-link" id="back-link">&#8592;</a>
+        <a href="#" class="header-text sub-title-link" id="back-link">&#8592; Galleria</a>
     </div>
     <div class="header-line" id="line-2"></div>
     <span class="header-text title-gallery animate-on-load" id="project-title">Progetto</span>
@@ -310,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <div class="gallery-footer">
     <div class="footer-line"></div>
-    <a href="#" class="header-text back-to-top">&#8593;</a>
+    <a href="#" class="header-text back-to-top">&#8593; Torna in cima</a>
     <span class="header-text contact-info">Contatti
 Email: samuele.demarch@gmail.com
 Instagram @samueledemarch</span>

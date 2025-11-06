@@ -127,7 +127,7 @@ font-style: normal;
 
     .masonry-container {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(6, 1fr);
         gap: 8px;
         padding: 8px; /* Base padding */
         width: 100%;
@@ -139,17 +139,31 @@ font-style: normal;
     .masonry-item a { display: block; text-decoration: none; }
     .masonry-item img { width: 100%; height: auto; display: block; transition: transform 0.3s ease, filter 0.3s ease; }
     .masonry-item:hover img { transform: scale(1.05); filter: brightness(115%); }
-    .image-hover-text { position: absolute; bottom: 8px; left: 8px; font-family: 'FormaDJRDisplay', sans-serif; font-size: 20px; color: white; line-height: 1.2; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; pointer-events: none; z-index: 2; }
-    .masonry-item:hover .image-hover-text { opacity: 1; visibility: visible; }
+    .image-hover-text { 
+        position: relative; 
+        top: 0;
+        left: 0;
+        margin-top: 4px;
+        font-family: 'FormaDJRDisplay', sans-serif; 
+        font-size: 16px; 
+        color: white; 
+        line-height: 1.2; 
+        opacity: 1; 
+        visibility: visible; 
+        transition: color 0.3s ease, opacity 0.3s ease, visibility 0.3s ease; 
+        pointer-events: none; 
+        z-index: 2;
+        display: block;
+    }
 
     /* Footer divider and back-to-top alignment */
     .gallery-footer { padding-bottom: 24px; }
     .footer-line { height: 1px; background-color: #ffffff; margin-left: 8px; margin-right: 8px; }
     .back-to-top { display: block; margin-top: 6px; text-decoration: none; }
-    /* Align to RIGHT (third) column on desktop (3-col layout) */
-    .back-to-top { margin-left: calc(8px + 2 * ((100vw - 32px) / 3) + 2 * 8px); }
+    /* Align to RIGHT (sixth) column on desktop (6-col layout) */
+    .back-to-top { margin-left: calc(8px + 5 * ((100vw - 32px) / 6) + 5 * 8px); }
 /* Contact info aligned to center column on desktop */
-.contact-info { display: block; margin-top: -20px; white-space: pre-line; margin-left: calc(8px + ((100vw - 32px) / 3) + 8px); }
+.contact-info { display: block; margin-top: -20px; white-space: pre-line; margin-left: calc(8px + 2.5 * ((100vw - 32px) / 6) + 2.5 * 8px); }
 
     /* --- Media Query @ 992px (2 Columns) --- */
     @media (max-width: 992px) {
@@ -165,13 +179,13 @@ font-style: normal;
             right: 10px;
         }
         .masonry-container {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             padding: 10px; /* Page padding */
             padding-top: 150px; /* Consistent with default for 2-link menu */
         }
         .footer-line { margin-left: 10px; margin-right: 10px; }
-        /* Back to top on right column, contacts on left column */
-        .back-to-top { margin-left: calc(10px + (100vw - 28px) / 2 + 8px); }
+        /* Back to top on right column (4th), contacts on left column */
+        .back-to-top { margin-left: calc(10px + 3 * ((100vw - 28px) / 4) + 3 * 8px); }
         .contact-info { margin-left: 10px; }
     }
 
@@ -195,7 +209,7 @@ font-style: normal;
         }
 
         .masonry-container {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             padding: 10px; /* Page padding */
             padding-top: calc(
                 137px            /* .title-gallery top (new) */
@@ -203,8 +217,8 @@ font-style: normal;
                 + 15px           /* Spazio aggiuntivo sotto "Galleria" (original gap) */
             ); /* 137 + 24 + 15 = 176px (menu open) */
         }
-        /* Align back-to-top and contact to left of the single column */
-        .back-to-top { margin-left: 10px; margin-top: 6px; }
+        /* Align back-to-top to right column (2nd), contact to left column */
+        .back-to-top { margin-left: calc(10px + ((100vw - 28px) / 2) + 8px); margin-top: 6px; }
         .contact-info { margin-left: 10px; margin-top: 10px; }
 
         .title-gallery.menu-closed {
@@ -251,7 +265,7 @@ font-style: normal;
     <div class="header-line animate-on-load" id="line-1"></div>
 
     <div class="sub-links-block" id="dropdown-links">
-    <a href="../index.html" class="header-text sub-title-link">Home</a>
+    <a href="../index.html" class="header-text sub-title-link">&#8592; Home</a>
     <a href="../Bio/index.html" class="header-text sub-title-link">Bio</a>
         <!-- Progetti link removed -->
     </div>
@@ -416,12 +430,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const hover = document.createElement('span');
             hover.className = 'image-hover-text';
-            const tagsText = Array.isArray(p.tags) && p.tags.length ? p.tags.join(', ') : '';
-            hover.innerHTML = `${p.name}${tagsText ? '<br><span style="font-size:14px; opacity:0.85;">' + tagsText + '</span>' : ''}`;
+            hover.textContent = p.name;
 
             link.appendChild(img);
-            link.appendChild(hover);
             item.appendChild(link);
+            item.appendChild(hover);
             masonryContainer.appendChild(item);
         });
 

@@ -179,24 +179,11 @@ font-style: normal;
             left: 10px;
         }
         .title-gallery {
-            /* Posizione di default (menu aperto) */
-            top: calc(
-                ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* Posizione di .sub-links-block top = 60px */
-                + (20px * 1.2)  /* Altezza "Home" = 24px */
-                + 8px           /* Gap tra i link */
-                + (20px * 1.2)  /* Altezza "Bio" = 24px */
-                + 10px          /* Spazio sotto i link (prima di line-2) */
-                + 1px           /* Altezza di line-2 */
-                + 10px          /* Spazio aggiuntivo prima di "Galleria" */
-            ); /* 60 + 24 + 8 + 24 + 10 + 1 + 10 = 137px */
-            left: 10px;
+            top: 15px;
+            left: auto;
+            right: 10px;
             display: block;
-            transition: top 0.6s ease-out; /* Transizione SOLO per 1 colonna */
-        }
-
-        /* Stili per quando il menu è chiuso (layout a 1 colonna) */
-        .title-gallery.menu-closed {
-            top: calc( (15px + (20px * 1.2) + 10px) + 1px + 10px); /* 60px */
+            transition: none;
         }
     }
 

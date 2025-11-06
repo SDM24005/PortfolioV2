@@ -35,3 +35,6 @@ Le cartelle devono essere rinominate manualmente perché contengono file che pot
 - Assicurati che il file video in `Progetti/Progetto 2/img/` si chiami `578079302214894359-loop.mp4` (con `-loop`) per funzionare come video loop
 
 
+
+
+

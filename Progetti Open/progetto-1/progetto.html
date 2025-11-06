@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Progetto - Portfolio</title>
+<style>
+@font-face {
+    font-family: 'FormaDJRDisplay';
+    src: url('/Fonts/FormaDJRDisplay-Regular-Testing.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background-color: #000000;
+    cursor: none !important;
+}
+
+b, strong, h1, h2, h3, h4, h5, h6 { font-weight: normal; }
+.hover-underline { text-decoration: underline !important; text-underline-offset: 2px; }
+
+a, button, input[type="button"], input[type="submit"], select, textarea, label[for], #menu-trigger,
+.title-gallery, .text-column {
+    cursor: none !important;
+}
+
+#custom-cursor {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    background-color: grey;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: width 0.15s ease-out, height 0.15s ease-out, background-color 0.15s ease-out;
+    z-index: 99999;
+    display: none;
+}
+
+#custom-cursor.hover {
+    width: 24px;
+    height: 24px;
+    background-color: white;
+}
+
+.header-text {
+    font-family: 'FormaDJRDisplay', sans-serif;
+    font-size: 20px;
+    font-weight: normal;
+    color: white;
+    line-height: 1.2;
+    margin: 0;
+    text-decoration: none;
+    display: block;
+}
+
+.main-title-name {
+    position: fixed;
+    top: 15px;
+    z-index: 1001;
+    mix-blend-mode: difference;
+}
+
+.header-line {
+    position: fixed;
+    background-color: white;
+    height: 1px;
+    z-index: 1000;
+}
+
+.fixed-header .header-text { mix-blend-mode: difference; }
+.sub-links-block .header-text { mix-blend-mode: difference !important; }
+
+.project-tags { padding: 8px; }
+.tag-chip { display: inline-block; border: 1px solid #fff; color: #fff; padding: 2px 8px; margin-right: 6px; margin-bottom: 6px; text-decoration: none; }
+@media (max-width: 992px) { .project-tags { padding: 10px; } }
+
+#line-1 {
+    top: calc(15px + (20px * 1.2) + 10px);
+}
+
+.sub-links-block {
+    position: fixed;
+    top: calc((15px + (20px * 1.2) + 10px) + 1px + 10px);
+    z-index: 1001;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    display: none;
+}
+
+#line-2 {
+    top: calc(
+        ((15px + (20px * 1.2) + 10px) + 1px + 10px)
+        + (20px * 1.2)
+        + 10px
+    );
+    display: none;
+}
+
+.title-gallery {
+    position: fixed;
+    top: 15px;
+    z-index: 1001;
+    display: block;
+    cursor: default;
+}
+
+.main-title-name, .sub-links-block {
+    left: calc(8px + (100vw - 32px) / 3 + 8px);
+}
+.title-gallery {
+    left: calc(8px + 2 * ((100vw - 32px) / 3) + 2 * 8px);
+}
+.header-line {
+    left: 8px;
+    right: 8px;
+}
+
+.content-wrapper {
+    display: grid;
+    grid-template-columns: calc(2 * (100vw - 32px) / 3 + 8px) calc((100vw - 32px) / 3);
+    align-items: start;
+    column-gap: 8px;
+    padding: 8px;
+    padding-top: 120px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.masonry-container {
+    column-count: 2;
+    column-gap: 8px;
+    box-sizing: border-box;
+}
+
+.gallery-footer { padding-bottom: 24px; }
+.footer-line { height: 1px; background-color: #ffffff; margin-left: 8px; margin-right: 8px; }
+.back-to-top { display: block; margin-top: 6px; text-decoration: none; }
+.back-to-top { margin-left: calc(8px + (2 * ((100vw - 32px) / 3) + 8px) + 8px); }
+.contact-info { display: block; margin-top: -20px; white-space: pre-line; margin-left: calc(8px + ((100vw - 32px) / 3) + 8px); }
+
+.text-column {
+    font-family: 'FormaDJRDisplay', sans-serif;
+    font-size: 20px;
+    font-weight: normal;
+    color: white;
+    line-height: 1.2;
+    padding: 0px;
+    padding-top: 0;
+    margin-top: -4px;
+    box-sizing: border-box;
+    cursor: default;
+}
+
+#project-meta, #project-meta * { -webkit-user-select: none; -ms-user-select: none; user-select: none; }
+.text-column > p:first-child { margin-top: 0; }
+
+.masonry-item {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 4px;
+    overflow: hidden;
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    position: relative;
+}
+.masonry-item.hidden-before-anim { opacity: 0; visibility: hidden; }
+.masonry-item a { display: block; text-decoration: none; }
+.masonry-item img { width: 100%; height: auto; display: block; transition: transform 0.3s ease, filter 0.3s ease; }
+
+.blur-up { filter: blur(20px); transform: scale(1.02); }
+.blur-up.loaded { filter: blur(0); transform: scale(1); transition: filter 0.4s ease, transform 0.4s ease; }
+
+.masonry-item video { width: 100%; height: auto; display: block; }
+.masonry-item iframe.pdf-view { width: 100%; height: 75vh; display: block; border: none; background: #111; }
+@media (max-width: 576px) {
+    .masonry-item iframe.pdf-view { height: 60vh; }
+}
+
+.fade-up { opacity: 0; transform: translateY(12px); }
+.fade-up.loaded { opacity: 1; transform: translateY(0); transition: opacity 0.5s ease, transform 0.5s ease; }
+.blur-up-media { filter: blur(10px); transform: scale(1.01); }
+.blur-up-media.loaded { filter: blur(0); transform: scale(1); transition: filter 0.4s ease, transform 0.4s ease; }
+.hidden-before-anim { opacity: 0 !important; visibility: hidden; }
+
+@media (max-width: 992px) {
+    .main-title-name, .sub-links-block { left: 10px; }
+    .title-gallery { left: calc(10px + (100vw - 28px) / 2 + 8px); }
+    .header-line { left: 10px; right: 10px; }
+    .masonry-container {
+        column-count: 1;
+        padding: 0;
+        padding-top: 120px;
+    }
+    .back-to-top { margin-left: calc(10px + (100vw - 28px) / 2 + 8px); }
+    .contact-info { margin-left: 10px; }
+    .content-wrapper {
+        padding: 10px;
+        padding-top: 120px;
+        grid-template-columns: calc((100vw - 28px) / 2) calc((100vw - 28px) / 2);
+        align-items: start;
+    }
+    .masonry-container {
+        column-count: 1;
+        padding: 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-title-name, .sub-links-block { left: 10px; }
+    .title-gallery {
+        top: calc(
+            ((15px + (20px * 1.2) + 10px) + 1px + 10px)
+            + (20px * 1.2)
+            + 10px
+            + 1px
+            + 10px
+        );
+        left: 10px;
+        transition: top 0.6s ease-out;
+    }
+    .content-wrapper {
+        padding: 10px;
+        grid-template-columns: 1fr;
+        row-gap: 4px;
+        align-items: start;
+        padding-top: calc(
+            ((15px + (20px * 1.2) + 10px) + 1px + 10px)
+            + (20px * 1.2)
+            + 10px
+            + 1px
+            + 10px
+            + (20px * 1.2)
+            + 25px
+        );
+        transition: padding-top 0.6s ease-out;
+    }
+    .content-wrapper.menu-closed { padding-top: 154px; }
+    .masonry-container {
+        column-count: 1;
+        padding-left: 0;
+        padding-right: 0;
+        padding-top: 0;
+        transition: none;
+        grid-row: 2;
+    }
+    .back-to-top { margin-left: 10px; margin-top: 6px; }
+    .contact-info { margin-left: 10px; margin-top: 10px; }
+    .text-column { grid-row: 1; }
+    .title-gallery.menu-closed {
+        top: calc((15px + (20px * 1.2) + 10px) + 1px + 10px);
+    }
+}
+
+@keyframes fadeInFromTop { from { opacity: 0; transform: translateY(-25px); } to { opacity: 1; transform: translateY(0); } }
+.animate-on-load { opacity: 0; animation: fadeInFromTop 0.8s ease-out forwards; }
+.animate-delay-text { animation-delay: 1.6s; }
+@keyframes fadeInFromTopMenu { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeOutToTopMenu { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
+.sub-links-block.animate-menu-open, #line-2.animate-menu-open { opacity: 0; animation: fadeInFromTopMenu 0.6s ease-out forwards; pointer-events: auto; }
+.sub-links-block.animate-menu-close, #line-2.animate-menu-close { opacity: 1; animation: fadeOutToTopMenu 0.6s ease-out forwards; pointer-events: none; }
+
+@media (pointer: coarse) {
+    #custom-cursor { display: none !important; }
+}
+</style>
+</head>
+<body>
+<div id="custom-cursor"></div>
+<script src="../../scripts/projects.js"></script>
+
+<header class="fixed-header">
+    <h1 class="header-text main-title-name animate-on-load" id="menu-trigger">Samuele De March</h1>
+    <div class="header-line animate-on-load" id="line-1"></div>
+    <div class="sub-links-block" id="dropdown-links">
+        <a href="#" class="header-text sub-title-link" id="back-link">&#8592; Galleria</a>
+    </div>
+    <div class="header-line" id="line-2"></div>
+    <span class="header-text title-gallery animate-on-load" id="project-title">Progetto</span>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        const projectFolder = decodeURIComponent(pathParts.slice(-2, -1)[0]);
+        const projectTitle = projectFolder.replace(/[-_]/g, ' ');
+        const titleElement = document.getElementById('project-title');
+        if (titleElement) {
+            titleElement.textContent = projectTitle;
+        }
+    } catch (e) {
+        console.error("Error setting project title:", e);
+    }
+});
+</script>
+</header>
+
+<div id="project-tags-bar" class="project-tags"></div>
+<div class="content-wrapper">
+    <div class="masonry-container"></div>
+    <div class="text-column animate-on-load animate-delay-text">
+        <p id="project-description">...</p>
+        <div id="project-meta" style="margin-top: 8px;"></div>
+    </div>
+</div>
+
+<div class="gallery-footer">
+    <div class="footer-line"></div>
+    <a href="#" class="header-text back-to-top">&#8593; Torna in cima</a>
+    <span class="header-text contact-info">Contatti
+Email: samuele.demarch@gmail.com
+Instagram @samueledemarch</span>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const textCol = document.querySelector('.text-column');
+        const meta = document.getElementById('project-meta');
+        if (textCol && meta && typeof projects !== 'undefined') {
+            const pathParts = window.location.pathname.split('/').filter(Boolean);
+            const projectFolder = decodeURIComponent(pathParts.slice(-2, -1)[0]);
+            const data = projects.find(p => p.page.includes(projectFolder));
+            if (data) {
+                const dateText = (data.startDate || data.endDate) ? `${data.startDate || ''}${data.startDate && data.endDate ? ' – ' : ''}${data.endDate || ''}` : '';
+                const parts = [];
+                if (dateText) parts.push(`${dateText}`);
+                meta.innerHTML = parts.join('<br>');
+                const bar = document.getElementById('project-tags-bar');
+                if (bar) {
+                    bar.style.display = 'none';
+                    bar.innerHTML = '';
+                }
+            }
+        }
+    } catch (e) {}
+
+    const menuTrigger = document.getElementById('menu-trigger');
+    const dropdownLinks = document.getElementById('dropdown-links');
+    const line2 = document.getElementById('line-2');
+    const titleGallery = document.querySelector('.title-gallery');
+    const contentWrapper = document.querySelector('.content-wrapper');
+    const masonryContainer = document.querySelector('.masonry-container');
+    const backLink = document.getElementById('back-link');
+    let menuAnimating = false;
+
+    function updateMenuTriggerCursor() {
+        if (!menuTrigger) return;
+        if (window.scrollY === 0) {
+            menuTrigger.classList.remove('clickable');
+        } else {
+            menuTrigger.classList.add('clickable');
+        }
+    }
+
+    function applyOpenStyles(element, displayType) {
+        if (!element) return;
+        element.style.display = displayType;
+        element.classList.remove('animate-menu-close');
+        element.classList.add('animate-menu-open');
+        element.classList.add('is-open');
+        element.style.pointerEvents = 'auto';
+        menuAnimating = true;
+    }
+
+    function applyCloseStyles(element) {
+        if (!element) return;
+        element.classList.remove('animate-menu-open');
+        element.classList.add('animate-menu-close');
+        element.style.pointerEvents = 'none';
+        menuAnimating = true;
+    }
+
+    function onOpenAnimationEnd(event) {
+        if ((event.target === dropdownLinks || event.target === line2) && event.animationName === 'fadeInFromTopMenu') {
+            event.target.classList.remove('animate-menu-open');
+            if (dropdownLinks && line2 && !dropdownLinks.classList.contains('animate-menu-open') && !line2.classList.contains('animate-menu-open')) {
+                menuAnimating = false;
+            }
+        }
+    }
+    
+    function updateGalleryPositioning() {
+        if (!titleGallery || !contentWrapper) return;
+        if (window.innerWidth <= 576) {
+            if (dropdownLinks && dropdownLinks.classList.contains('is-open')) {
+                titleGallery.classList.remove('menu-closed');
+                contentWrapper.classList.remove('menu-closed');
+            } else {
+                titleGallery.classList.add('menu-closed');
+                contentWrapper.classList.add('menu-closed');
+            }
+        } else {
+            titleGallery.classList.remove('menu-closed');
+            contentWrapper.classList.remove('menu-closed');
+        }
+    }
+
+    function refinedOnCloseAnimationEnd(event) {
+        if ((event.target === dropdownLinks || event.target === line2) && event.animationName === 'fadeOutToTopMenu') {
+            event.target.style.display = 'none';
+            event.target.classList.remove('is-open');
+            event.target.classList.remove('animate-menu-close');
+            if (dropdownLinks && line2 && !dropdownLinks.classList.contains('animate-menu-close') && !line2.classList.contains('animate-menu-close')) {
+                menuAnimating = false;
+            }
+            if (dropdownLinks && !dropdownLinks.classList.contains('is-open') && line2 && !line2.classList.contains('is-open')) {
+                updateGalleryPositioning();
+            }
+        }
+    }
+
+    if (dropdownLinks) {
+        dropdownLinks.addEventListener('animationend', (e) => {
+            if (e.animationName === 'fadeInFromTopMenu') onOpenAnimationEnd(e);
+            if (e.animationName === 'fadeOutToTopMenu') refinedOnCloseAnimationEnd(e);
+        });
+    }
+    if (line2) {
+        line2.addEventListener('animationend', (e) => {
+            if (e.animationName === 'fadeInFromTopMenu') onOpenAnimationEnd(e);
+            if (e.animationName === 'fadeOutToTopMenu') refinedOnCloseAnimationEnd(e);
+        });
+    }
+
+    function openMenu() {
+        if (menuAnimating || (dropdownLinks && dropdownLinks.classList.contains('is-open'))) return;
+        applyOpenStyles(dropdownLinks, 'flex');
+        applyOpenStyles(line2, 'block');
+        updateGalleryPositioning();
+    }
+
+    function closeMenu() {
+        if (menuAnimating || !(dropdownLinks && dropdownLinks.classList.contains('is-open'))) return;
+        applyCloseStyles(dropdownLinks);
+        applyCloseStyles(line2);
+        if (window.innerWidth <= 576 && titleGallery) {
+            titleGallery.classList.add('menu-closed');
+        }
+    }
+    
+    if (dropdownLinks && line2) {
+        setTimeout(function() {
+            openMenu();
+            updateMenuTriggerCursor();
+        }, 400);
+    }
+
+    if (menuTrigger && dropdownLinks && line2) {
+        menuTrigger.addEventListener('click', function() {
+            if (dropdownLinks.classList.contains('is-open')) {
+                if (window.scrollY !== 0) {
+                    closeMenu();
+                }
+            } else {
+                openMenu();
+            }
+        });
+    }
+
+    window.addEventListener('scroll', function() {
+        if (!dropdownLinks || !line2) return;
+        if (menuAnimating) return;
+        updateMenuTriggerCursor();
+        if (window.scrollY === 0) {
+            if (!dropdownLinks.classList.contains('is-open')) {
+                openMenu();
+            }
+        } else {
+            if (dropdownLinks.classList.contains('is-open')) {
+                closeMenu();
+            }
+        }
+    });
+
+    window.addEventListener('resize', updateGalleryPositioning);
+    updateMenuTriggerCursor();
+
+    const customCursorDiv = document.getElementById('custom-cursor');
+    const prefersCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+
+    if (customCursorDiv && !prefersCoarsePointer) {
+        document.addEventListener('mousemove', function(e) {
+            customCursorDiv.style.display = 'block';
+            customCursorDiv.style.left = e.clientX + 'px';
+            customCursorDiv.style.top = e.clientY + 'px';
+        });
+        document.addEventListener('mouseleave', function() { customCursorDiv.style.display = 'none'; });
+        document.addEventListener('mouseenter', function() { customCursorDiv.style.display = 'block'; });
+
+        const hoverables = document.querySelectorAll('a, button, #menu-trigger');
+        hoverables.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                let applyHover = false;
+                if (el.tagName === 'A' || el.tagName === 'BUTTON') {
+                    applyHover = true;
+                } else if (el.id === 'menu-trigger') {
+                    if (el.classList.contains('clickable')) {
+                        applyHover = true;
+                    }
+                }
+                if (applyHover) {
+                    customCursorDiv.classList.add('hover');
+                    el.classList.add('hover-underline');
+                }
+            });
+            el.addEventListener('mouseleave', () => {
+                customCursorDiv.classList.remove('hover');
+                el.classList.remove('hover-underline');
+            });
+        });
+    }
+
+    try {
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        const projectFolder = decodeURIComponent(pathParts.slice(-2, -1)[0]);
+        const data = (typeof projects !== 'undefined') ? projects.find(p => p.page.includes(projectFolder)) : null;
+        if (data) {
+            const descEl = document.getElementById('project-description');
+            if (descEl && data.description) descEl.textContent = data.description;
+
+            if (masonryContainer) {
+                masonryContainer.innerHTML = '';
+                const entries = [];
+                if (Array.isArray(data.images)) entries.push(...data.images);
+                if (Array.isArray(data.media)) entries.push(...data.media);
+                const baseDelayForImages = 0.9;
+                entries.forEach((src, index) => {
+                    const file = src.split('/').pop();
+                    let relativePath = src;
+                    const imgIndex = relativePath.indexOf('/img/');
+                    if (imgIndex !== -1) {
+                        relativePath = relativePath.substring(imgIndex + 1);
+                    } else {
+                        relativePath = 'img/' + file;
+                    }
+                    const pathParts = relativePath.split('/');
+                    const encodedParts = pathParts.map(part => encodeURIComponent(part));
+                    const encodedPath = encodedParts.join('/');
+                    const lower = file.toLowerCase();
+                    const item = document.createElement('div');
+                    item.className = 'masonry-item';
+                    item.classList.add('animate-on-load');
+                    item.classList.add('hidden-before-anim');
+                    item.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
+
+                    if (lower.endsWith('.mp4') || lower.endsWith('.webm')) {
+                        const video = document.createElement('video');
+                        const isLoop = lower.includes('_loop') || lower.includes('-loop');
+                        if (isLoop) {
+                            video.autoplay = true;
+                            video.loop = true;
+                            video.muted = true;
+                            video.playsInline = true;
+                            video.controls = false;
+                            video.preload = 'auto';
+                        } else {
+                            video.controls = true;
+                            video.playsInline = true;
+                            video.preload = 'metadata';
+                        }
+                        const source = document.createElement('source');
+                        source.src = encodedPath;
+                        source.type = lower.endsWith('.mp4') ? 'video/mp4' : 'video/webm';
+                        video.appendChild(source);
+                        video.classList.add('fade-up', 'blur-up-media', 'animate-on-load');
+                        video.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
+                        video.addEventListener('loadedmetadata', () => {
+                            video.classList.add('loaded');
+                        });
+                        item.appendChild(video);
+                    } else if (lower.endsWith('.pdf')) {
+                        const iframe = document.createElement('iframe');
+                        iframe.src = `${encodedPath}#toolbar=0&navpanes=0`;
+                        iframe.className = 'pdf-view fade-up blur-up-media';
+                        iframe.classList.add('animate-on-load');
+                        iframe.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
+                        iframe.setAttribute('type', 'application/pdf');
+                        iframe.setAttribute('loading', 'lazy');
+                        const markLoaded = () => { iframe.classList.add('loaded'); };
+                        iframe.addEventListener('load', markLoaded, { once: true });
+                        setTimeout(markLoaded, 700);
+                        item.appendChild(iframe);
+                    } else {
+                        const img = document.createElement('img');
+                        img.src = encodedPath;
+                        img.alt = file;
+                        img.loading = 'lazy';
+                        img.decoding = 'async';
+                        img.classList.add('blur-up', 'animate-on-load');
+                        img.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
+                        img.addEventListener('load', () => {
+                            img.classList.add('loaded');
+                        });
+                        item.appendChild(img);
+                    }
+                    masonryContainer.appendChild(item);
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            item.classList.remove('hidden-before-anim');
+                            item.style.visibility = 'visible';
+                        });
+                    });
+                });
+            }
+        }
+    } catch(e) {}
+
+    const backToTop = document.querySelector('.back-to-top');
+    if (backToTop) {
+        backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    if (backLink) {
+        backLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '../../Galleria/index.html';
+            }
+        });
+    }
+});
+</script>
+</body>
+</html>

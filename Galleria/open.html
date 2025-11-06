@@ -104,6 +104,97 @@ font-style: normal;
         display: none;
     }
 
+    .filter-label {
+        font-family: 'FormaDJRDisplay', sans-serif;
+        font-size: 20px;
+        font-weight: normal;
+        color: #000000;
+        line-height: 1.2;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        cursor: none !important;
+        position: relative;
+    }
+    
+    .filter-arrow {
+        font-size: 16px;
+        transition: transform 0.3s ease;
+    }
+
+    .filter-label:hover {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        padding: 8px;
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 150px;
+        z-index: 1002;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    }
+
+    .dropdown-menu-content {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        column-gap: 16px;
+    }
+
+
+    .dropdown-menu.visible {
+        display: flex;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .dropdown-item {
+        font-family: 'FormaDJRDisplay', sans-serif;
+        font-size: 16px;
+        font-weight: normal;
+        color: #000000;
+        line-height: 1.2;
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin: 0;
+        text-align: left;
+        cursor: none !important;
+        text-decoration: none;
+        opacity: 0;
+        transform: translateY(-5px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    
+    .dropdown-menu.visible .dropdown-item {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .dropdown-menu:not(.visible) .dropdown-item {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    .dropdown-item:hover {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    .dropdown-item.active {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
     .tag-filter-container {
         position: fixed;
         top: calc(
@@ -117,18 +208,41 @@ font-style: normal;
         ); /* 137px */
         z-index: 1001;
         display: none;
-        flex-wrap: wrap;
+        flex-direction: column;
         gap: 8px;
         align-items: flex-start;
     }
 
-    .tag-filter-container.is-open {
+    .year-filter-container {
+        position: fixed;
+        top: calc(
+            ( (15px + (20px * 1.2) + 10px) + 1px + 10px ) /* 60px */
+            + (20px * 1.2)  /* Home = 24px */
+            + 8px           /* Gap */
+            + (20px * 1.2)  /* Bio = 24px */
+            + 10px          /* Padding sotto i link */
+            + 1px           /* line-2 height */
+            + 10px          /* Spazio dopo line-2 */
+            + (20px * 1.2)  /* Label "Tag" height */
+            + 8px           /* Gap after label */
+        ); /* ~137px + 24px + 8px = ~169px (base position) */
+        z-index: 1001;
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .tag-filter-container.is-open,
+    .year-filter-container.is-open {
         display: flex;
         opacity: 0;
         animation: fadeInFromTopMenu 0.6s ease-out forwards;
     }
 
-    .tag-filter-btn {
+
+    .tag-filter-btn,
+    .year-filter-btn {
         font-family: 'FormaDJRDisplay', sans-serif;
         font-size: 16px;
         font-weight: normal;
@@ -143,53 +257,38 @@ font-style: normal;
         transition: opacity 0.3s ease;
     }
 
-    .tag-filter-btn:hover {
+    .tag-filter-btn:hover,
+    .year-filter-btn:hover {
         text-decoration: underline;
         text-underline-offset: 2px;
     }
 
-    .tag-filter-btn.active {
+    .tag-filter-btn.active,
+    .year-filter-btn.active {
         text-decoration: underline;
         text-underline-offset: 2px;
     }
 
-    .tag-filter-btn.all-tags {
+    .tag-filter-btn.all-tags,
+    .year-filter-btn.all-years {
         opacity: 0.6;
     }
 
-    .tag-filter-btn.all-tags.active {
+    .tag-filter-btn.all-tags.active,
+    .year-filter-btn.all-years.active {
         opacity: 1;
     }
 
-    .tag-filter-btn.mode-btn {
+    .tag-filter-btn.mode-btn,
+    .year-filter-btn.mode-btn {
         opacity: 0.6;
     }
 
-    .tag-filter-btn.mode-btn.active {
+    .tag-filter-btn.mode-btn.active,
+    .year-filter-btn.mode-btn.active {
         opacity: 1;
     }
 
-    /* Tag buttons container - initially hidden */
-    .tag-buttons-container {
-        display: none;
-        flex-wrap: wrap;
-        gap: 8px;
-        align-items: flex-start;
-        opacity: 0;
-        transform: translateY(-10px);
-        transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-
-    .tag-buttons-container.visible {
-        display: flex;
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    .tag-buttons-container.hiding {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
 
     .title-gallery {
         position: fixed;
@@ -210,6 +309,10 @@ font-style: normal;
         left: calc(8px + (100vw - 32px) / 3 + 8px);
         max-width: calc((100vw - 32px) / 3);
     }
+    .year-filter-container {
+        left: calc(8px + (100vw - 32px) / 3 + 8px);
+        max-width: calc((100vw - 32px) / 3);
+    }
     .title-gallery {
         left: calc(8px + 2 * ((100vw - 32px) / 3) + 2 * 8px);
     }
@@ -219,30 +322,34 @@ font-style: normal;
     }
 
     .masonry-container {
-        column-count: 3;
-        column-gap: 8px;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        grid-auto-rows: 1fr;
+        gap: 8px;
         padding: 8px; /* Base padding */
         width: 100%;
         box-sizing: border-box;
         transition: padding-top 0.6s ease-out; /* For smooth transition with menu */
     }
     .masonry-item { 
-        display: inline-block; 
+        display: block; 
         width: 100%;
-        margin-bottom: 8px;
+        overflow: visible; 
         break-inside: avoid; 
         -webkit-column-break-inside: avoid; 
         page-break-inside: avoid; 
-        position: relative; 
+        position: relative;
     }
     .masonry-item a { 
         display: block; 
         text-decoration: none; 
+        width: 100%;
         overflow: hidden;
     }
     .masonry-item img { 
         width: 100%; 
-        height: auto; 
+        height: auto;
+        aspect-ratio: 1;
         display: block; 
         transition: transform 0.3s ease, filter 0.3s ease;
         object-fit: cover;
@@ -252,23 +359,21 @@ font-style: normal;
         filter: brightness(115%); 
     }
     .image-hover-text { 
-        position: absolute; 
-        bottom: 8px; 
-        left: 8px; 
+        position: relative; 
+        top: 0;
+        left: 0;
+        margin-top: 4px;
         font-family: 'FormaDJRDisplay', sans-serif; 
-        font-size: 20px; 
+        font-size: 16px; 
+        color: #000000; 
         line-height: 1.2; 
-        opacity: 0; 
-        visibility: hidden; 
+        opacity: 1; 
+        visibility: visible; 
         transition: color 0.3s ease, opacity 0.3s ease, visibility 0.3s ease; 
         pointer-events: none; 
         z-index: 2;
+        display: block;
     }
-    .image-hover-text.light-text { color: #ffffff; }
-    .image-hover-text.dark-text { color: #000000; }
-    .image-hover-text span { opacity: 0.7; transition: opacity 0.3s ease; }
-    .masonry-item:hover .image-hover-text { opacity: 1; visibility: visible; }
-    .masonry-item:hover .image-hover-text span { opacity: 1; }
 
     /* Footer divider and back-to-top alignment */
     .gallery-footer { padding-bottom: 24px; }
@@ -307,6 +412,10 @@ font-style: normal;
             left: 10px;
             max-width: calc((100vw - 28px) / 2);
         }
+        .year-filter-container {
+            left: 10px;
+            max-width: calc((100vw - 28px) / 2);
+        }
         .title-gallery {
             left: calc(10px + (100vw - 28px) / 2 + 8px);
         }
@@ -315,12 +424,9 @@ font-style: normal;
             right: 10px;
         }
         .masonry-container {
-            column-count: 2;
-            column-gap: 10px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
             padding: 10px; /* Page padding */
-        }
-        .masonry-item {
-            margin-bottom: 10px;
         }
         .footer-line { margin-left: 10px; margin-right: 10px; }
         /* Back to top on right column, contacts on left column */
@@ -335,6 +441,14 @@ font-style: normal;
             left: 10px;
         }
         .title-gallery {
+            top: 15px;
+            left: auto;
+            right: 10px;
+            transition: none;
+        }
+        .tag-filter-container {
+            left: 10px;
+            max-width: calc(100vw - 20px);
             top: calc(
                 ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
                 + (20px * 1.2 * 2) /* Altezza dei due link = 48px */
@@ -343,24 +457,28 @@ font-style: normal;
                 + 1px              /* Altezza di line-2 */
                 + 10px             /* Spazio dopo line-2 */
             ); /* 137px */
-            left: 10px;
-            transition: top 0.6s ease-out;
         }
-        .tag-filter-container {
+        .year-filter-container {
             left: 10px;
             max-width: calc(100vw - 20px);
             top: calc(
-                137px + 24px + 10px
-            ); /* 171px */
+                ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
+                + (20px * 1.2 * 2) /* Altezza dei due link = 48px */
+                + (8px * 1)        /* Gap tra i link = 8px */
+                + 10px             /* Spazio sotto i link (prima di line-2) */
+                + 1px              /* Altezza di line-2 */
+                + 10px             /* Spazio dopo line-2 */
+                + (20px * 1.2)     /* Label "Tag" height */
+                + 8px              /* Gap after label */
+                + 24px             /* Dropdown menu height (approx) */
+                + 8px              /* Gap after dropdown */
+            ); /* ~235px */
         }
 
         .masonry-container {
-            column-count: 1;
-            column-gap: 10px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
             padding: 10px; /* Page padding */
-        }
-        .masonry-item {
-            margin-bottom: 10px;
         }
         /* Titles always visible on mobile */
         .image-hover-text {
@@ -373,10 +491,6 @@ font-style: normal;
 
         .title-gallery.menu-closed {
             top: calc( (15px + (20px * 1.2) + 10px) + 1px + 10px); /* 60px */
-        }
-
-        .masonry-container.menu-closed {
-            /* padding-top when menu is closed, should match open state to prevent jump */
         }
     }
 
@@ -408,13 +522,16 @@ font-style: normal;
     <div class="header-line animate-on-load" id="line-1"></div>
 
     <div class="sub-links-block" id="dropdown-links">
-    <a href="../index.html" class="header-text sub-title-link">Home</a>
+    <a href="../index.html" class="header-text sub-title-link">&#8592; Home</a>
     <a href="../Bio/index.html" class="header-text sub-title-link">Bio</a>
         <!-- Progetti link removed -->
     </div>
     <div class="header-line" id="line-2"></div>
     <div class="tag-filter-container" id="tag-filter-container">
         <!-- Tag buttons will be inserted here by JavaScript -->
+    </div>
+    <div class="year-filter-container" id="year-filter-container">
+        <!-- Year buttons will be inserted here by JavaScript -->
     </div>
     <span class="header-text title-gallery animate-on-load">Open</span>
 </header>
@@ -424,7 +541,7 @@ font-style: normal;
 
 <div class="gallery-footer">
     <div class="footer-line"></div>
-    <a href="#" class="header-text back-to-top">&#8593;</a>
+    <a href="#" class="header-text back-to-top">&#8593; Torna in cima</a>
     <span class="header-text contact-info">Contatti
 Email: samuele.demarch@gmail.com
 Instagram @samueledemarch</span>
@@ -439,38 +556,117 @@ document.addEventListener('DOMContentLoaded', function() {
     const titleGallery = document.querySelector('.title-gallery');
     const masonryContainer = document.querySelector('.masonry-container');
     const tagFilterContainer = document.getElementById('tag-filter-container');
+    const yearFilterContainer = document.getElementById('year-filter-container');
     const customCursorDiv = document.getElementById('custom-cursor');
     let menuAnimating = false;
     let selectedTags = [];
-    let filterMode = 'all'; // 'all', 'or' (+), 'and' (-)
+    let selectedYears = [];
+    let filterMode = 'all'; // 'all', 'or'
+    let yearFilterMode = 'all'; // 'all', 'or'
 
     // Disable custom cursor on touch devices using media query
     const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 
-    function adjustMasonryPadding() {
-        if (!masonryContainer || !tagFilterContainer) return;
+    // Schedule layout update after dropdown open/close so measurements are accurate
+    function scheduleLayoutUpdate() {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                adjustYearFilterPosition();
+                adjustMasonryPadding();
+            });
+        });
+    }
 
-        const isHidden = window.getComputedStyle(tagFilterContainer).display === 'none';
-        if (isHidden) {
+    function adjustYearFilterPosition() {
+        if (!tagFilterContainer || !yearFilterContainer) return;
+        
+        const tagDropdown = tagFilterContainer.querySelector('.dropdown-menu');
+        const tagLabel = tagFilterContainer.querySelector('.filter-label');
+        
+        // Base position calculation (same as CSS)
+        let baseTop = (
+            (15 + (20 * 1.2) + 10) + 1 + 10  // 60px
+            + (20 * 1.2)  // Home = 24px
+            + 8           // Gap
+            + (20 * 1.2)  // Bio = 24px
+            + 10          // Padding sotto i link
+            + 1           // line-2 height
+            + 10          // Spazio dopo line-2
+            + (20 * 1.2)  // Label "Tag" height
+            + 8           // Gap after label
+        ); // ~169px
+        
+        let newTop = baseTop;
+        
+        // If tag dropdown is visible, add its height
+        if (tagDropdown && tagDropdown.classList.contains('visible') && tagLabel) {
+            // Force a reflow to get accurate measurements
+            void tagFilterContainer.offsetHeight;
+            
+            const tagDropdownHeight = tagDropdown.getBoundingClientRect().height;
+            
+            // FIX: Aggiungi solo l'altezza del dropdown + un gap
+            newTop = baseTop + tagDropdownHeight + 8;
+        } else {
+            // When dropdown is closed, reset to base position
+            newTop = baseTop;
+        }
+        
+        yearFilterContainer.style.top = `${newTop}px`;
+    }
+
+    function adjustMasonryPadding() {
+        if (!masonryContainer || !tagFilterContainer || !yearFilterContainer) return;
+
+        const tagHidden = window.getComputedStyle(tagFilterContainer).display === 'none';
+        const yearHidden = window.getComputedStyle(yearFilterContainer).display === 'none';
+        
+        if (tagHidden) {
             tagFilterContainer.style.display = 'flex';
             tagFilterContainer.style.visibility = 'hidden';
         }
-
-        const tagContainerRect = tagFilterContainer.getBoundingClientRect();
-        const tagButtonsContainer = tagFilterContainer.querySelector('.tag-buttons-container');
-        let newPaddingTop = tagContainerRect.bottom + 20;
-        
-        // If tag buttons are visible, add their height
-        if (tagButtonsContainer && tagButtonsContainer.classList.contains('visible')) {
-            const tagButtonsRect = tagButtonsContainer.getBoundingClientRect();
-            newPaddingTop = tagButtonsRect.bottom + 20;
+        if (yearHidden) {
+            yearFilterContainer.style.display = 'flex';
+            yearFilterContainer.style.visibility = 'hidden';
         }
+
+        // First adjust year filter position to ensure it's in the correct place
+        adjustYearFilterPosition();
+        
+        // Force a reflow to get accurate measurements after position changes
+        void tagFilterContainer.offsetHeight;
+        void yearFilterContainer.offsetHeight;
+
+        // Now calculate padding based on actual positions (viewport -> relative to masonry top)
+        const masonryTop = masonryContainer.getBoundingClientRect().top;
+        const tagContainerRect = tagFilterContainer.getBoundingClientRect();
+        const tagDropdown = tagFilterContainer.querySelector('.dropdown-menu');
+        let tagBottom = tagContainerRect.bottom;
+        if (tagDropdown && tagDropdown.classList.contains('visible')) {
+            const tagDropdownRect = tagDropdown.getBoundingClientRect();
+            tagBottom = Math.max(tagBottom, tagDropdownRect.bottom);
+        }
+
+        const yearContainerRect = yearFilterContainer.getBoundingClientRect();
+        const yearDropdown = yearFilterContainer.querySelector('.dropdown-menu');
+        let yearBottom = yearContainerRect.bottom;
+        if (yearDropdown && yearDropdown.classList.contains('visible')) {
+            const yearDropdownRect = yearDropdown.getBoundingClientRect();
+            yearBottom = Math.max(yearBottom, yearDropdownRect.bottom);
+        }
+
+        const maxBottom = Math.max(tagBottom, yearBottom);
+        const newPaddingTop = Math.max(0, (maxBottom - masonryTop) + 20);
 
         masonryContainer.style.paddingTop = `${newPaddingTop}px`;
 
-        if (isHidden) {
+        if (tagHidden) {
             tagFilterContainer.style.display = '';
             tagFilterContainer.style.visibility = '';
+        }
+        if (yearHidden) {
+            yearFilterContainer.style.display = '';
+            yearFilterContainer.style.visibility = '';
         }
     }
     
@@ -583,6 +779,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (tagFilterContainer) {
             tagFilterContainer.classList.add('is-open');
         }
+        if (yearFilterContainer) {
+            yearFilterContainer.classList.add('is-open');
+        }
         updateGalleryPositioning();
     }
 
@@ -592,6 +791,9 @@ document.addEventListener('DOMContentLoaded', function() {
         applyCloseStyles(line2);
         if (tagFilterContainer) {
             tagFilterContainer.classList.remove('is-open');
+        }
+        if (yearFilterContainer) {
+            yearFilterContainer.classList.remove('is-open');
         }
 
         if (window.innerWidth <= 576 && titleGallery) {
@@ -633,175 +835,353 @@ document.addEventListener('DOMContentLoaded', function() {
         return Array.from(tagsSet).sort();
     }
 
-    function showTagButtons() {
-        const tagButtonsContainer = tagFilterContainer.querySelector('.tag-buttons-container');
-        if (!tagButtonsContainer) return;
+    function toggleTagDropdown() {
+        const dropdown = tagFilterContainer.querySelector('.dropdown-menu');
+        if (!dropdown) return;
         
-        // Remove hiding class if present
-        tagButtonsContainer.classList.remove('hiding');
+        const isVisible = dropdown.classList.contains('visible');
+        const tagLabel = tagFilterContainer.querySelector('.filter-label');
+        const tagArrow = tagLabel ? tagLabel.querySelector('.filter-arrow') : null;
         
-        // Use setTimeout to ensure display change happens
-        setTimeout(() => {
-            tagButtonsContainer.classList.add('visible');
-            // Adjust padding after animation starts
-            setTimeout(() => {
-                adjustMasonryPadding();
-            }, 50);
-        }, 10);
+        // Close year dropdown if open
+        const yearDropdown = yearFilterContainer.querySelector('.dropdown-menu');
+        if (yearDropdown && yearDropdown.classList.contains('visible')) {
+            yearDropdown.classList.remove('visible');
+            const yearLabel = yearFilterContainer.querySelector('.filter-label');
+            const yearArrow = yearLabel ? yearLabel.querySelector('.filter-arrow') : null;
+            if (yearArrow) yearArrow.innerHTML = '&#8593;';
+            // Reset animation for items when closing
+            const yearItems = yearDropdown.querySelectorAll('.dropdown-item');
+            yearItems.forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(-5px)';
+            });
+        }
+        
+        if (isVisible) {
+            dropdown.classList.remove('visible');
+            if (tagArrow) tagArrow.innerHTML = '&#8593;';
+            // Reset animation for items when closing
+            const items = dropdown.querySelectorAll('.dropdown-item');
+            items.forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(-5px)';
+            });
+        } else {
+            dropdown.classList.add('visible');
+            if (tagArrow) tagArrow.innerHTML = '&#8595;';
+            // Reset items first, then trigger animation when opening
+            const items = dropdown.querySelectorAll('.dropdown-item');
+            items.forEach((item, index) => {
+                // Reset to initial state first
+                item.style.transitionDelay = '0s';
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(-5px)';
+            });
+            // Force reflow, then animate
+            void dropdown.offsetHeight;
+            requestAnimationFrame(() => {
+                items.forEach((item, index) => {
+                    item.style.transitionDelay = `${index * 0.03}s`;
+                    requestAnimationFrame(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    });
+                });
+            });
+        }
+        scheduleLayoutUpdate();
     }
 
-    function hideTagButtons() {
-        const tagButtonsContainer = tagFilterContainer.querySelector('.tag-buttons-container');
-        if (!tagButtonsContainer) return;
+    function toggleYearDropdown() {
+        const dropdown = yearFilterContainer.querySelector('.dropdown-menu');
+        if (!dropdown) return;
         
-        tagButtonsContainer.classList.add('hiding');
-        tagButtonsContainer.classList.remove('visible');
+        const isVisible = dropdown.classList.contains('visible');
+        const yearLabel = yearFilterContainer.querySelector('.filter-label');
+        const yearArrow = yearLabel ? yearLabel.querySelector('.filter-arrow') : null;
         
-        // Adjust padding immediately when hiding
-        adjustMasonryPadding();
+        // Close tag dropdown if open
+        const tagDropdown = tagFilterContainer.querySelector('.dropdown-menu');
+        if (tagDropdown && tagDropdown.classList.contains('visible')) {
+            tagDropdown.classList.remove('visible');
+            const tagLabel = tagFilterContainer.querySelector('.filter-label');
+            const tagArrow = tagLabel ? tagLabel.querySelector('.filter-arrow') : null;
+            if (tagArrow) tagArrow.innerHTML = '&#8593;';
+            // Reset animation for items when closing
+            const tagItems = tagDropdown.querySelectorAll('.dropdown-item');
+            tagItems.forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(-5px)';
+            });
+        }
         
-        // Remove from DOM after animation
-        setTimeout(() => {
-            tagButtonsContainer.classList.remove('hiding');
-            tagButtonsContainer.style.display = 'none';
-            adjustMasonryPadding();
-        }, 400);
+        if (isVisible) {
+            dropdown.classList.remove('visible');
+            if (yearArrow) yearArrow.innerHTML = '&#8593;';
+            // Reset animation for items when closing
+            const items = dropdown.querySelectorAll('.dropdown-item');
+            items.forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(-5px)';
+            });
+        } else {
+            dropdown.classList.add('visible');
+            if (yearArrow) yearArrow.innerHTML = '&#8595;';
+            // Reset items first, then trigger animation when opening
+            const items = dropdown.querySelectorAll('.dropdown-item');
+            items.forEach((item, index) => {
+                // Reset to initial state first
+                item.style.transitionDelay = '0s';
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(-5px)';
+            });
+            // Force reflow, then animate
+            void dropdown.offsetHeight;
+            requestAnimationFrame(() => {
+                items.forEach((item, index) => {
+                    item.style.transitionDelay = `${index * 0.03}s`;
+                    requestAnimationFrame(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    });
+                });
+            });
+        }
+        scheduleLayoutUpdate();
     }
+
+    function getUniqueYears(projects) {
+        const yearsSet = new Set();
+        projects.forEach(p => {
+            if (p.startDate) {
+                const year = p.startDate.split('-')[0];
+                if (year) yearsSet.add(year);
+            }
+            if (p.endDate) {
+                const year = p.endDate.split('-')[0];
+                if (year) yearsSet.add(year);
+            }
+        });
+        return Array.from(yearsSet).sort((a, b) => parseInt(b) - parseInt(a)); // Sort descending (newest first)
+    }
+
 
     function renderTagFilter(tags) {
         if (!tagFilterContainer) return;
         tagFilterContainer.innerHTML = '';
         
-        // Add "All" button
-        const allBtn = document.createElement('button');
-        allBtn.className = 'tag-filter-btn all-tags active';
-        allBtn.textContent = 'all';
-        allBtn.addEventListener('click', () => {
-            filterMode = 'all';
-            selectedTags = [];
-            hideTagButtons();
-            updateTagButtons();
-            filterAndRender();
-        });
-        tagFilterContainer.appendChild(allBtn);
-
-        // Add "+" button
-        const plusBtn = document.createElement('button');
-        plusBtn.className = 'tag-filter-btn mode-btn';
-        plusBtn.textContent = '+';
-        plusBtn.dataset.mode = 'or';
-        plusBtn.addEventListener('click', () => {
-            if (filterMode === 'and') {
-                // Deselect "-" if active
-                const minusBtn = tagFilterContainer.querySelector('[data-mode="and"]');
-                if (minusBtn) minusBtn.classList.remove('active');
-            }
-            filterMode = 'or';
-            if (selectedTags.length === 0) {
-                selectedTags = [];
-            }
-            showTagButtons();
-            updateTagButtons();
-            filterAndRender();
-        });
-        tagFilterContainer.appendChild(plusBtn);
-
-        // Add "-" button
-        const minusBtn = document.createElement('button');
-        minusBtn.className = 'tag-filter-btn mode-btn';
-        minusBtn.textContent = '-';
-        minusBtn.dataset.mode = 'and';
-        minusBtn.addEventListener('click', () => {
-            if (filterMode === 'or') {
-                // Deselect "+" if active
-                const plusBtn = tagFilterContainer.querySelector('[data-mode="or"]');
-                if (plusBtn) plusBtn.classList.remove('active');
-            }
-            filterMode = 'and';
-            if (selectedTags.length === 0) {
-                selectedTags = [];
-            }
-            showTagButtons();
-            updateTagButtons();
-            filterAndRender();
-        });
-        tagFilterContainer.appendChild(minusBtn);
-
-        // Create container for tag buttons (initially hidden)
-        const tagButtonsContainer = document.createElement('div');
-        tagButtonsContainer.className = 'tag-buttons-container';
+        // Add "Tag" label (clickable)
+        const tagLabel = document.createElement('span');
+        tagLabel.className = 'filter-label';
+        const tagArrow = document.createElement('span');
+        tagArrow.className = 'filter-arrow';
+        tagArrow.innerHTML = '&#8593;';
+        const tagText = document.createTextNode('Tag');
+        tagLabel.appendChild(tagArrow);
+        tagLabel.appendChild(tagText);
+        tagLabel.addEventListener('click', toggleTagDropdown);
+        tagFilterContainer.appendChild(tagLabel);
         
-        // Add individual tag buttons
-        tags.forEach(tag => {
-            const btn = document.createElement('button');
-            btn.className = 'tag-filter-btn';
-            btn.textContent = tag;
-            btn.dataset.tag = tag;
-            btn.addEventListener('click', () => {
-                // Toggle tag selection
+        // Create dropdown menu
+        const dropdown = document.createElement('div');
+        dropdown.className = 'dropdown-menu';
+        
+        // Create content container with 4 columns
+        const content = document.createElement('div');
+        content.className = 'dropdown-menu-content';
+        
+        // Add individual tag options
+        tags.forEach((tag, tagIndex) => {
+            const item = document.createElement('button');
+            item.className = 'dropdown-item';
+            item.textContent = tag;
+            item.dataset.tag = tag;
+            item.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent closing the dropdown
                 const index = selectedTags.indexOf(tag);
                 if (index > -1) {
-                    // Remove tag if already selected
                     selectedTags.splice(index, 1);
                 } else {
-                    // Add tag if not selected
                     selectedTags.push(tag);
                 }
                 updateTagButtons();
                 filterAndRender();
             });
-            tagButtonsContainer.appendChild(btn);
+            content.appendChild(item);
         });
         
-        tagFilterContainer.appendChild(tagButtonsContainer);
+        dropdown.appendChild(content);
+        tagLabel.appendChild(dropdown);
+        
+        // Add hover effects to dropdown items after creation
+        if (customCursorDiv && !isTouchDevice) {
+            const tagDropdownItems = tagFilterContainer.querySelectorAll('.dropdown-item');
+            tagDropdownItems.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    customCursorDiv.classList.add('hover');
+                    item.classList.add('hover-underline');
+                });
+                item.addEventListener('mouseleave', () => {
+                    customCursorDiv.classList.remove('hover');
+                    item.classList.remove('hover-underline');
+                });
+            });
+        }
+        
         adjustMasonryPadding();
     }
 
+    function renderYearFilter(years) {
+        if (!yearFilterContainer) return;
+        yearFilterContainer.innerHTML = '';
+        
+        // Add "Anno" label (clickable)
+        const yearLabel = document.createElement('span');
+        yearLabel.className = 'filter-label';
+        const yearArrow = document.createElement('span');
+        yearArrow.className = 'filter-arrow';
+        yearArrow.innerHTML = '&#8593;';
+        const yearText = document.createTextNode('Anno');
+        yearLabel.appendChild(yearArrow);
+        yearLabel.appendChild(yearText);
+        yearLabel.addEventListener('click', toggleYearDropdown);
+        yearFilterContainer.appendChild(yearLabel);
+        
+        // Create dropdown menu
+        const dropdown = document.createElement('div');
+        dropdown.className = 'dropdown-menu';
+        
+        // Create content container with 4 columns
+        const content = document.createElement('div');
+        content.className = 'dropdown-menu-content';
+        
+        // Add individual year options
+        years.forEach((year, yearIndex) => {
+            const item = document.createElement('button');
+            item.className = 'dropdown-item';
+            item.textContent = year;
+            item.dataset.year = year;
+            item.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent closing the dropdown
+                const index = selectedYears.indexOf(year);
+                if (index > -1) {
+                    selectedYears.splice(index, 1);
+                } else {
+                    selectedYears.push(year);
+                }
+                updateYearButtons();
+                filterAndRender();
+            });
+            content.appendChild(item);
+        });
+        
+        dropdown.appendChild(content);
+        yearLabel.appendChild(dropdown);
+        
+        // Add hover effects to dropdown items after creation
+        if (customCursorDiv && !isTouchDevice) {
+            const yearDropdownItems = yearFilterContainer.querySelectorAll('.dropdown-item');
+            yearDropdownItems.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    customCursorDiv.classList.add('hover');
+                    item.classList.add('hover-underline');
+                });
+                item.addEventListener('mouseleave', () => {
+                    customCursorDiv.classList.remove('hover');
+                    item.classList.remove('hover-underline');
+                });
+            });
+        }
+        
+        adjustMasonryPadding();
+        adjustYearFilterPosition();
+    }
+
     function updateTagButtons() {
-        const buttons = tagFilterContainer.querySelectorAll('.tag-filter-btn');
-        buttons.forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.classList.contains('all-tags')) {
-                // "All" button is active when filterMode is 'all'
-                if (filterMode === 'all') {
-                    btn.classList.add('active');
-                }
-            } else if (btn.classList.contains('mode-btn')) {
-                // Mode buttons are active when their mode matches filterMode
-                if (btn.dataset.mode === filterMode) {
-                    btn.classList.add('active');
-                }
-            } else if (btn.dataset.tag && selectedTags.includes(btn.dataset.tag)) {
-                // Individual tag button is active if it's in selectedTags
-                btn.classList.add('active');
+        // Auto-activate "all" mode if no tags are selected, otherwise use "or"
+        if (selectedTags.length === 0) {
+            filterMode = 'all';
+        } else {
+            filterMode = 'or';
+        }
+        
+        const items = tagFilterContainer.querySelectorAll('.dropdown-item');
+        items.forEach(item => {
+            item.classList.remove('active');
+            if (item.dataset.tag && selectedTags.includes(item.dataset.tag)) {
+                item.classList.add('active');
             }
         });
+    }
+
+    function updateYearButtons() {
+        // Auto-activate "all" mode if no years are selected, otherwise use "or"
+        if (selectedYears.length === 0) {
+            yearFilterMode = 'all';
+        } else {
+            yearFilterMode = 'or';
+        }
+        
+        const items = yearFilterContainer.querySelectorAll('.dropdown-item');
+        items.forEach(item => {
+            item.classList.remove('active');
+            if (item.dataset.year && selectedYears.includes(item.dataset.year)) {
+                item.classList.add('active');
+            }
+        });
+    }
+
+    function getProjectYear(project) {
+        // Get the most recent year from startDate or endDate
+        let year = null;
+        if (project.startDate) {
+            const startYear = project.startDate.split('-')[0];
+            if (startYear) year = parseInt(startYear);
+        }
+        if (project.endDate) {
+            const endYear = parseInt(project.endDate.split('-')[0]);
+            if (endYear && (!year || endYear > year)) {
+                year = endYear;
+            }
+        }
+        return year;
     }
 
     function filterProjects(projects) {
-        // If mode is 'all' or no tags selected, return all projects
-        if (filterMode === 'all' || selectedTags.length === 0) {
-            return projects;
+        let filtered = projects;
+        
+        // Filter by tags
+        if (filterMode !== 'all' && selectedTags.length > 0) {
+            filtered = filtered.filter(p => {
+                if (!Array.isArray(p.tags)) return false;
+                return selectedTags.some(tag => p.tags.includes(tag));
+            });
         }
         
-        // Filter based on mode
-        return projects.filter(p => {
-            if (!Array.isArray(p.tags)) return false;
-            
-            if (filterMode === 'or') {
-                // OR mode: project has at least one of the selected tags
-                return selectedTags.some(tag => p.tags.includes(tag));
-            } else if (filterMode === 'and') {
-                // AND mode: project has all selected tags
-                return selectedTags.every(tag => p.tags.includes(tag));
-            }
-            
-            return false;
-        });
+        // Filter by years
+        if (yearFilterMode !== 'all' && selectedYears.length > 0) {
+            filtered = filtered.filter(p => {
+                const projectYear = getProjectYear(p);
+                if (!projectYear) return false;
+                const yearStr = projectYear.toString();
+                return selectedYears.includes(yearStr);
+            });
+        }
+        
+        return filtered;
     }
 
     function filterAndRender() {
-        const filtered = filterProjects(openProjects);
+        let filtered = filterProjects(openProjects);
+        
+        // Sort by year (newest first) - always sort regardless of filter
+        filtered = filtered.sort((a, b) => {
+            const yearA = getProjectYear(a) || 0;
+            const yearB = getProjectYear(b) || 0;
+            return yearB - yearA; // Descending order (newest first)
+        });
+        
         renderGallery(filtered);
         adjustMasonryPadding();
         // Scroll to top when filtering
@@ -895,15 +1275,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const hover = document.createElement('span');
             hover.className = 'image-hover-text';
-            const tagsText = Array.isArray(p.tags) && p.tags.length ? p.tags.join(', ') : '';
-            hover.innerHTML = `${p.name}${tagsText ? '<br><span style="font-size:14px; opacity:0.85;">' + tagsText + '</span>' : ''}`;
-
-            // Set text color based on image brightness
-            setTextColorBasedOnImage(img, hover);
+            hover.textContent = p.name;
 
             link.appendChild(img);
-            link.appendChild(hover);
             item.appendChild(link);
+            item.appendChild(hover);
             masonryContainer.appendChild(item);
         });
 
@@ -918,12 +1294,52 @@ document.addEventListener('DOMContentLoaded', function() {
         addHoverEffectsToMasonryItems();
     }
 
-    // Initialize tag filter and render gallery
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+        const tagDropdown = tagFilterContainer.querySelector('.dropdown-menu');
+        const yearDropdown = yearFilterContainer.querySelector('.dropdown-menu');
+        
+        if (tagDropdown && tagDropdown.classList.contains('visible')) {
+            if (!tagFilterContainer.contains(event.target)) {
+                tagDropdown.classList.remove('visible');
+                const tagLabel = tagFilterContainer.querySelector('.filter-label');
+                const tagArrow = tagLabel ? tagLabel.querySelector('.filter-arrow') : null;
+                if (tagArrow) tagArrow.innerHTML = '&#8593;';
+                // Reset animation for items when closing
+                const items = tagDropdown.querySelectorAll('.dropdown-item');
+                items.forEach(item => {
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(-5px)';
+                });
+                scheduleLayoutUpdate();
+            }
+        }
+        
+        if (yearDropdown && yearDropdown.classList.contains('visible')) {
+            if (!yearFilterContainer.contains(event.target)) {
+                yearDropdown.classList.remove('visible');
+                const yearLabel = yearFilterContainer.querySelector('.filter-label');
+                const yearArrow = yearLabel ? yearLabel.querySelector('.filter-arrow') : null;
+                if (yearArrow) yearArrow.innerHTML = '&#8593;';
+                // Reset animation for items when closing
+                const items = yearDropdown.querySelectorAll('.dropdown-item');
+                items.forEach(item => {
+                    item.style.opacity = '0';
+                    item.style.transform = 'translateY(-5px)';
+                });
+                scheduleLayoutUpdate();
+            }
+        }
+    });
+
+    // Initialize tag filter, year filter and render gallery
     if (Array.isArray(openProjects)) {
         const uniqueTags = getUniqueTags(openProjects);
+        const uniqueYears = getUniqueYears(openProjects);
         renderTagFilter(uniqueTags);
-        renderGallery(openProjects);
-        adjustMasonryPadding();
+        renderYearFilter(uniqueYears);
+        filterAndRender(); // This will sort and render
+        scheduleLayoutUpdate();
     }
 
     window.addEventListener('scroll', function() {
@@ -990,24 +1406,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Initial hover effects
-        const hoverables = document.querySelectorAll('a, button:not(.tag-filter-btn), #menu-trigger');
+        const hoverables = document.querySelectorAll('a, button:not(.tag-filter-btn):not(.year-filter-btn), #menu-trigger');
         addHoverEffectsToElements(hoverables);
         
         // Add hover effects to existing masonry items (images)
         addHoverEffectsToMasonryItems();
-
-        // Add hover effects to tag filter buttons
-        const tagButtons = tagFilterContainer.querySelectorAll('.tag-filter-btn');
-        tagButtons.forEach(btn => {
-            btn.addEventListener('mouseenter', () => {
-                customCursorDiv.classList.add('hover');
-                btn.classList.add('hover-underline');
-            });
-            btn.addEventListener('mouseleave', () => {
-                customCursorDiv.classList.remove('hover');
-                btn.classList.remove('hover-underline');
-            });
-        });
+        
+        // Note: Dropdown items hover effects are added in renderTagFilter and renderYearFilter functions
     }
     // --- End Custom Cursor Logic ---
 
