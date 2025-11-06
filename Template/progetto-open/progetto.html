@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Progetto Open - Portfolio</title>
+<title>Progetto - Portfolio</title>
 <style>
 @font-face {
     font-family: 'FormaDJRDisplay';
@@ -15,7 +15,7 @@
 body {
     margin: 0;
     font-family: sans-serif;
-    background-color: #ffffff;
+    background-color: #000000;
     cursor: none !important;
 }
 
@@ -43,14 +43,14 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
 #custom-cursor.hover {
     width: 24px;
     height: 24px;
-    background-color: black;
+    background-color: white;
 }
 
 .header-text {
     font-family: 'FormaDJRDisplay', sans-serif;
     font-size: 20px;
     font-weight: normal;
-    color: #000000;
+    color: white;
     line-height: 1.2;
     margin: 0;
     text-decoration: none;
@@ -62,12 +62,11 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
     top: 15px;
     z-index: 1001;
     mix-blend-mode: difference;
-    color: #ffffff;
 }
 
 .header-line {
     position: fixed;
-    background-color: #000000;
+    background-color: white;
     height: 1px;
     z-index: 1000;
 }
@@ -76,7 +75,7 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
 .sub-links-block .header-text { mix-blend-mode: difference !important; }
 
 .project-tags { padding: 8px; }
-.tag-chip { display: inline-block; border: 1px solid #000; color: #000; padding: 2px 8px; margin-right: 6px; margin-bottom: 6px; text-decoration: none; }
+.tag-chip { display: inline-block; border: 1px solid #fff; color: #fff; padding: 2px 8px; margin-right: 6px; margin-bottom: 6px; text-decoration: none; }
 @media (max-width: 992px) { .project-tags { padding: 10px; } }
 
 #line-1 {
@@ -108,8 +107,6 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
     z-index: 1001;
     display: block;
     cursor: default;
-    mix-blend-mode: difference;
-    color: #ffffff;
 }
 
 .main-title-name, .sub-links-block {
@@ -141,7 +138,7 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
 }
 
 .gallery-footer { padding-bottom: 24px; }
-.footer-line { height: 1px; background-color: #000000; margin-left: 8px; margin-right: 8px; }
+.footer-line { height: 1px; background-color: #ffffff; margin-left: 8px; margin-right: 8px; }
 .back-to-top { display: block; margin-top: 6px; text-decoration: none; }
 .back-to-top { margin-left: calc(8px + (2 * ((100vw - 32px) / 3) + 8px) + 8px); }
 .contact-info { display: block; margin-top: -20px; white-space: pre-line; margin-left: calc(8px + ((100vw - 32px) / 3) + 8px); }
@@ -150,7 +147,7 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
     font-family: 'FormaDJRDisplay', sans-serif;
     font-size: 20px;
     font-weight: normal;
-    color: #000000;
+    color: white;
     line-height: 1.2;
     padding: 0px;
     padding-top: 0;
@@ -284,7 +281,22 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
         <a href="#" class="header-text sub-title-link" id="back-link">&#8592;</a>
     </div>
     <div class="header-line" id="line-2"></div>
-    <span class="header-text title-gallery animate-on-load">Progetto</span>
+    <span class="header-text title-gallery animate-on-load" id="project-title">Progetto</span>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        const projectFolder = decodeURIComponent(pathParts.slice(-2, -1)[0]);
+        const projectTitle = projectFolder.replace(/[-_]/g, ' ');
+        const titleElement = document.getElementById('project-title');
+        if (titleElement) {
+            titleElement.textContent = projectTitle;
+        }
+    } catch (e) {
+        console.error("Error setting project title:", e);
+    }
+});
+</script>
 </header>
 
 <div id="project-tags-bar" class="project-tags"></div>
@@ -309,16 +321,10 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         const textCol = document.querySelector('.text-column');
         const meta = document.getElementById('project-meta');
-        if (textCol && meta) {
+        if (textCol && meta && typeof projects !== 'undefined') {
             const pathParts = window.location.pathname.split('/').filter(Boolean);
             const projectFolder = decodeURIComponent(pathParts.slice(-2, -1)[0]);
-            let data = null;
-            if (typeof openProjects !== 'undefined') {
-                data = openProjects.find(p => p.page.includes(projectFolder));
-            }
-            if (!data && typeof projects !== 'undefined') {
-                data = projects.find(p => p.page.includes(projectFolder));
-            }
+            const data = projects.find(p => p.page.includes(projectFolder));
             if (data) {
                 const dateText = (data.startDate || data.endDate) ? `${data.startDate || ''}${data.startDate && data.endDate ? ' – ' : ''}${data.endDate || ''}` : '';
                 const parts = [];
@@ -512,13 +518,7 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         const pathParts = window.location.pathname.split('/').filter(Boolean);
         const projectFolder = decodeURIComponent(pathParts.slice(-2, -1)[0]);
-        let data = null;
-        if (typeof openProjects !== 'undefined') {
-            data = openProjects.find(p => p.page.includes(projectFolder));
-        }
-        if (!data && typeof projects !== 'undefined') {
-            data = projects.find(p => p.page.includes(projectFolder));
-        }
+        const data = (typeof projects !== 'undefined') ? projects.find(p => p.page.includes(projectFolder)) : null;
         if (data) {
             const descEl = document.getElementById('project-description');
             if (descEl && data.description) descEl.textContent = data.description;
@@ -539,12 +539,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         relativePath = 'img/' + file;
                     }
                     const pathParts = relativePath.split('/');
-                    const encodedParts = pathParts.map((part, idx) => {
-                        if (idx === pathParts.length - 1) {
-                            return encodeURIComponent(part);
-                        }
-                        return part;
-                    });
+                    const encodedParts = pathParts.map(part => encodeURIComponent(part));
                     const encodedPath = encodedParts.join('/');
                     const lower = file.toLowerCase();
                     const item = document.createElement('div');
@@ -637,4 +632,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
-

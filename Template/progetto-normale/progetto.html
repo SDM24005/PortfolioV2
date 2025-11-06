@@ -281,7 +281,22 @@ a, button, input[type="button"], input[type="submit"], select, textarea, label[f
         <a href="#" class="header-text sub-title-link" id="back-link">&#8592;</a>
     </div>
     <div class="header-line" id="line-2"></div>
-    <span class="header-text title-gallery animate-on-load">Progetto</span>
+    <span class="header-text title-gallery animate-on-load" id="project-title">Progetto</span>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        const projectFolder = decodeURIComponent(pathParts.slice(-2, -1)[0]);
+        const projectTitle = projectFolder.replace(/[-_]/g, ' ');
+        const titleElement = document.getElementById('project-title');
+        if (titleElement) {
+            titleElement.textContent = projectTitle;
+        }
+    } catch (e) {
+        console.error("Error setting project title:", e);
+    }
+});
+</script>
 </header>
 
 <div id="project-tags-bar" class="project-tags"></div>
@@ -617,4 +632,3 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 </body>
 </html>
-

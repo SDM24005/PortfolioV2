@@ -1,38 +1,17 @@
 // Script per gestire i percorsi delle immagini e delle pagine dei progetti
 const projects = [
 	{
-		name: "Albero",
-		page: "../Progetti/test_albero/progetto.html",
-		preview: "../Progetti/test_albero/img/preview.jpg",
+		name: "Packaging Biocare",
+		page: "../Progetti/packaging-biocare/progetto.html",
+		preview: "../Progetti/packaging-biocare/img/preview.jpg",
 		description: "Questo è il testo descrittivo del Progetto 1.",
-		tags: ["fotografia", "architettura"],
-		startDate: "2024-01",
-		endDate: "2024-03",
+		tags: ["packaging", "grafica"],
+		startDate: "",
+		endDate: "",
 		images: [
-			"../Progetti/test_albero/img/MG_8638.jpg",
-			"../Progetti/test_albero/img/MG_8646.jpg",
-			"../Progetti/test_albero/img/MG_8652-2.jpg",
-			"../Progetti/test_albero/img/MG_8669.jpg"
-		]
-	},
-	{
-		name: "Progetto 2",
-		page: "../Progetti/progetto-2/progetto.html",
-		preview: "../Progetti/progetto-2/img/preview.jpg",
-		description: "Questo è il testo descrittivo del Progetto 2.",
-		tags: ["ritratto", "studio"],
-		startDate: "2023-10",
-		endDate: "2023-12",
-		media: [
-			"../Progetti/progetto-2/img/578079302214894359.mp4",
-			"../Progetti/progetto-2/img/segno contrasti.pdf"
-		],
-		images: [
-			"../Progetti/progetto-2/img/MG_8638.jpg",
-			"../Progetti/progetto-2/img/MG_8646.jpg",
-			"../Progetti/progetto-2/img/MG_8652-2.jpg",
-			"../Progetti/progetto-2/img/MG_8669.jpg"
-		]
+			"../Progetti/packaging-biocare/img/packaging-front.jpg",
+			"../Progetti/packaging-biocare/img/packaging-back.jpg",
+			"../Progetti/packaging-biocare/img/etichetta.png"		]
 	}
 ];
 
@@ -60,25 +39,6 @@ const openProjects = [
 			"../Progetti Open/progetto-1/img/MG_8646.jpg",
 			"../Progetti Open/progetto-1/img/MG_8652-2.jpg",
 			"../Progetti Open/progetto-1/img/MG_8669.jpg"
-		]
-	},
-	{
-		name: "Progetto 2",
-		page: "../Progetti Open/progetto-2/progetto.html",
-		preview: "../Progetti Open/progetto-2/img/preview.jpg",
-		description: "Questo è il testo descrittivo del Progetto Open 2.",
-		tags: ["open", "ritratto"],
-		startDate: "2023-10",
-		endDate: "2023-12",
-		media: [
-			"../Progetti Open/progetto-2/img/578079302214894359-loop.mp4",
-			"../Progetti Open/progetto-2/img/segno contrasti.pdf"
-		],
-		images: [
-			"../Progetti Open/progetto-2/img/MG_8638.jpg",
-			"../Progetti Open/progetto-2/img/MG_8646.jpg",
-			"../Progetti Open/progetto-2/img/MG_8652-2.jpg",
-			"../Progetti Open/progetto-2/img/MG_8669.jpg"
 		]
 	}
 ];
