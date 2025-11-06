@@ -567,8 +567,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Custom Cursor Logic ---
     const customCursorDiv = document.getElementById('custom-cursor');
+    // Disable custom cursor on touch devices
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
-    if (customCursorDiv) {
+    if (customCursorDiv && !isTouchDevice) {
         document.addEventListener('mousemove', function(e) {
             customCursorDiv.style.display = 'block'; // Show on first move
             customCursorDiv.style.left = e.clientX + 'px';
@@ -632,6 +634,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else {
                         relativePath = 'img/' + file;
                     }
+                    // Encode the path properly for URLs (handle spaces and special characters)
+                    const pathParts = relativePath.split('/');
+                    const encodedParts = pathParts.map(part => encodeURIComponent(part));
+                    const encodedPath = encodedParts.join('/');
                     const lower = file.toLowerCase();
                     const item = document.createElement('div');
                     item.className = 'masonry-item';
@@ -658,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             video.preload = 'metadata';
                         }
                         const source = document.createElement('source');
-                        source.src = relativePath;
+                        source.src = encodedPath;
                         source.type = lower.endsWith('.mp4') ? 'video/mp4' : 'video/webm';
                         video.appendChild(source);
                         video.classList.add('fade-up');
@@ -672,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     } else if (lower.endsWith('.pdf')) {
                         // Use iframe for better mobile compatibility
                         const iframe = document.createElement('iframe');
-                        iframe.src = `${relativePath}#toolbar=0&navpanes=0`;
+                        iframe.src = `${encodedPath}#toolbar=0&navpanes=0`;
                         iframe.className = 'pdf-view fade-up blur-up-media';
                         iframe.classList.add('animate-on-load');
                         iframe.style.animationDelay = `${baseDelayForImages + index * 0.08}s`;
@@ -685,7 +691,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         item.appendChild(iframe);
                     } else {
                         const img = document.createElement('img');
-                        img.src = relativePath;
+                        img.src = encodedPath;
                         img.alt = file;
                         img.loading = 'lazy';
                         img.decoding = 'async';
