@@ -92,15 +92,13 @@ font-style: normal;
         display: none;
     }
 
-    #line-2 { /* Updated for 2 links */
+    #line-2 { /* Updated for 1 link */
         top: calc(
             ( (15px + (20px * 1.2) + 10px) + 1px + 10px ) /* 60px */
             + (20px * 1.2)  /* Home = 24px */
-            + 8px           /* Gap */
-            + (20px * 1.2)  /* Bio = 24px */
             /* Progetti link removed */
             + 10px          /* Padding sotto i link prima della linea 2 */
-        ); /* 126px */
+        ); /* 94px */
         display: none;
     }
 
@@ -200,12 +198,10 @@ font-style: normal;
         top: calc(
             ( (15px + (20px * 1.2) + 10px) + 1px + 10px ) /* 60px */
             + (20px * 1.2)  /* Home = 24px */
-            + 8px           /* Gap */
-            + (20px * 1.2)  /* Bio = 24px */
             + 10px          /* Padding sotto i link */
             + 1px           /* line-2 height */
             + 10px          /* Spazio dopo line-2 */
-        ); /* 137px */
+        ); /* 105px */
         z-index: 1001;
         display: none;
         flex-direction: column;
@@ -218,14 +214,12 @@ font-style: normal;
         top: calc(
             ( (15px + (20px * 1.2) + 10px) + 1px + 10px ) /* 60px */
             + (20px * 1.2)  /* Home = 24px */
-            + 8px           /* Gap */
-            + (20px * 1.2)  /* Bio = 24px */
             + 10px          /* Padding sotto i link */
             + 1px           /* line-2 height */
             + 10px          /* Spazio dopo line-2 */
             + (20px * 1.2)  /* Label "Tag" height */
             + 8px           /* Gap after label */
-        ); /* ~137px + 24px + 8px = ~169px (base position) */
+        ); /* ~105px + 24px + 8px = ~137px (base position) */
         z-index: 1001;
         display: none;
         flex-direction: column;
@@ -358,6 +352,10 @@ font-style: normal;
         transform: scale(1.1); 
         filter: brightness(115%); 
     }
+    .masonry-item:hover .image-hover-text {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
     .image-hover-text { 
         position: relative; 
         top: 0;
@@ -369,7 +367,7 @@ font-style: normal;
         line-height: 1.2; 
         opacity: 1; 
         visibility: visible; 
-        transition: color 0.3s ease, opacity 0.3s ease, visibility 0.3s ease; 
+        transition: color 0.3s ease, opacity 0.3s ease, visibility 0.3s ease, text-decoration 0.3s ease; 
         pointer-events: none; 
         z-index: 2;
         display: block;
@@ -523,7 +521,6 @@ font-style: normal;
 
     <div class="sub-links-block" id="dropdown-links">
     <a href="../index.html" class="header-text sub-title-link">&#8592; Home</a>
-    <a href="../Bio/index.html" class="header-text sub-title-link">Bio</a>
         <!-- Progetti link removed -->
     </div>
     <div class="header-line" id="line-2"></div>
@@ -587,14 +584,12 @@ document.addEventListener('DOMContentLoaded', function() {
         let baseTop = (
             (15 + (20 * 1.2) + 10) + 1 + 10  // 60px
             + (20 * 1.2)  // Home = 24px
-            + 8           // Gap
-            + (20 * 1.2)  // Bio = 24px
             + 10          // Padding sotto i link
             + 1           // line-2 height
             + 10          // Spazio dopo line-2
             + (20 * 1.2)  // Label "Tag" height
             + 8           // Gap after label
-        ); // ~169px
+        ); // ~137px
         
         let newTop = baseTop;
         
@@ -1173,7 +1168,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function filterAndRender() {
-        let filtered = filterProjects(openProjects);
+        // Combine openProjects and projects
+        const allProjects = [...(openProjects || []), ...(projects || [])];
+        let filtered = filterProjects(allProjects);
         
         // Sort by year (newest first) - always sort regardless of filter
         filtered = filtered.sort((a, b) => {
@@ -1333,9 +1330,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initialize tag filter, year filter and render gallery
-    if (Array.isArray(openProjects)) {
-        const uniqueTags = getUniqueTags(openProjects);
-        const uniqueYears = getUniqueYears(openProjects);
+    // Combine openProjects and projects for filters
+    const allProjectsForFilters = [...(openProjects || []), ...(projects || [])];
+    if (allProjectsForFilters.length > 0) {
+        const uniqueTags = getUniqueTags(allProjectsForFilters);
+        const uniqueYears = getUniqueYears(allProjectsForFilters);
         renderTagFilter(uniqueTags);
         renderYearFilter(uniqueYears);
         filterAndRender(); // This will sort and render

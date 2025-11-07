@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Galleria Immagini - Header con Menu a Tendina</title>
+<title>Galleria</title>
 <style>
 @font-face {
 font-family: 'FormaDJRDisplay';
@@ -92,15 +92,13 @@ font-style: normal;
         display: none;
     }
 
-    #line-2 { /* Updated for 2 links */
+    #line-2 { /* Updated for 1 link */
         top: calc(
             ( (15px + (20px * 1.2) + 10px) + 1px + 10px ) /* 60px */
             + (20px * 1.2)  /* Home = 24px */
-            + 8px           /* Gap */
-            + (20px * 1.2)  /* Bio = 24px */
             /* Progetti link removed */
             + 10px          /* Padding sotto i link prima della linea 2 */
-        ); /* 126px */
+        ); /* 94px */
         display: none;
     }
 
@@ -163,6 +161,10 @@ font-style: normal;
         transform: scale(1.1); 
         filter: brightness(115%); 
     }
+    .masonry-item:hover .image-hover-text {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
     .image-hover-text { 
         position: relative; 
         top: 0;
@@ -174,7 +176,7 @@ font-style: normal;
         line-height: 1.2; 
         opacity: 1; 
         visibility: visible; 
-        transition: color 0.3s ease, opacity 0.3s ease, visibility 0.3s ease; 
+        transition: color 0.3s ease, opacity 0.3s ease, visibility 0.3s ease, text-decoration 0.3s ease; 
         pointer-events: none; 
         z-index: 2;
         display: block;
@@ -290,7 +292,6 @@ font-style: normal;
 
     <div class="sub-links-block" id="dropdown-links">
     <a href="../index.html" class="header-text sub-title-link">&#8592; Home</a>
-    <a href="../Bio/index.html" class="header-text sub-title-link">Bio</a>
         <!-- Progetti link removed -->
     </div>
     <div class="header-line" id="line-2"></div>
@@ -302,7 +303,7 @@ font-style: normal;
 
 <div class="gallery-footer">
     <div class="footer-line"></div>
-    <a href="#" class="header-text back-to-top">&#8593; Back to the top</a>
+    <a href="#" class="header-text back-to-top">&#8593; Torna in cima</a>
     <span class="header-text contact-info">Contatti
 Email: samuele.demarch@gmail.com
 Instagram @samueledemarch</span>
