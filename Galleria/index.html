@@ -113,10 +113,10 @@ font-style: normal;
     /* --- Default Alignments (3 Columns) --- */
     .main-title-name,
     .sub-links-block {
-        left: calc(8px + (100vw - 32px) / 3 + 8px);
+        left: 8px;
     }
     .title-gallery {
-        left: calc(8px + 2 * ((100vw - 32px) / 3) + 2 * 8px);
+        left: calc(8px + 1 * ((100vw - 32px) / 3) + 1 * 8px);
     }
     .header-line {
         left: 8px;
@@ -125,22 +125,25 @@ font-style: normal;
 
     .masonry-container {
         display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        grid-auto-rows: 1fr;
+        grid-template-columns: repeat(3, 1fr);
+        grid-auto-flow: row;
         gap: 8px;
         padding: 8px; /* Base padding */
         width: 100%;
         box-sizing: border-box;
-        padding-top: 150px; /* Adjusted for 2-link menu: 126px (line-2 top) + 24px (approx for title/gap) */
+        padding-top: calc(
+            ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
+            + (20px * 1.2)  /* Home = 24px */
+            + 10px          /* Padding sotto i link */
+            + 1px           /* line-2 height */
+            + 8px           /* Spazio minimo dopo line-2 (appena sotto il menu) */
+        ); /* 60 + 24 + 10 + 1 + 8 = 103px */
         transition: padding-top 0.6s ease-out; /* For smooth transition with menu */
     }
     .masonry-item { 
         display: block; 
         width: 100%; 
         overflow: visible; 
-        break-inside: avoid; 
-        -webkit-column-break-inside: avoid; 
-        page-break-inside: avoid; 
         position: relative;
     }
     .masonry-item a { 
@@ -186,10 +189,10 @@ font-style: normal;
     .gallery-footer { padding-bottom: 24px; }
     .footer-line { height: 1px; background-color: #ffffff; margin-left: 8px; margin-right: 8px; }
     .back-to-top { display: block; margin-top: 6px; text-decoration: none; }
-    /* Align to RIGHT (sixth) column on desktop (6-col layout) */
-    .back-to-top { margin-left: calc(8px + 5 * ((100vw - 32px) / 6) + 5 * 8px); }
+    /* Align to RIGHT (third) column on desktop (3-col layout) */
+    .back-to-top { margin-left: calc(8px + 2 * ((100vw - 32px) / 3) + 2 * 8px); }
 /* Contact info aligned to center column on desktop */
-.contact-info { display: block; margin-top: -20px; white-space: pre-line; margin-left: calc(8px + 2.5 * ((100vw - 32px) / 6) + 2.5 * 8px); }
+.contact-info { display: block; margin-top: -20px; white-space: pre-line; margin-left: calc(8px + 1 * ((100vw - 32px) / 3) + 1 * 8px); }
 
     /* --- Media Query @ 992px (2 Columns) --- */
     @media (max-width: 992px) {
@@ -205,13 +208,20 @@ font-style: normal;
             right: 10px;
         }
         .masonry-container {
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
             padding: 10px; /* Page padding */
-            padding-top: 150px; /* Consistent with default for 2-link menu */
+            padding-top: calc(
+                ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
+                + (20px * 1.2)  /* Home = 24px */
+                + 10px          /* Padding sotto i link */
+                + 1px           /* line-2 height */
+                + 8px           /* Spazio minimo dopo line-2 (appena sotto il menu) */
+            ); /* 60 + 24 + 10 + 1 + 8 = 103px */
         }
         .footer-line { margin-left: 10px; margin-right: 10px; }
-        /* Back to top on right column (4th), contacts on left column */
-        .back-to-top { margin-left: calc(10px + 3 * ((100vw - 28px) / 4) + 3 * 8px); }
+        /* Back to top on right column (2nd), contacts on left column */
+        .back-to-top { margin-left: calc(10px + 1 * ((100vw - 28px) / 2) + 1 * 8px); }
         .contact-info { margin-left: 10px; }
     }
 
@@ -222,38 +232,33 @@ font-style: normal;
             left: 10px;
         }
         .title-gallery {
-            top: calc(
-                ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
-                + (20px * 1.2 * 2) /* Altezza dei due link = 48px */
-                + (8px * 1)        /* Gap tra i link = 8px */
-                + 10px             /* Spazio sotto i link (prima di line-2) */
-                + 1px              /* Altezza di line-2 */
-                + 10px             /* Spazio aggiuntivo prima di "Galleria" */
-            ); /* 60 + 48 + 8 + 10 + 1 + 10 = 137px */
-            left: 10px;
-            transition: top 0.6s ease-out;
+            top: 15px;
+            left: auto;
+            right: 10px;
+            transition: none;
         }
 
         .masonry-container {
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(1, 1fr);
+            gap: 10px;
             padding: 10px; /* Page padding */
             padding-top: calc(
-                137px            /* .title-gallery top (new) */
-                + (20px * 1.2)   /* Altezza di "Galleria" stessa = 24px */
-                + 15px           /* Spazio aggiuntivo sotto "Galleria" (original gap) */
-            ); /* 137 + 24 + 15 = 176px (menu open) */
+                ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
+                + (20px * 1.2)  /* Home = 24px */
+                + 10px          /* Padding sotto i link */
+                + 1px           /* line-2 height */
+                + 5px           /* Spazio minimo dopo line-2 (appena sotto il menu) */
+            ); /* 60 + 24 + 10 + 1 + 5 = 100px (menu open) */
         }
-        /* Align back-to-top to right column (2nd), contact to left column */
-        .back-to-top { margin-left: calc(10px + ((100vw - 28px) / 2) + 8px); margin-top: 6px; }
+        /* Align back-to-top and contact to single column */
+        .back-to-top { margin-left: 10px; margin-top: 6px; }
         .contact-info { margin-left: 10px; margin-top: 10px; }
 
-        .title-gallery.menu-closed {
-            top: calc( (15px + (20px * 1.2) + 10px) + 1px + 10px); /* 60px */
-        }
-
         .masonry-container.menu-closed {
-            /* padding-top when menu is closed, should match open state to prevent jump */
-            padding-top: 176px; /* Adjusted to new open state height */
+            /* padding-top when menu is closed - appena sotto line-1 */
+            padding-top: calc(
+                (15px + (20px * 1.2) + 10px) + 1px + 5px  /* 49px + 1px + 5px = 55px */
+            ); /* 55px */
         }
         
         /* Titles always visible on mobile */
@@ -358,11 +363,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!titleGallery || !masonryContainer) return; 
 
         if (window.innerWidth <= 576) {
+            // On mobile, "Galleria" is always at top: 15px, right: 10px
+            // No need to toggle menu-closed class for title-gallery anymore
+            // Only adjust masonry padding based on menu state
             if (dropdownLinks && dropdownLinks.classList.contains('is-open')) {
-                titleGallery.classList.remove('menu-closed');
                 masonryContainer.classList.remove('menu-closed'); 
             } else {
-                titleGallery.classList.add('menu-closed');
                 masonryContainer.classList.add('menu-closed'); 
             }
         } else {
@@ -409,10 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (menuAnimating || !(dropdownLinks && dropdownLinks.classList.contains('is-open'))) return;
         applyCloseStyles(dropdownLinks);
         applyCloseStyles(line2);
-
-        if (window.innerWidth <= 576 && titleGallery) {
-            titleGallery.classList.add('menu-closed');
-        }
+        updateGalleryPositioning();
     }
     
     if (dropdownLinks && line2) {

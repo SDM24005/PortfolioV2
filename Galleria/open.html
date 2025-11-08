@@ -12,6 +12,22 @@ font-weight: normal;
 font-style: normal;
 }
 
+@font-face {
+font-family: 'PPWriter-BookItalic';
+src: url('../Fonts/PPWriter-BookItalic.woff2') format('woff2'),
+     url('../Fonts/PPWriter-BookItalic.woff') format('woff');
+font-weight: normal;
+font-style: italic;
+}
+
+@font-face {
+font-family: 'PPWriter-Book';
+src: url('../Fonts/PPWriter-Book.woff2') format('woff2'),
+     url('../Fonts/PPWriter-Book.woff') format('woff');
+font-weight: normal;
+font-style: normal;
+}
+
     body {
         margin: 0;
         font-family: sans-serif;
@@ -52,7 +68,7 @@ font-style: normal;
 
 
     .header-text {
-        font-family: 'FormaDJRDisplay', sans-serif;
+        font-family: 'PPWriter-BookItalic', sans-serif;
         font-size: 20px;
         font-weight: normal;
         color: #000000;
@@ -91,6 +107,17 @@ font-style: normal;
         gap: 8px;
         display: none;
     }
+    
+    .sub-title-link {
+        font-family: 'PPWriter-Book', sans-serif !important;
+    }
+    
+    .sub-title-link .arrow,
+    .back-to-top .arrow {
+        font-family: 'FormaDJRDisplay', sans-serif;
+        display: inline-block;
+        margin-right: 4px;
+    }
 
     #line-2 { /* Updated for 1 link */
         top: calc(
@@ -103,7 +130,7 @@ font-style: normal;
     }
 
     .filter-label {
-        font-family: 'FormaDJRDisplay', sans-serif;
+        font-family: 'PPWriter-Book', sans-serif;
         font-size: 20px;
         font-weight: normal;
         color: #000000;
@@ -117,6 +144,7 @@ font-style: normal;
     }
     
     .filter-arrow {
+        font-family: 'FormaDJRDisplay', sans-serif;
         font-size: 16px;
         transition: transform 0.3s ease;
     }
@@ -140,8 +168,30 @@ font-style: normal;
         transform: translateY(-10px);
         transition: opacity 0.4s ease-out, transform 0.4s ease-out;
     }
+    
+    /* Limit tag dropdown width */
+    .tag-filter-container .dropdown-menu {
+        max-width: calc((100vw - 32px) / 6); /* Match column width */
+    }
+    
+    .year-filter-container .dropdown-menu {
+        max-width: calc((100vw - 32px) / 6); /* Match column width */
+    }
 
     .dropdown-menu-content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .dropdown-item.reset-item {
+        width: 100%;
+        margin-bottom: 8px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+        padding-bottom: 8px;
+    }
+    
+    .dropdown-menu-items-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 8px;
@@ -156,7 +206,7 @@ font-style: normal;
     }
 
     .dropdown-item {
-        font-family: 'FormaDJRDisplay', sans-serif;
+        font-family: 'PPWriter-Book', sans-serif;
         font-size: 16px;
         font-weight: normal;
         color: #000000;
@@ -193,6 +243,7 @@ font-style: normal;
         text-underline-offset: 2px;
     }
 
+
     .tag-filter-container {
         position: fixed;
         top: calc(
@@ -208,7 +259,7 @@ font-style: normal;
         gap: 8px;
         align-items: flex-start;
     }
-
+    
     .year-filter-container {
         position: fixed;
         top: calc(
@@ -217,9 +268,7 @@ font-style: normal;
             + 10px          /* Padding sotto i link */
             + 1px           /* line-2 height */
             + 10px          /* Spazio dopo line-2 */
-            + (20px * 1.2)  /* Label "Tag" height */
-            + 8px           /* Gap after label */
-        ); /* ~105px + 24px + 8px = ~137px (base position) */
+        ); /* Same row as tag filter */
         z-index: 1001;
         display: none;
         flex-direction: column;
@@ -237,7 +286,7 @@ font-style: normal;
 
     .tag-filter-btn,
     .year-filter-btn {
-        font-family: 'FormaDJRDisplay', sans-serif;
+        font-family: 'PPWriter-Book', sans-serif;
         font-size: 16px;
         font-weight: normal;
         color: #000000;
@@ -294,21 +343,21 @@ font-style: normal;
         color: #ffffff;
     }
 
-    /* --- Default Alignments (3 Columns) --- */
+    /* --- Default Alignments (6 Columns) --- */
     .main-title-name,
     .sub-links-block {
-        left: calc(8px + (100vw - 32px) / 3 + 8px);
+        left: calc(8px + 2 * ((100vw - 32px) / 6) + 2 * 8px); /* Left side of 3rd column */
     }
     .tag-filter-container {
-        left: calc(8px + (100vw - 32px) / 3 + 8px);
-        max-width: calc((100vw - 32px) / 3);
+        left: calc(8px + 2 * ((100vw - 32px) / 6) + 2 * 8px); /* Left side of 3rd column */
+        max-width: calc((100vw - 32px) / 6);
     }
     .year-filter-container {
-        left: calc(8px + (100vw - 32px) / 3 + 8px);
-        max-width: calc((100vw - 32px) / 3);
+        left: calc(8px + 3 * ((100vw - 32px) / 6) + 3 * 8px); /* Left side of 4th column */
+        max-width: calc((100vw - 32px) / 6);
     }
     .title-gallery {
-        left: calc(8px + 2 * ((100vw - 32px) / 3) + 2 * 8px);
+        left: calc(8px + 4 * ((100vw - 32px) / 6) + 4 * 8px); /* Left side of 5th column */
     }
     .header-line {
         left: 8px;
@@ -318,20 +367,34 @@ font-style: normal;
     .masonry-container {
         display: grid;
         grid-template-columns: repeat(6, 1fr);
-        grid-auto-rows: 1fr;
+        grid-auto-flow: row;
         gap: 8px;
         padding: 8px; /* Base padding */
         width: 100%;
         box-sizing: border-box;
-        transition: padding-top 0.6s ease-out; /* For smooth transition with menu */
+        padding-top: calc(
+            ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
+            + (20px * 1.2)  /* Home = 24px */
+            + 10px          /* Padding sotto i link */
+            + 1px           /* line-2 height */
+            + 10px          /* Spazio dopo line-2 */
+            + (20px * 1.2)  /* Label "Tag" height (same for both filters side by side) */
+            + 8px           /* Gap after labels */
+            + 10px          /* Spazio aggiuntivo */
+        ); /* 60 + 24 + 10 + 1 + 10 + 24 + 8 + 10 = 147px */
+        transition: padding-top 0.3s ease-out; /* Faster transition for better responsiveness */
+    }
+    
+    /* Reduce padding when menu is closed and at top of page */
+    .masonry-container.menu-closed-top {
+        padding-top: calc(
+            (15px + (20px * 1.2) + 10px) + 1px + 20px  /* 60px + 1px + 20px extra space */
+        ); /* 81px */
     }
     .masonry-item { 
         display: block; 
         width: 100%;
         overflow: visible; 
-        break-inside: avoid; 
-        -webkit-column-break-inside: avoid; 
-        page-break-inside: avoid; 
         position: relative;
     }
     .masonry-item a { 
@@ -339,6 +402,7 @@ font-style: normal;
         text-decoration: none; 
         width: 100%;
         overflow: hidden;
+        position: relative;
     }
     .masonry-item img { 
         width: 100%; 
@@ -348,29 +412,51 @@ font-style: normal;
         transition: transform 0.3s ease, filter 0.3s ease;
         object-fit: cover;
     }
+    /* Green overlay on hover (desktop only) */
+    .masonry-item a::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgb(0, 75, 0);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+        z-index: 2;
+    }
+    .masonry-item:hover a::after {
+        opacity: 1; /* Green overlay 100% opaque on hover */
+    }
     .masonry-item:hover img { 
         transform: scale(1.1); 
         filter: brightness(115%); 
     }
-    .masonry-item:hover .image-hover-text {
-        text-decoration: underline;
-        text-underline-offset: 2px;
-    }
+    /* Text inside image (desktop only) - visible only on hover */
     .image-hover-text { 
-        position: relative; 
-        top: 0;
-        left: 0;
-        margin-top: 4px;
-        font-family: 'FormaDJRDisplay', sans-serif; 
-        font-size: 16px; 
-        color: #000000; 
+        position: absolute; 
+        bottom: 8px;
+        left: 8px;
+        font-family: 'PPWriter-BookItalic', sans-serif; 
+        font-size: 20px; 
+        color: #ffffff; 
         line-height: 1.2; 
-        opacity: 1; 
-        visibility: visible; 
-        transition: color 0.3s ease, opacity 0.3s ease, visibility 0.3s ease, text-decoration 0.3s ease; 
+        opacity: 0; 
+        visibility: hidden; 
+        transition: color 0.3s ease, opacity 0.3s ease, visibility 0.3s ease; 
         pointer-events: none; 
-        z-index: 2;
+        z-index: 3; /* Above overlay */
         display: block;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); /* Shadow for better readability */
+        text-decoration: none;
+    }
+    .masonry-item:hover .image-hover-text {
+        opacity: 1;
+        visibility: visible;
+        text-decoration: none;
     }
 
     /* Footer divider and back-to-top alignment */
@@ -394,11 +480,16 @@ font-style: normal;
     .open-gallery-btn:hover {
         opacity: 0.3;
     }
-    .back-to-top { display: block; margin-top: 6px; text-decoration: none; }
-    /* Align to RIGHT (third) column on desktop (3-col layout) */
-    .back-to-top { margin-left: calc(8px + 2 * ((100vw - 32px) / 3) + 2 * 8px); }
+    .back-to-top { 
+        display: block; 
+        margin-top: 6px; 
+        text-decoration: none;
+        font-family: 'PPWriter-BookItalic', sans-serif;
+    }
+    /* Align to RIGHT (fifth) column on desktop (6-col layout) */
+    .back-to-top { margin-left: calc(8px + 4 * ((100vw - 32px) / 6) + 4 * 8px); }
 /* Contact info aligned to center column on desktop */
-.contact-info { display: block; margin-top: -20px; white-space: pre-line; margin-left: calc(8px + ((100vw - 32px) / 3) + 8px); }
+.contact-info { display: block; margin-top: -20px; white-space: pre-line; margin-left: calc(8px + 2 * ((100vw - 32px) / 6) + 2 * 8px); }
 
     /* --- Media Query @ 992px (2 Columns) --- */
     @media (max-width: 992px) {
@@ -408,11 +499,21 @@ font-style: normal;
         }
         .tag-filter-container {
             left: 10px;
-            max-width: calc((100vw - 28px) / 2);
+            max-width: calc((100vw - 28px) / 4);
+        }
+        .tag-filter-container .dropdown-menu {
+            max-width: calc((100vw - 28px) / 4); /* Match column width */
         }
         .year-filter-container {
-            left: 10px;
-            max-width: calc((100vw - 28px) / 2);
+            left: calc(10px + ((100vw - 28px) / 4) + 8px); /* Aligned to 2nd column of 4-column layout, same row as tag */
+            max-width: calc((100vw - 28px) / 4);
+            top: calc(
+                ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
+                + (20px * 1.2)  /* Home = 24px */
+                + 10px          /* Padding sotto i link */
+                + 1px           /* line-2 height */
+                + 10px          /* Spazio dopo line-2 */
+            ); /* Same row as tag filter */
         }
         .title-gallery {
             left: calc(10px + (100vw - 28px) / 2 + 8px);
@@ -425,10 +526,20 @@ font-style: normal;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px;
             padding: 10px; /* Page padding */
+            padding-top: calc(
+                ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
+                + (20px * 1.2)  /* Home = 24px */
+                + 10px          /* Padding sotto i link */
+                + 1px           /* line-2 height */
+                + 10px          /* Spazio dopo line-2 */
+                + (20px * 1.2)  /* Label "Tag" height (same for both filters side by side) */
+                + 8px           /* Gap after labels */
+                + 10px          /* Spazio aggiuntivo */
+            ); /* 60 + 24 + 10 + 1 + 10 + 24 + 8 + 10 = 147px */
         }
         .footer-line { margin-left: 10px; margin-right: 10px; }
-        /* Back to top on right column, contacts on left column */
-        .back-to-top { margin-left: calc(10px + (100vw - 28px) / 2 + 8px); }
+        /* Back to top on right column (4th), contacts on left column */
+        .back-to-top { margin-left: calc(10px + 3 * ((100vw - 28px) / 4) + 3 * 8px); }
         .contact-info { margin-left: 10px; }
     }
 
@@ -449,39 +560,66 @@ font-style: normal;
             max-width: calc(100vw - 20px);
             top: calc(
                 ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
-                + (20px * 1.2 * 2) /* Altezza dei due link = 48px */
-                + (8px * 1)        /* Gap tra i link = 8px */
-                + 10px             /* Spazio sotto i link (prima di line-2) */
-                + 1px              /* Altezza di line-2 */
-                + 10px             /* Spazio dopo line-2 */
-            ); /* 137px */
+                + (20px * 1.2)  /* Home = 24px (un solo link) */
+                + 10px          /* Padding sotto i link */
+                + 1px           /* line-2 height */
+                + 10px          /* Spazio dopo line-2 */
+            ); /* 60 + 24 + 10 + 1 + 10 = 105px */
+        }
+        .tag-filter-container .dropdown-menu {
+            max-width: calc(((100vw - 28px) / 2) - 8px); /* Leave space for year menu */
         }
         .year-filter-container {
-            left: 10px;
-            max-width: calc(100vw - 20px);
+            left: calc(10px + ((100vw - 28px) / 2) + 8px); /* Right side, aligned to 2nd column of 2-column layout */
+            max-width: calc((100vw - 28px) / 2);
             top: calc(
                 ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
-                + (20px * 1.2 * 2) /* Altezza dei due link = 48px */
-                + (8px * 1)        /* Gap tra i link = 8px */
-                + 10px             /* Spazio sotto i link (prima di line-2) */
-                + 1px              /* Altezza di line-2 */
-                + 10px             /* Spazio dopo line-2 */
-                + (20px * 1.2)     /* Label "Tag" height */
-                + 8px              /* Gap after label */
-                + 24px             /* Dropdown menu height (approx) */
-                + 8px              /* Gap after dropdown */
-            ); /* ~235px */
+                + (20px * 1.2)  /* Home = 24px (un solo link) */
+                + 10px          /* Padding sotto i link */
+                + 1px           /* line-2 height */
+                + 10px          /* Spazio dopo line-2 */
+            ); /* 60 + 24 + 10 + 1 + 10 = 105px - same as tag-filter-container */
         }
 
         .masonry-container {
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             padding: 10px; /* Page padding */
+            padding-top: calc(
+                ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
+                + (20px * 1.2)  /* Home = 24px */
+                + 10px          /* Padding sotto i link */
+                + 1px           /* line-2 height */
+                + 10px          /* Spazio dopo line-2 */
+                + (20px * 1.2)  /* Label "Tag" height (same for both filters side by side) */
+                + 8px           /* Gap after labels */
+                + 10px          /* Spazio aggiuntivo */
+            ); /* 60 + 24 + 10 + 1 + 10 + 24 + 8 + 10 = 147px */
+            transition: padding-top 0.3s ease-out;
         }
-        /* Titles always visible on mobile */
+        
+        .masonry-container.menu-closed {
+            /* padding-top when menu is closed - appena sotto line-1 */
+            padding-top: calc(
+                ( (15px + (20px * 1.2) + 10px) + 1px + 10px )  /* 60px */
+                + 10px          /* Spazio dopo line-1 */
+            ); /* 60 + 10 = 70px */
+        }
+        /* Titles always visible on mobile - restore original position below image */
         .image-hover-text {
+            position: relative !important;
+            bottom: auto !important;
+            left: auto !important;
+            top: 0 !important;
+            margin-top: 4px !important;
+            color: #000000 !important;
+            text-shadow: none !important;
             opacity: 1 !important;
             visibility: visible !important;
+        }
+        /* Remove green overlay on mobile */
+        .masonry-item a::after {
+            display: none !important;
         }
         /* Align back-to-top and contact to left of the single column */
         .back-to-top { margin-left: 10px; margin-top: 6px; }
@@ -520,7 +658,7 @@ font-style: normal;
     <div class="header-line animate-on-load" id="line-1"></div>
 
     <div class="sub-links-block" id="dropdown-links">
-    <a href="../index.html" class="header-text sub-title-link">&#8592; Home</a>
+    <a href="../index.html" class="header-text sub-title-link"><span class="arrow">&#8592;</span> Home</a>
         <!-- Progetti link removed -->
     </div>
     <div class="header-line" id="line-2"></div>
@@ -538,7 +676,7 @@ font-style: normal;
 
 <div class="gallery-footer">
     <div class="footer-line"></div>
-    <a href="#" class="header-text back-to-top">&#8593; Torna in cima</a>
+    <a href="#" class="header-text back-to-top"><span class="arrow">&#8593;</span> Torna in cima</a>
     <span class="header-text contact-info">Contatti
 Email: samuele.demarch@gmail.com
 Instagram @samueledemarch</span>
@@ -564,104 +702,96 @@ document.addEventListener('DOMContentLoaded', function() {
     // Disable custom cursor on touch devices using media query
     const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 
-    // Schedule layout update after dropdown open/close so measurements are accurate
+    // Schedule layout update for padding when dropdown opens/closes
     function scheduleLayoutUpdate() {
         requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                adjustYearFilterPosition();
-                adjustMasonryPadding();
-            });
+            adjustMasonryPadding();
         });
     }
 
     function adjustYearFilterPosition() {
-        if (!tagFilterContainer || !yearFilterContainer) return;
-        
-        const tagDropdown = tagFilterContainer.querySelector('.dropdown-menu');
-        const tagLabel = tagFilterContainer.querySelector('.filter-label');
-        
-        // Base position calculation (same as CSS)
-        let baseTop = (
-            (15 + (20 * 1.2) + 10) + 1 + 10  // 60px
-            + (20 * 1.2)  // Home = 24px
-            + 10          // Padding sotto i link
-            + 1           // line-2 height
-            + 10          // Spazio dopo line-2
-            + (20 * 1.2)  // Label "Tag" height
-            + 8           // Gap after label
-        ); // ~137px
-        
-        let newTop = baseTop;
-        
-        // If tag dropdown is visible, add its height
-        if (tagDropdown && tagDropdown.classList.contains('visible') && tagLabel) {
-            // Force a reflow to get accurate measurements
-            void tagFilterContainer.offsetHeight;
-            
-            const tagDropdownHeight = tagDropdown.getBoundingClientRect().height;
-            
-            // FIX: Aggiungi solo l'altezza del dropdown + un gap
-            newTop = baseTop + tagDropdownHeight + 8;
-        } else {
-            // When dropdown is closed, reset to base position
-            newTop = baseTop;
-        }
-        
-        yearFilterContainer.style.top = `${newTop}px`;
+        // Year filter is now positioned to the right of tag filter at the same height
+        // No JavaScript adjustment needed - CSS handles positioning
+        // This function is kept for compatibility but does nothing
+        return;
     }
 
+    // Calculate and update masonry padding based on dropdown states
     function adjustMasonryPadding() {
         if (!masonryContainer || !tagFilterContainer || !yearFilterContainer) return;
 
-        const tagHidden = window.getComputedStyle(tagFilterContainer).display === 'none';
-        const yearHidden = window.getComputedStyle(yearFilterContainer).display === 'none';
-        
-        if (tagHidden) {
-            tagFilterContainer.style.display = 'flex';
-            tagFilterContainer.style.visibility = 'hidden';
-        }
-        if (yearHidden) {
-            yearFilterContainer.style.display = 'flex';
-            yearFilterContainer.style.visibility = 'hidden';
-        }
-
-        // First adjust year filter position to ensure it's in the correct place
-        adjustYearFilterPosition();
-        
-        // Force a reflow to get accurate measurements after position changes
-        void tagFilterContainer.offsetHeight;
-        void yearFilterContainer.offsetHeight;
-
-        // Now calculate padding based on actual positions (viewport -> relative to masonry top)
-        const masonryTop = masonryContainer.getBoundingClientRect().top;
-        const tagContainerRect = tagFilterContainer.getBoundingClientRect();
+        // Check dropdowns
         const tagDropdown = tagFilterContainer.querySelector('.dropdown-menu');
-        let tagBottom = tagContainerRect.bottom;
-        if (tagDropdown && tagDropdown.classList.contains('visible')) {
-            const tagDropdownRect = tagDropdown.getBoundingClientRect();
-            tagBottom = Math.max(tagBottom, tagDropdownRect.bottom);
-        }
-
-        const yearContainerRect = yearFilterContainer.getBoundingClientRect();
         const yearDropdown = yearFilterContainer.querySelector('.dropdown-menu');
-        let yearBottom = yearContainerRect.bottom;
-        if (yearDropdown && yearDropdown.classList.contains('visible')) {
+        
+        const tagDropdownVisible = tagDropdown && tagDropdown.classList.contains('visible');
+        const yearDropdownVisible = yearDropdown && yearDropdown.classList.contains('visible');
+        
+        // If no dropdowns are visible, remove inline style and let CSS handle it
+        if (!tagDropdownVisible && !yearDropdownVisible) {
+            masonryContainer.style.paddingTop = '';
+            return;
+        }
+        
+        // Base padding from CSS is 147px (when filters are visible but dropdowns closed)
+        const basePadding = 147;
+        
+        // Get filter container positions relative to viewport
+        const tagRect = tagFilterContainer.getBoundingClientRect();
+        const yearRect = yearFilterContainer.getBoundingClientRect();
+        
+        // Find the bottom of filter labels (when dropdowns are closed)
+        const filterLabelsBottom = Math.max(tagRect.bottom, yearRect.bottom);
+        
+        // Find the bottom of dropdowns when open - use scrollHeight for accurate measurement
+        let dropdownsBottom = filterLabelsBottom;
+        
+        if (tagDropdownVisible && tagDropdown) {
+            // Force a reflow to ensure accurate measurements
+            void tagDropdown.offsetHeight;
+            
+            // Get the actual rendered position
+            const tagDropdownRect = tagDropdown.getBoundingClientRect();
+            
+            // Also check scrollHeight as it's more reliable for content height
+            const tagDropdownScrollHeight = tagDropdown.scrollHeight;
+            const tagDropdownContent = tagDropdown.querySelector('.dropdown-menu-content');
+            
+            if (tagDropdownRect.height > 0) {
+                // Use the actual bottom position
+                dropdownsBottom = Math.max(dropdownsBottom, tagDropdownRect.bottom);
+            } else if (tagDropdownScrollHeight > 0 && tagDropdownContent) {
+                // Fallback: calculate from label position + scrollHeight
+                dropdownsBottom = Math.max(dropdownsBottom, tagRect.bottom + tagDropdownScrollHeight);
+            }
+        }
+        
+        if (yearDropdownVisible && yearDropdown) {
+            // Force a reflow
+            void yearDropdown.offsetHeight;
+            
             const yearDropdownRect = yearDropdown.getBoundingClientRect();
-            yearBottom = Math.max(yearBottom, yearDropdownRect.bottom);
+            if (yearDropdownRect.height > 0) {
+                dropdownsBottom = Math.max(dropdownsBottom, yearDropdownRect.bottom);
+            }
         }
-
-        const maxBottom = Math.max(tagBottom, yearBottom);
-        const newPaddingTop = Math.max(0, (maxBottom - masonryTop) + 20);
-
-        masonryContainer.style.paddingTop = `${newPaddingTop}px`;
-
-        if (tagHidden) {
-            tagFilterContainer.style.display = '';
-            tagFilterContainer.style.visibility = '';
-        }
-        if (yearHidden) {
-            yearFilterContainer.style.display = '';
-            yearFilterContainer.style.visibility = '';
+        
+        // Calculate padding: distance from top of masonry container to bottom of filters/dropdowns
+        const masonryRect = masonryContainer.getBoundingClientRect();
+        const scrollY = window.scrollY;
+        
+        // Calculate absolute positions
+        const masonryTopAbsolute = masonryRect.top + scrollY;
+        const dropdownsBottomAbsolute = dropdownsBottom + scrollY;
+        
+        // Calculate required padding
+        const requiredPadding = dropdownsBottomAbsolute - masonryTopAbsolute + 10;
+        
+        // Apply padding (ensure it's at least basePadding)
+        const newPadding = Math.max(basePadding, requiredPadding);
+        
+        if (newPadding > 0 && newPadding < 1000) {
+            masonryContainer.style.paddingTop = `${newPadding}px`;
         }
     }
     
@@ -728,16 +858,40 @@ document.addEventListener('DOMContentLoaded', function() {
         if (window.innerWidth <= 576) {
             if (dropdownLinks && dropdownLinks.classList.contains('is-open')) {
                 titleGallery.classList.remove('menu-closed');
-                masonryContainer.classList.remove('menu-closed'); 
+                masonryContainer.classList.remove('menu-closed');
+                masonryContainer.classList.remove('menu-closed-top');
             } else {
                 titleGallery.classList.add('menu-closed');
-                masonryContainer.classList.add('menu-closed'); 
+                masonryContainer.classList.add('menu-closed');
+                // Add menu-closed-top class when at top of page and menu is closed
+                if (window.scrollY === 0) {
+                    masonryContainer.classList.add('menu-closed-top');
+                } else {
+                    masonryContainer.classList.remove('menu-closed-top');
+                }
             }
         } else {
             titleGallery.classList.remove('menu-closed');
-            masonryContainer.classList.remove('menu-closed'); 
+            masonryContainer.classList.remove('menu-closed');
+            // On desktop, add menu-closed-top when at top and filters are not visible
+            if (window.scrollY === 0 && tagFilterContainer && !tagFilterContainer.classList.contains('is-open')) {
+                masonryContainer.classList.add('menu-closed-top');
+            } else {
+                masonryContainer.classList.remove('menu-closed-top');
+            }
         }
-        adjustMasonryPadding();
+        // When dropdowns are closed, remove inline style and let CSS handle padding
+        // This prevents scroll issues
+        const tagDropdown = tagFilterContainer?.querySelector('.dropdown-menu');
+        const yearDropdown = yearFilterContainer?.querySelector('.dropdown-menu');
+        const hasOpenDropdown = (tagDropdown && tagDropdown.classList.contains('visible')) || 
+                                 (yearDropdown && yearDropdown.classList.contains('visible'));
+        
+        if (!hasOpenDropdown) {
+            // Remove inline style to let CSS take over
+            masonryContainer.style.paddingTop = '';
+        }
+        // Note: adjustMasonryPadding() is called separately when dropdowns open/close
     }
 
     function refinedOnCloseAnimationEnd(event) {
@@ -790,6 +944,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (yearFilterContainer) {
             yearFilterContainer.classList.remove('is-open');
         }
+        updateGalleryPositioning();
 
         if (window.innerWidth <= 576 && titleGallery) {
             titleGallery.classList.add('menu-closed');
@@ -838,20 +993,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const tagLabel = tagFilterContainer.querySelector('.filter-label');
         const tagArrow = tagLabel ? tagLabel.querySelector('.filter-arrow') : null;
         
-        // Close year dropdown if open
-        const yearDropdown = yearFilterContainer.querySelector('.dropdown-menu');
-        if (yearDropdown && yearDropdown.classList.contains('visible')) {
-            yearDropdown.classList.remove('visible');
-            const yearLabel = yearFilterContainer.querySelector('.filter-label');
-            const yearArrow = yearLabel ? yearLabel.querySelector('.filter-arrow') : null;
-            if (yearArrow) yearArrow.innerHTML = '&#8593;';
-            // Reset animation for items when closing
-            const yearItems = yearDropdown.querySelectorAll('.dropdown-item');
-            yearItems.forEach(item => {
-                item.style.opacity = '0';
-                item.style.transform = 'translateY(-5px)';
-            });
-        }
+        // Allow both dropdowns to be open simultaneously - removed closing logic
         
         if (isVisible) {
             dropdown.classList.remove('visible');
@@ -881,11 +1023,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     requestAnimationFrame(() => {
                         item.style.opacity = '1';
                         item.style.transform = 'translateY(0)';
+                        // Adjust padding after all items are animated (last item)
+                        if (index === items.length - 1) {
+                            setTimeout(() => {
+                                adjustMasonryPadding();
+                            }, 100);
+                        }
                     });
                 });
             });
         }
-        scheduleLayoutUpdate();
+        // Update masonry padding when dropdown state changes
+        // Use multiple timeouts to ensure dropdown is fully rendered and measured correctly
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                adjustMasonryPadding();
+                // Second adjustment after animations complete
+                setTimeout(() => {
+                    adjustMasonryPadding();
+                    // Third adjustment to ensure final layout
+                    setTimeout(() => {
+                        adjustMasonryPadding();
+                    }, 200);
+                }, 300);
+            }, 150);
+        });
     }
 
     function toggleYearDropdown() {
@@ -896,20 +1058,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const yearLabel = yearFilterContainer.querySelector('.filter-label');
         const yearArrow = yearLabel ? yearLabel.querySelector('.filter-arrow') : null;
         
-        // Close tag dropdown if open
-        const tagDropdown = tagFilterContainer.querySelector('.dropdown-menu');
-        if (tagDropdown && tagDropdown.classList.contains('visible')) {
-            tagDropdown.classList.remove('visible');
-            const tagLabel = tagFilterContainer.querySelector('.filter-label');
-            const tagArrow = tagLabel ? tagLabel.querySelector('.filter-arrow') : null;
-            if (tagArrow) tagArrow.innerHTML = '&#8593;';
-            // Reset animation for items when closing
-            const tagItems = tagDropdown.querySelectorAll('.dropdown-item');
-            tagItems.forEach(item => {
-                item.style.opacity = '0';
-                item.style.transform = 'translateY(-5px)';
-            });
-        }
+        // Allow both dropdowns to be open simultaneously - removed closing logic
         
         if (isVisible) {
             dropdown.classList.remove('visible');
@@ -943,7 +1092,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
         }
-        scheduleLayoutUpdate();
+        // Update masonry padding when dropdown state changes
+        // Use setTimeout to allow dropdown to render before measuring
+        setTimeout(() => {
+            adjustMasonryPadding();
+        }, 100);
     }
 
     function getUniqueYears(projects) {
@@ -982,9 +1135,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const dropdown = document.createElement('div');
         dropdown.className = 'dropdown-menu';
         
-        // Create content container with 4 columns
+        // Create content container
         const content = document.createElement('div');
         content.className = 'dropdown-menu-content';
+        
+        // Add Reset button (full width, on its own row)
+        const resetButton = document.createElement('button');
+        resetButton.className = 'dropdown-item reset-item';
+        resetButton.textContent = 'Reset';
+        resetButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            selectedTags = [];
+            updateTagButtons();
+            filterAndRender();
+            resetButton.classList.remove('hover-underline');
+        });
+        content.appendChild(resetButton);
+        
+        // Create grid container for tag items
+        const itemsGrid = document.createElement('div');
+        itemsGrid.className = 'dropdown-menu-items-grid';
         
         // Add individual tag options
         tags.forEach((tag, tagIndex) => {
@@ -1000,16 +1170,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     selectedTags.push(tag);
                 }
+                // Remove hover-underline class immediately to prevent it from persisting
+                item.classList.remove('hover-underline');
                 updateTagButtons();
                 filterAndRender();
             });
-            content.appendChild(item);
+            itemsGrid.appendChild(item);
         });
         
+        content.appendChild(itemsGrid);
         dropdown.appendChild(content);
         tagLabel.appendChild(dropdown);
         
-        // Add hover effects to dropdown items after creation
+        // Add hover effects to dropdown items after creation (including reset button)
         if (customCursorDiv && !isTouchDevice) {
             const tagDropdownItems = tagFilterContainer.querySelectorAll('.dropdown-item');
             tagDropdownItems.forEach(item => {
@@ -1024,7 +1197,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        adjustMasonryPadding();
+        scheduleLayoutUpdate();
     }
 
     function renderYearFilter(years) {
@@ -1047,9 +1220,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const dropdown = document.createElement('div');
         dropdown.className = 'dropdown-menu';
         
-        // Create content container with 4 columns
+        // Create content container
         const content = document.createElement('div');
         content.className = 'dropdown-menu-content';
+        
+        // Add Reset button (full width, on its own row)
+        const resetButton = document.createElement('button');
+        resetButton.className = 'dropdown-item reset-item';
+        resetButton.textContent = 'Reset';
+        resetButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            selectedYears = [];
+            updateYearButtons();
+            filterAndRender();
+            resetButton.classList.remove('hover-underline');
+        });
+        content.appendChild(resetButton);
+        
+        // Create grid container for year items
+        const itemsGrid = document.createElement('div');
+        itemsGrid.className = 'dropdown-menu-items-grid';
         
         // Add individual year options
         years.forEach((year, yearIndex) => {
@@ -1065,16 +1255,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     selectedYears.push(year);
                 }
+                // Remove hover-underline class immediately to prevent it from persisting
+                item.classList.remove('hover-underline');
                 updateYearButtons();
                 filterAndRender();
             });
-            content.appendChild(item);
+            itemsGrid.appendChild(item);
         });
         
+        content.appendChild(itemsGrid);
         dropdown.appendChild(content);
         yearLabel.appendChild(dropdown);
         
-        // Add hover effects to dropdown items after creation
+        // Add hover effects to dropdown items after creation (including reset button)
         if (customCursorDiv && !isTouchDevice) {
             const yearDropdownItems = yearFilterContainer.querySelectorAll('.dropdown-item');
             yearDropdownItems.forEach(item => {
@@ -1089,8 +1282,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        adjustMasonryPadding();
-        adjustYearFilterPosition();
+        // Initial padding adjustment
+        scheduleLayoutUpdate();
     }
 
     function updateTagButtons() {
@@ -1103,8 +1296,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const items = tagFilterContainer.querySelectorAll('.dropdown-item');
         items.forEach(item => {
-            item.classList.remove('active');
-            if (item.dataset.tag && selectedTags.includes(item.dataset.tag)) {
+            const isActive = item.dataset.tag && selectedTags.includes(item.dataset.tag);
+            // Remove both active and hover-underline classes
+            item.classList.remove('active', 'hover-underline');
+            // Add active class only if tag is selected
+            if (isActive) {
                 item.classList.add('active');
             }
         });
@@ -1120,8 +1316,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const items = yearFilterContainer.querySelectorAll('.dropdown-item');
         items.forEach(item => {
-            item.classList.remove('active');
-            if (item.dataset.year && selectedYears.includes(item.dataset.year)) {
+            const isActive = item.dataset.year && selectedYears.includes(item.dataset.year);
+            // Remove both active and hover-underline classes
+            item.classList.remove('active', 'hover-underline');
+            // Add active class only if year is selected
+            if (isActive) {
                 item.classList.add('active');
             }
         });
@@ -1180,7 +1379,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         renderGallery(filtered);
-        adjustMasonryPadding();
+        scheduleLayoutUpdate();
         // Scroll to top when filtering
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1275,8 +1474,8 @@ document.addEventListener('DOMContentLoaded', function() {
             hover.textContent = p.name;
 
             link.appendChild(img);
+            link.appendChild(hover); // Text inside the link for proper positioning
             item.appendChild(link);
-            item.appendChild(hover);
             masonryContainer.appendChild(item);
         });
 
@@ -1308,7 +1507,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     item.style.opacity = '0';
                     item.style.transform = 'translateY(-5px)';
                 });
-                scheduleLayoutUpdate();
+                // Update padding when closing dropdown - give time for animation
+                setTimeout(() => {
+                    adjustMasonryPadding();
+                }, 150);
             }
         }
         
@@ -1324,7 +1526,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     item.style.opacity = '0';
                     item.style.transform = 'translateY(-5px)';
                 });
-                scheduleLayoutUpdate();
+                // Update padding when closing dropdown - give time for animation
+                setTimeout(() => {
+                    adjustMasonryPadding();
+                }, 150);
             }
         }
     });
@@ -1338,14 +1543,46 @@ document.addEventListener('DOMContentLoaded', function() {
         renderTagFilter(uniqueTags);
         renderYearFilter(uniqueYears);
         filterAndRender(); // This will sort and render
-        scheduleLayoutUpdate();
+        // Initial padding adjustment after filters are rendered
+        setTimeout(() => {
+            adjustMasonryPadding();
+        }, 200);
     }
 
+    let scrollTimeout;
     window.addEventListener('scroll', function() {
         if (!dropdownLinks || !line2) return;
         if (menuAnimating) return;
 
         updateMenuTriggerCursor(); 
+        
+        // Clear any pending scroll updates
+        clearTimeout(scrollTimeout);
+        
+        // Only update class-based positioning after scroll stops (debounce)
+        // Do NOT adjust padding during scroll to prevent conflicts
+        scrollTimeout = setTimeout(() => {
+            // Only update classes, not padding
+            if (window.innerWidth <= 576) {
+                if (dropdownLinks && dropdownLinks.classList.contains('is-open')) {
+                    masonryContainer?.classList.remove('menu-closed', 'menu-closed-top');
+                } else {
+                    masonryContainer?.classList.add('menu-closed');
+                    if (window.scrollY === 0) {
+                        masonryContainer?.classList.add('menu-closed-top');
+                    } else {
+                        masonryContainer?.classList.remove('menu-closed-top');
+                    }
+                }
+            } else {
+                masonryContainer?.classList.remove('menu-closed');
+                if (window.scrollY === 0 && tagFilterContainer && !tagFilterContainer.classList.contains('is-open')) {
+                    masonryContainer?.classList.add('menu-closed-top');
+                } else {
+                    masonryContainer?.classList.remove('menu-closed-top');
+                }
+            }
+        }, 50);
 
         if (window.scrollY === 0) {
             if (!dropdownLinks.classList.contains('is-open')) {
@@ -1356,7 +1593,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeMenu();
             }
         }
-    });
+    }, { passive: true });
 
     window.addEventListener('resize', updateGalleryPositioning);
     updateMenuTriggerCursor(); 
