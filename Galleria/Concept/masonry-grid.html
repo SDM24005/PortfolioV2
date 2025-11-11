@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Griglia Masonry</title>
+<style>
+    @font-face {
+        font-family: 'PPKyoto';
+        src: url('../../Fonts/PPKyoto-MediumItalic.otf') format('opentype');
+        font-weight: normal;
+        font-style: italic;
+    }
+
+    @font-face {
+        font-family: 'PPKyoto';
+        src: url('../../Fonts/PPKyoto-Medium.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background-color: #000000;
+        padding: 20px;
+        padding-top: 70px;
+    }
+
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #000000;
+    }
+
+    .header-rectangle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        background-color: #000000;
+    }
+
+    .header-text {
+        position: relative;
+        z-index: 1000;
+        color: white;
+        font-size: 48px;
+        font-family: 'PPKyoto', sans-serif;
+        font-style: normal;
+        opacity: 0;
+        transform: translateY(-20px);
+        animation: fadeInFromTop 0.6s ease-out 0.3s forwards;
+    }
+
+    .logo-circle {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 60px;
+        height: 60px;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        cursor: pointer;
+        animation: moveToBottomAndRotate 0.5s ease-in-out 0.7s forwards;
+    }
+
+    .logo-circle.dragging {
+        transition: none;
+    }
+
+    .logo-circle img {
+        width: 95%;
+        height: 95%;
+        object-fit: contain;
+        display: block;
+    }
+
+    .masonry-container {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .masonry-column {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        flex: 0 0 auto;
+    }
+
+    .masonry-item {
+        width: 100%;
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    .masonry-item.animate {
+        animation: fadeInFromLeft 0.6s ease-out forwards;
+    }
+
+    .masonry-item img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .gallery-footer {
+        margin-top: 40px;
+        padding: 20px;
+        padding-bottom: 100px;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.5s ease-in;
+    }
+
+    .gallery-footer.visible {
+        opacity: 1;
+    }
+
+    .footer-line {
+        width: 100%;
+        height: 3px;
+        background-color: white;
+        margin-bottom: 30px;
+    }
+
+    .footer-text {
+        color: white;
+        font-family: sans-serif;
+        font-size: 18px;
+        margin-bottom: 15px;
+        line-height: 1.5;
+    }
+
+    .back-to-top {
+        color: white;
+        font-family: sans-serif;
+        font-size: 16px;
+        text-decoration: none;
+        cursor: pointer;
+        display: inline-block;
+        transition: opacity 0.3s ease;
+    }
+
+    .back-to-top:hover {
+        opacity: 0.7;
+    }
+
+    .bottom-menu {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #000000;
+        height: 0;
+        z-index: 998;
+        overflow: hidden;
+        transition: height 0.2s ease-out;
+    }
+
+    .bottom-menu.open {
+        height: 300px;
+    }
+    
+    .bottom-menu.dragging {
+        transition: none;
+    }
+
+    .menu-content {
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        align-items: center;
+        justify-content: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 100%;
+    }
+
+    .menu-item {
+        color: white;
+        font-family: 'PPKyoto', sans-serif;
+        font-size: 48px;
+        font-style: italic;
+        text-decoration: none;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+        text-align: center;
+    }
+
+    .menu-item:hover {
+        opacity: 0.7;
+    }
+
+    @keyframes fadeInFromTop {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes moveToBottomAndRotate {
+        from {
+            top: 50%;
+            transform: translate(-50%, -50%) ;
+        }
+        to {
+            top: calc(100vh - 90px);
+            transform: translateX(-50%);
+        }
+    }
+
+    @keyframes fadeInFromLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @media (max-width: 992px) {
+        body {
+            padding: 15px;
+            padding-top: 65px;
+        }
+        .masonry-container {
+            gap: 15px;
+        }
+        .masonry-column {
+            gap: 15px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        body {
+            padding: 10px;
+            padding-top: 60px;
+        }
+        .masonry-container {
+            gap: 10px;
+        }
+        .masonry-column {
+            gap: 10px;
+        }
+    }
+</style>
+</head>
+<body>
+<header class="header">
+    <div class="header-rectangle"></div>
+    <div class="header-text">Works</div>
+</header>
+<div class="logo-circle" id="logo-circle">
+    <img src="../../Logo/logo-light.png" alt="Logo">
+</div>
+<div class="masonry-container"></div>
+<div class="bottom-menu" id="bottom-menu">
+    <div class="menu-content">
+        <a href="#" class="menu-item">Home</a>
+        <a href="#" class="menu-item">Bio</a>
+        <a href="#" class="menu-item">Contatti</a>
+    </div>
+</div>
+
+<footer class="gallery-footer">
+    <div class="footer-line"></div>
+    <div class="footer-text">Sei arrivato in fondo alla galleria</div>
+    <a href="#" class="back-to-top">back to the top</a>
+</footer>
+
+<script>
+(function() {
+    const container = document.querySelector('.masonry-container');
+    const FOTO_TEST_IMAGES = [
+        '../../FotoTest/DSC04670.jpg',
+        '../../FotoTest/DSC04690.jpg',
+        '../../FotoTest/DSC04759.jpg',
+        '../../FotoTest/DSC04795.jpg',
+        '../../FotoTest/DSC04814.jpg',
+        '../../FotoTest/DSC04826.jpg',
+        '../../FotoTest/DSC04842.jpg',
+        '../../FotoTest/DSC04857.jpg',
+        '../../FotoTest/DSC04859.jpg',
+        '../../FotoTest/DSC04860.jpg',
+        '../../FotoTest/DSC04861.jpg'
+    ];
+    const NUM_COPIES = 5;
+    const ANIMATION_BASE_DELAY = 0.5;
+    const COLUMN_DELAY = 0.1;
+    const ITEM_DELAY = 0.05;
+    const LOGO_ANIMATION_DELAY = 1200;
+
+    function getAllImages() {
+        const allImages = [];
+        for (let i = 0; i < NUM_COPIES; i++) {
+            allImages.push(...FOTO_TEST_IMAGES);
+        }
+        return allImages;
+    }
+
+    function getResponsiveSettings() {
+        const screenWidth = window.innerWidth;
+        if (screenWidth <= 576) {
+            return {
+                numColumns: 1,
+                columnWidth: screenWidth - 20,
+                gap: 10
+            };
+        } else if (screenWidth <= 992) {
+            return {
+                numColumns: 2,
+                columnWidth: (screenWidth - 45) / 2,
+                gap: 15
+            };
+        } else {
+            const numColumns = Math.min(4, Math.floor((screenWidth - 100) / 320));
+            const gap = 20;
+            return {
+                numColumns,
+                columnWidth: (screenWidth - (numColumns - 1) * gap - 40) / numColumns,
+                gap
+            };
+        }
+    }
+
+    function loadImage(src, columnWidth) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                const aspectRatio = img.naturalHeight / img.naturalWidth;
+                resolve({
+                    src,
+                    width: columnWidth,
+                    height: columnWidth * aspectRatio,
+                    aspectRatio
+                });
+            };
+            img.onerror = reject;
+            img.src = src;
+        });
+    }
+
+    function distributeImages(imageData, numColumns, gap) {
+        const columns = Array(numColumns).fill(null).map(() => []);
+        const columnHeights = Array(numColumns).fill(0);
+
+        imageData.forEach(data => {
+            const colIndex = columnHeights.indexOf(Math.min(...columnHeights));
+            columns[colIndex].push(data);
+            columnHeights[colIndex] += data.height + (columns[colIndex].length > 1 ? gap : 0);
+        });
+
+        return { columns, columnHeights };
+    }
+
+    function renderColumns(columns, columnHeights, columnWidth, gap) {
+        container.innerHTML = '';
+        container.style.gap = gap + 'px';
+
+        const columnDivs = [];
+        const allImages = [];
+
+        columns.forEach((column, colIndex) => {
+            if (column.length === 0) return;
+
+            const colDiv = document.createElement('div');
+            colDiv.className = 'masonry-column';
+            colDiv.style.width = columnWidth + 'px';
+            colDiv.style.gap = gap + 'px';
+
+            column.forEach((imgData, itemIndex) => {
+                const item = document.createElement('div');
+                item.className = 'masonry-item';
+                item.dataset.columnIndex = colIndex;
+                item.dataset.itemIndex = itemIndex;
+
+                const img = document.createElement('img');
+                img.src = imgData.src;
+                img.alt = '';
+                img.style.width = '100%';
+                img.style.height = 'auto';
+                img.style.display = 'block';
+
+                allImages.push(img);
+                item.appendChild(img);
+                colDiv.appendChild(item);
+            });
+
+            container.appendChild(colDiv);
+            columnDivs.push(colDiv);
+        });
+
+        if (allImages.length === 0) return;
+
+        const alignAndAnimate = () => {
+            container.offsetHeight;
+
+            const actualHeights = columnDivs.map(colDiv => {
+                colDiv.style.paddingBottom = '0';
+                return colDiv.offsetHeight;
+            });
+
+            const maxHeight = Math.max(...actualHeights);
+            columnDivs.forEach((colDiv, index) => {
+                const currentHeight = actualHeights[index];
+                if (currentHeight < maxHeight && currentHeight > 0) {
+                    colDiv.style.paddingBottom = (maxHeight - currentHeight) + 'px';
+                }
+            });
+
+            const allItems = container.querySelectorAll('.masonry-item');
+            allItems.forEach(item => {
+                const colIndex = parseInt(item.dataset.columnIndex) || 0;
+                const itemIndex = parseInt(item.dataset.itemIndex) || 0;
+                const delay = (ANIMATION_BASE_DELAY + colIndex * COLUMN_DELAY + itemIndex * ITEM_DELAY) * 1000;
+                setTimeout(() => item.classList.add('animate'), delay);
+            });
+
+            // Mostra il footer dopo che le immagini sono caricate
+            const footer = document.querySelector('.gallery-footer');
+            if (footer) {
+                footer.classList.add('visible');
+            }
+        };
+
+        let loadedCount = 0;
+        const checkLoaded = () => {
+            loadedCount++;
+            if (loadedCount === allImages.length) {
+                requestAnimationFrame(() => setTimeout(alignAndAnimate, 0));
+            }
+        };
+
+        allImages.forEach(img => {
+            if (img.complete) {
+                checkLoaded();
+            } else {
+                img.addEventListener('load', checkLoaded);
+                img.addEventListener('error', checkLoaded);
+            }
+        });
+    }
+
+    async function createMasonryGrid() {
+        const images = getAllImages();
+        if (images.length === 0) {
+            container.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Nessuna immagine trovata</p>';
+            return;
+        }
+
+        const { numColumns, columnWidth, gap } = getResponsiveSettings();
+        const columns = Array(numColumns).fill(null).map(() => []);
+        const columnHeights = Array(numColumns).fill(0);
+
+        try {
+            const imagePromises = images.map(src => loadImage(src, columnWidth));
+            const results = await Promise.allSettled(imagePromises);
+            const imageData = results
+                .filter(result => result.status === 'fulfilled')
+                .map(result => result.value);
+
+            if (imageData.length === 0) {
+                container.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Nessuna immagine disponibile</p>';
+                return;
+            }
+
+            const { columns: distributedColumns, columnHeights: distributedHeights } = distributeImages(imageData, numColumns, gap);
+            renderColumns(distributedColumns, distributedHeights, columnWidth, gap);
+        } catch (error) {
+            console.error('Errore nel caricamento delle immagini:', error);
+        }
+    }
+
+    setTimeout(() => createMasonryGrid(), LOGO_ANIMATION_DELAY);
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(createMasonryGrid, 250);
+    });
+
+    // Back to top functionality
+    const backToTopLink = document.querySelector('.back-to-top');
+    if (backToTopLink) {
+        backToTopLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // Menu functionality
+    const logoCircle = document.getElementById('logo-circle');
+    const bottomMenu = document.getElementById('bottom-menu');
+    const MENU_HEIGHT = 300;
+    let menuOpen = false;
+    
+    function toggleMenuFromPosition(circleTop) {
+        // Determina lo stato corrente del menu basandosi sulla posizione del cerchio fornita
+        const closedRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+        const currentDragUpDistance = closedRestTop - circleTop;
+        
+        // Se il cerchio è sopra la posizione di riposo, il menu è aperto (almeno parzialmente)
+        const isCurrentlyOpen = currentDragUpDistance > MENU_HEIGHT * 0.5;
+        
+        // Inverti lo stato: se è aperto, chiudilo; se è chiuso, aprilo
+        const newMenuOpen = !isCurrentlyOpen;
+        
+        // Aggiorna la variabile di stato
+        menuOpen = newMenuOpen;
+        
+        // Aggiorna il menu visivamente
+        if (bottomMenu) {
+            // Rimuovi la classe dragging per permettere la transizione
+            bottomMenu.classList.remove('dragging');
+            
+            if (menuOpen) {
+                bottomMenu.classList.add('open');
+                bottomMenu.style.height = MENU_HEIGHT + 'px';
+            } else {
+                bottomMenu.classList.remove('open');
+                bottomMenu.style.height = '0px';
+            }
+        }
+        
+        // Aggiorna la posizione di riposo del cerchio quando il menu si apre/chiude
+        updateCircleRestPosition();
+        
+        // Anima il cerchio alla nuova posizione
+        if (!isDragging && logoCircle) {
+            // Ferma qualsiasi animazione a molla in corso
+            if (springAnimId) {
+                cancelAnimationFrame(springAnimId);
+                springAnimId = null;
+            }
+            
+            // Leggi la posizione corrente PRIMA di impostare la transizione
+            const currentPos = getCirclePosition();
+            const currentTop = currentPos.top;
+            
+            // Imposta la nuova posizione target
+            const targetTop = circleRestTop;
+            
+            // Se la posizione target è diversa dalla corrente, anima
+            if (Math.abs(targetTop - currentTop) > 1) {
+                // Usa una transizione CSS per sincronizzare con l'apertura/chiusura del menu
+                logoCircle.style.transition = 'top 0.2s ease-out';
+                
+                // Imposta la nuova posizione (questo triggererà l'animazione)
+                logoCircle.style.top = targetTop + 'px';
+                logoCircle.style.left = circleRestLeft + 'px';
+                logoCircle.style.transform = 'translate(-50%, -50%)';
+                
+                // Rimuovi la transizione dopo l'animazione per permettere il drag
+                setTimeout(() => {
+                    if (logoCircle && !isDragging) {
+                        logoCircle.style.transition = '';
+                    }
+                }, 200);
+            }
+        }
+    }
+    
+    function toggleMenu() {
+        // Determina lo stato corrente del menu basandosi sulla posizione REALE del cerchio
+        if (!logoCircle) return;
+        
+        const pos = getCirclePosition();
+        toggleMenuFromPosition(pos.top);
+    }
+    
+    function updateCircleRestPosition() {
+        // Calcola la nuova posizione di riposo basata sullo stato del menu
+        if (menuOpen) {
+            // Quando il menu è aperto, il cerchio si alza della stessa altezza del menu
+            circleRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2 - MENU_HEIGHT;
+        } else {
+            // Quando il menu è chiuso, posizione normale
+            circleRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+        }
+    }
+    
+    function updateMenuHeightFromCircle(circleTop) {
+        if (!bottomMenu) return;
+        
+        // Calcola la posizione di riposo quando il menu è chiuso
+        const closedRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+        
+        // Calcola quanto il cerchio è sopra la posizione di riposo chiusa
+        const dragUpDistance = closedRestTop - circleTop;
+        
+        // Limita l'altezza del menu tra 0 e MENU_HEIGHT basata sulla distanza trascinata verso l'alto
+        // Usa Math.max per gestire anche quando il cerchio viene trascinato verso il basso (dragUpDistance negativo)
+        const menuHeight = Math.max(0, Math.min(MENU_HEIGHT, dragUpDistance));
+        
+        // Applica sempre l'altezza calcolata (rimuove qualsiasi altezza fissa precedente)
+        bottomMenu.style.height = menuHeight + 'px';
+        
+        // Aggiorna lo stato del menu in base all'altezza
+        const newMenuOpen = menuHeight > MENU_HEIGHT * 0.5;
+        
+        // Aggiorna la classe solo se lo stato è cambiato
+        if (newMenuOpen !== menuOpen) {
+            menuOpen = newMenuOpen;
+            if (menuOpen) {
+                bottomMenu.classList.add('open');
+            } else {
+                bottomMenu.classList.remove('open');
+            }
+        }
+    }
+    
+
+    // Spring physics per il cerchio
+    const CIRCLE_REST_BOTTOM = 30;
+    const CIRCLE_SIZE = 60;
+    let circleRestTop = 0;
+    let circleRestLeft = 0;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragStartLeft = 0;
+    let dragStartTop = 0;
+    let currentCircleLeft = 0;
+    let currentCircleTop = 0;
+    let springAnimId = null;
+    let hasMoved = false;
+
+    // Imposta posizione cerchio (rimuove animazione CSS e imposta posizione precisa)
+    function setCirclePosition(left, top, preserveTransition = false) {
+        if (!logoCircle) return;
+        // Rimuovi l'animazione CSS quando iniziamo a controllare con JavaScript
+        // Ma preserva la transizione se richiesto
+        if (!preserveTransition) {
+            logoCircle.style.animation = 'none';
+        }
+        logoCircle.style.left = left + 'px';
+        logoCircle.style.top = top + 'px';
+        logoCircle.style.transform = 'translate(-50%, -50%)';
+        // Forza il reflow per assicurare che le modifiche siano applicate
+        logoCircle.offsetHeight;
+    }
+
+    // Leggi la posizione reale del cerchio
+    function getCirclePosition() {
+        if (!logoCircle) return { left: 0, top: 0 };
+        const rect = logoCircle.getBoundingClientRect();
+        // Ritorna il centro del cerchio (perché usa translate(-50%, -50%))
+        return {
+            left: rect.left + rect.width / 2,
+            top: rect.top + rect.height / 2
+        };
+    }
+
+    // Animazione a molla per entrambi gli assi
+    function animateSpring(targetLeft, targetTop, startLeft, startTop, velocityX = 0, velocityY = 0) {
+        if (springAnimId) {
+            cancelAnimationFrame(springAnimId);
+        }
+
+        const SPRING = 0.35;
+        const DAMPING = 0.75;
+        let posX = startLeft;
+        let posY = startTop;
+        let velX = velocityX;
+        let velY = velocityY;
+
+        function step() {
+            const distX = targetLeft - posX;
+            const distY = targetTop - posY;
+            
+            const forceX = distX * SPRING;
+            const forceY = distY * SPRING;
+            const dampingX = velX * DAMPING;
+            const dampingY = velY * DAMPING;
+            
+            const accelX = forceX - dampingX;
+            const accelY = forceY - dampingY;
+
+            velX += accelX;
+            velY += accelY;
+            posX += velX;
+            posY += velY;
+
+            setCirclePosition(posX, posY);
+
+            // Condizioni di stop: ferma quando sia X che Y sono stabili
+            if (Math.abs(distX) < 0.3 && Math.abs(distY) < 0.3 && 
+                Math.abs(velX) < 0.15 && Math.abs(velY) < 0.15) {
+                setCirclePosition(targetLeft, targetTop);
+                circleRestLeft = targetLeft;
+                circleRestTop = targetTop;
+                springAnimId = null;
+                // Reset hasMoved dopo che l'animazione è completata per permettere i click successivi
+                hasMoved = false;
+                return;
+            }
+
+            springAnimId = requestAnimationFrame(step);
+        }
+
+        step();
+    }
+
+    // Inizializza dopo animazione CSS
+    // Usa animationend event per essere sicuri che l'animazione sia finita
+    function initializeCirclePhysics() {
+        if (!logoCircle) return;
+        
+        // Leggi la posizione REALE dopo l'animazione CSS e salvala
+        const pos = getCirclePosition();
+        circleRestLeft = pos.left;
+        circleRestTop = pos.top;
+        
+        // Se per qualche motivo è 0, calcola dalla viewport
+        if (circleRestTop <= 0) {
+            updateCircleRestPosition(); // Calcola basandosi sullo stato del menu
+        }
+        if (circleRestLeft <= 0) {
+            circleRestLeft = window.innerWidth / 2;
+        }
+        
+        // Imposta la posizione in pixel per rimuovere qualsiasi calc() o percentuale
+        setCirclePosition(circleRestLeft, circleRestTop);
+
+        if (bottomMenu) {
+
+            // Drag con mouse
+            let totalDragDistance = 0;
+            
+            logoCircle.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Ferma qualsiasi animazione in corso
+                if (springAnimId) {
+                    cancelAnimationFrame(springAnimId);
+                    springAnimId = null;
+                }
+                
+                // Rimuovi transizione per movimento fluido durante il drag
+                logoCircle.style.transition = 'none';
+                if (bottomMenu) {
+                    bottomMenu.classList.add('dragging');
+                }
+                
+                isDragging = true;
+                hasMoved = false;
+                totalDragDistance = 0;
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                
+                // Leggi la posizione ATTUALE reale del cerchio
+                const pos = getCirclePosition();
+                dragStartLeft = pos.left;
+                dragStartTop = pos.top;
+                currentCircleLeft = dragStartLeft;
+                currentCircleTop = dragStartTop;
+                
+                // Aggiorna il menu in base alla posizione iniziale del cerchio
+                // Questo assicura che il menu parta dalla posizione corretta quando si inizia un nuovo drag
+                updateMenuHeightFromCircle(dragStartTop);
+                
+                logoCircle.classList.add('dragging');
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging && logoCircle) {
+                    const deltaX = e.clientX - dragStartX;
+                    const deltaY = e.clientY - dragStartY;
+                    
+                    // Calcola la distanza totale del drag
+                    totalDragDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                    
+                    if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+                        hasMoved = true;
+                    }
+                    
+                    // Applica rapporto 3/4 al movimento del mouse
+                    const moveRatio = 0.75;
+                    currentCircleLeft = dragStartLeft + (deltaX * moveRatio);
+                    currentCircleTop = dragStartTop + (deltaY * moveRatio);
+                    
+                    // Limita movimento (opzionale, per evitare che esca dallo schermo)
+                    const minLeft = CIRCLE_SIZE / 2;
+                    const maxLeft = window.innerWidth - CIRCLE_SIZE / 2;
+                    const minTop = CIRCLE_SIZE / 2;
+                    const maxTop = window.innerHeight - CIRCLE_SIZE / 2;
+                    
+                    currentCircleLeft = Math.max(minLeft, Math.min(maxLeft, currentCircleLeft));
+                    currentCircleTop = Math.max(minTop, Math.min(maxTop, currentCircleTop));
+                    
+                    setCirclePosition(currentCircleLeft, currentCircleTop);
+                    
+                    // Aggiorna sempre l'altezza del menu in base alla posizione del cerchio durante il drag
+                    // Il menu deve seguire il cerchio in tempo reale
+                    updateMenuHeightFromCircle(currentCircleTop);
+                }
+            });
+
+            document.addEventListener('mouseup', (e) => {
+                if (isDragging) {
+                    isDragging = false;
+                    logoCircle.classList.remove('dragging');
+                    
+                    if (bottomMenu) {
+                        bottomMenu.classList.remove('dragging');
+                    }
+                    
+                    // Se il drag è minore di 8px, considera come click e apri/chiudi menu
+                    if (totalDragDistance < 8) {
+                        // Usa la posizione INIZIALE del cerchio (prima del drag) per determinare lo stato
+                        // Questo è importante perché la posizione corrente potrebbe essere cambiata leggermente
+                        toggleMenuFromPosition(dragStartTop);
+                        
+                        // Reset immediato per permettere click successivi
+                        hasMoved = false;
+                        totalDragDistance = 0;
+                        return;
+                    }
+                    
+                    // Se non è stata ancora impostata, calcolala
+                    if (circleRestLeft === 0) {
+                        circleRestLeft = window.innerWidth / 2;
+                    }
+                    
+                    // Determina l'altezza finale del menu basandosi sulla posizione finale del cerchio
+                    const closedRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+                    const finalDragUpDistance = closedRestTop - currentCircleTop;
+                    const finalMenuHeight = Math.max(0, Math.min(MENU_HEIGHT, finalDragUpDistance));
+                    
+                    // Se il menu è più della metà aperto, completa l'apertura, altrimenti chiudilo
+                    if (finalMenuHeight > MENU_HEIGHT * 0.5) {
+                        // Apri completamente
+                        menuOpen = true;
+                        if (bottomMenu) {
+                            bottomMenu.classList.add('open');
+                            bottomMenu.style.height = MENU_HEIGHT + 'px';
+                        }
+                    } else {
+                        // Chiudi completamente
+                        menuOpen = false;
+                        if (bottomMenu) {
+                            bottomMenu.classList.remove('open');
+                            bottomMenu.style.height = '0px';
+                        }
+                    }
+                    
+                    // Aggiorna la posizione di riposo finale
+                    updateCircleRestPosition();
+                    
+                    // Calcola velocità basata sullo spostamento
+                    const velocityX = (currentCircleLeft - dragStartLeft) * 0.3;
+                    const velocityY = (currentCircleTop - dragStartTop) * 0.3;
+                    
+                    // Applica fisica a molla
+                    animateSpring(circleRestLeft, circleRestTop, currentCircleLeft, currentCircleTop, velocityX, velocityY);
+                    
+                    // Reset hasMoved dopo un breve delay per permettere click successivi
+                    // (verrà resettato anche alla fine dell'animazione a molla)
+                    setTimeout(() => {
+                        hasMoved = false;
+                        totalDragDistance = 0;
+                    }, 100);
+                }
+            });
+
+            // Touch support
+            let totalTouchDistance = 0;
+            
+            logoCircle.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (springAnimId) {
+                    cancelAnimationFrame(springAnimId);
+                    springAnimId = null;
+                }
+                
+                // Rimuovi transizione per movimento fluido durante il drag
+                logoCircle.style.transition = 'none';
+                if (bottomMenu) {
+                    bottomMenu.classList.add('dragging');
+                }
+                
+                isDragging = true;
+                hasMoved = false;
+                totalTouchDistance = 0;
+                dragStartX = e.touches[0].clientX;
+                dragStartY = e.touches[0].clientY;
+                
+                const pos = getCirclePosition();
+                dragStartLeft = pos.left;
+                dragStartTop = pos.top;
+                currentCircleLeft = dragStartLeft;
+                currentCircleTop = dragStartTop;
+                
+                // Aggiorna il menu in base alla posizione iniziale del cerchio
+                // Questo assicura che il menu parta dalla posizione corretta quando si inizia un nuovo drag
+                updateMenuHeightFromCircle(dragStartTop);
+                
+                logoCircle.classList.add('dragging');
+            }, { passive: false });
+
+            document.addEventListener('touchmove', (e) => {
+                if (isDragging && logoCircle) {
+                    e.preventDefault();
+                    const deltaX = e.touches[0].clientX - dragStartX;
+                    const deltaY = e.touches[0].clientY - dragStartY;
+                    
+                    // Calcola la distanza totale del drag
+                    totalTouchDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                    
+                    if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+                        hasMoved = true;
+                    }
+                    
+                    // Applica rapporto 3/4 al movimento del touch
+                    const moveRatio = 0.75;
+                    currentCircleLeft = dragStartLeft + (deltaX * moveRatio);
+                    currentCircleTop = dragStartTop + (deltaY * moveRatio);
+                    
+                    const minLeft = CIRCLE_SIZE / 2;
+                    const maxLeft = window.innerWidth - CIRCLE_SIZE / 2;
+                    const minTop = CIRCLE_SIZE / 2;
+                    const maxTop = window.innerHeight - CIRCLE_SIZE / 2;
+                    
+                    currentCircleLeft = Math.max(minLeft, Math.min(maxLeft, currentCircleLeft));
+                    currentCircleTop = Math.max(minTop, Math.min(maxTop, currentCircleTop));
+                    
+                    setCirclePosition(currentCircleLeft, currentCircleTop);
+                    
+                    // Aggiorna sempre l'altezza del menu in base alla posizione del cerchio durante il drag
+                    // Il menu deve seguire il cerchio in tempo reale
+                    updateMenuHeightFromCircle(currentCircleTop);
+                }
+            }, { passive: false });
+
+            document.addEventListener('touchend', (e) => {
+                if (isDragging) {
+                    isDragging = false;
+                    logoCircle.classList.remove('dragging');
+                    
+                    if (bottomMenu) {
+                        bottomMenu.classList.remove('dragging');
+                    }
+                    
+                    // Se il drag è minore di 8px, considera come click e apri/chiudi menu
+                    if (totalTouchDistance < 8) {
+                        // Usa la posizione INIZIALE del cerchio (prima del drag) per determinare lo stato
+                        toggleMenuFromPosition(dragStartTop);
+                        
+                        // Reset immediato per permettere click successivi
+                        hasMoved = false;
+                        totalTouchDistance = 0;
+                        return;
+                    }
+                    
+                    // Determina l'altezza finale del menu basandosi sulla posizione finale del cerchio
+                    const closedRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+                    const finalDragUpDistance = closedRestTop - currentCircleTop;
+                    const finalMenuHeight = Math.max(0, Math.min(MENU_HEIGHT, finalDragUpDistance));
+                    
+                    // Se il menu è più della metà aperto, completa l'apertura, altrimenti chiudilo
+                    if (finalMenuHeight > MENU_HEIGHT * 0.5) {
+                        // Apri completamente
+                        menuOpen = true;
+                        if (bottomMenu) {
+                            bottomMenu.classList.add('open');
+                            bottomMenu.style.height = MENU_HEIGHT + 'px';
+                        }
+                    } else {
+                        // Chiudi completamente
+                        menuOpen = false;
+                        if (bottomMenu) {
+                            bottomMenu.classList.remove('open');
+                            bottomMenu.style.height = '0px';
+                        }
+                    }
+                    
+                    // Aggiorna la posizione di riposo finale
+                    updateCircleRestPosition();
+                    
+                    if (circleRestLeft === 0) {
+                        circleRestLeft = window.innerWidth / 2;
+                    }
+                    
+                    const velocityX = (currentCircleLeft - dragStartLeft) * 0.3;
+                    const velocityY = (currentCircleTop - dragStartTop) * 0.3;
+                    animateSpring(circleRestLeft, circleRestTop, currentCircleLeft, currentCircleTop, velocityX, velocityY);
+                    
+                    // Reset hasMoved dopo un breve delay per permettere click successivi
+                    // (verrà resettato anche alla fine dell'animazione a molla)
+                    setTimeout(() => {
+                        hasMoved = false;
+                        totalTouchDistance = 0;
+                    }, 100);
+                }
+            });
+
+            // Chiudi menu quando si scrolla
+            let scrollTimeout;
+            window.addEventListener('scroll', () => {
+                if (menuOpen && !isDragging) {
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(() => {
+                        if (menuOpen) {
+                            toggleMenu();
+                        }
+                    }, 100);
+                }
+            }, { passive: true });
+
+            // Aggiorna posizione su resize
+            window.addEventListener('resize', () => {
+                if (!isDragging && !springAnimId) {
+                    updateCircleRestPosition();
+                    circleRestLeft = window.innerWidth / 2;
+                    setCirclePosition(circleRestLeft, circleRestTop);
+                }
+            });
+        }
+    }
+    
+    // Inizializza quando l'animazione CSS è completata
+    if (logoCircle) {
+        // Usa animationend event se disponibile
+        logoCircle.addEventListener('animationend', () => {
+            initializeCirclePhysics();
+        }, { once: true });
+        
+        // Fallback con timeout nel caso animationend non funzioni
+        setTimeout(() => {
+            initializeCirclePhysics();
+        }, 1200);
+    }
+})();
+</script>
+</body>
+</html>
