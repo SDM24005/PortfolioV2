@@ -332,6 +332,9 @@
         .logo-circle.loaded {
             animation: moveToBottomAndRotate 0.5s ease-in-out 0s forwards !important;
         }
+        .header {
+            top: calc(50% - 100px);
+        }
         .header.loaded {
             animation: moveHeaderToTop 0.5s ease-in-out 0s forwards;
         }
@@ -367,16 +370,6 @@
         }
         .header-rectangle.loaded {
             animation: fadeInHeaderRectangle 0.5s ease-in-out 0s forwards;
-        }
-        
-        /* Assicura che l'animazione moveHeaderToTop funzioni su mobile */
-        @keyframes moveHeaderToTop {
-            from {
-                top: calc(50% - 100px);
-            }
-            to {
-                top: 0;
-            }
         }
     }
 </style>
@@ -882,6 +875,9 @@
             // Rimuovi la classe dragging per permettere la transizione
             bottomMenu.classList.remove('dragging');
             
+            // Assicurati che la transizione CSS sia attiva
+            bottomMenu.style.transition = 'height 0.2s ease-out';
+            
             if (menuOpen) {
                 bottomMenu.classList.add('open');
                 bottomMenu.style.height = MENU_HEIGHT + 'px';
@@ -902,27 +898,55 @@
                 springAnimId = null;
             }
             
+            // Rimuovi completamente l'animazione CSS e qualsiasi stile che potrebbe interferire
+            logoCircle.style.animation = 'none';
+            logoCircle.style.removeProperty('animation');
+            logoCircle.style.removeProperty('animation-name');
+            logoCircle.style.removeProperty('animation-duration');
+            logoCircle.style.removeProperty('animation-timing-function');
+            logoCircle.style.removeProperty('animation-delay');
+            logoCircle.style.removeProperty('animation-iteration-count');
+            logoCircle.style.removeProperty('animation-direction');
+            logoCircle.style.removeProperty('animation-fill-mode');
+            void logoCircle.offsetHeight; // Forza reflow
+            
             // Leggi la posizione corrente PRIMA di impostare la transizione
             const currentPos = getCirclePosition();
             const currentTop = currentPos.top;
+            const currentLeft = currentPos.left;
             
-            // Imposta la nuova posizione target
+            // Imposta la nuova posizione target (assicurati che circleRestTop sia stato aggiornato)
+            // Se circleRestTop non è valido, ricalcolalo
+            if (!circleRestTop || circleRestTop <= 0) {
+                updateCircleRestPosition();
+            }
+            
             const targetTop = circleRestTop;
+            const targetLeft = circleRestLeft || window.innerWidth / 2;
             
             // Se la posizione target è diversa dalla corrente, anima
-            if (Math.abs(targetTop - currentTop) > 1) {
-                // Usa una transizione CSS per sincronizzare con l'apertura/chiusura del menu
-                logoCircle.style.transition = 'top 0.2s ease-out';
+            if (Math.abs(targetTop - currentTop) > 1 || Math.abs(targetLeft - currentLeft) > 1) {
+                // Usa una transizione CSS con la stessa velocità del menu (0.2s ease-out)
+                logoCircle.style.transition = 'top 0.2s ease-out, left 0.2s ease-out';
                 
-                // Imposta la nuova posizione (questo triggererà l'animazione)
-                logoCircle.style.top = targetTop + 'px';
-                logoCircle.style.left = circleRestLeft + 'px';
-                logoCircle.style.transform = 'translate(-50%, -50%)';
+                // Imposta direttamente la posizione usando setProperty con !important
+                // IMPORTANTE: imposta top PRIMA di left per evitare conflitti
+                logoCircle.style.setProperty('top', targetTop + 'px', 'important');
+                logoCircle.style.setProperty('left', targetLeft + 'px', 'important');
+                logoCircle.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
+                
+                // Forza un reflow per assicurarsi che le modifiche siano applicate
+                void logoCircle.offsetHeight;
+                
+                // Aggiorna anche circleRestLeft e circleRestTop
+                circleRestLeft = targetLeft;
+                circleRestTop = targetTop;
                 
                 // Rimuovi la transizione dopo l'animazione per permettere il drag
                 setTimeout(() => {
                     if (logoCircle && !isDragging) {
                         logoCircle.style.transition = '';
+                        logoCircle.style.removeProperty('transition');
                     }
                 }, 200);
             }
@@ -933,8 +957,106 @@
         // Determina lo stato corrente del menu basandosi sulla posizione REALE del cerchio
         if (!logoCircle) return;
         
+        // Leggi la posizione corrente reale del cerchio
         const pos = getCirclePosition();
-        toggleMenuFromPosition(pos.top);
+        const currentTop = pos.top;
+        
+        // Determina lo stato corrente del menu basandosi sulla posizione del cerchio
+        const closedRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+        const currentDragUpDistance = closedRestTop - currentTop;
+        
+        // Se il cerchio è sopra la posizione di riposo, il menu è aperto (almeno parzialmente)
+        const isCurrentlyOpen = currentDragUpDistance > MENU_HEIGHT * 0.5;
+        
+        // Inverti lo stato: se è aperto, chiudilo; se è chiuso, aprilo
+        menuOpen = !isCurrentlyOpen;
+        
+        // Aggiorna la posizione di riposo del cerchio quando il menu si apre/chiude
+        updateCircleRestPosition();
+        
+        // Anima il cerchio e il menu in sincronia usando requestAnimationFrame
+        // per assicurarsi che inizino nello stesso frame
+        requestAnimationFrame(() => {
+            // Aggiorna il menu visivamente
+            if (bottomMenu) {
+                // Rimuovi la classe dragging per permettere la transizione
+                bottomMenu.classList.remove('dragging');
+                
+                // Assicurati che la transizione CSS sia attiva
+                bottomMenu.style.transition = 'height 0.2s ease-out';
+                
+                if (menuOpen) {
+                    bottomMenu.classList.add('open');
+                    bottomMenu.style.height = MENU_HEIGHT + 'px';
+                } else {
+                    bottomMenu.classList.remove('open');
+                    bottomMenu.style.height = '0px';
+                }
+            }
+            
+            // Anima il cerchio alla nuova posizione con la stessa velocità del menu
+            if (!isDragging && logoCircle) {
+            // Ferma qualsiasi animazione a molla in corso
+            if (springAnimId) {
+                cancelAnimationFrame(springAnimId);
+                springAnimId = null;
+            }
+            
+            // Rimuovi completamente l'animazione CSS e qualsiasi stile che potrebbe interferire
+            logoCircle.style.animation = 'none';
+            logoCircle.style.removeProperty('animation');
+            logoCircle.style.removeProperty('animation-name');
+            logoCircle.style.removeProperty('animation-duration');
+            logoCircle.style.removeProperty('animation-timing-function');
+            logoCircle.style.removeProperty('animation-delay');
+            logoCircle.style.removeProperty('animation-iteration-count');
+            logoCircle.style.removeProperty('animation-direction');
+            logoCircle.style.removeProperty('animation-fill-mode');
+            void logoCircle.offsetHeight; // Forza reflow
+            
+            // Leggi la posizione corrente PRIMA di impostare la transizione
+            const currentPos = getCirclePosition();
+            const currentCircleTop = currentPos.top;
+            const currentCircleLeft = currentPos.left;
+            
+            // Imposta la nuova posizione target
+            if (!circleRestTop || circleRestTop <= 0) {
+                updateCircleRestPosition();
+            }
+            
+            const targetTop = circleRestTop;
+            const targetLeft = circleRestLeft || window.innerWidth / 2;
+            
+            // Se la posizione target è diversa dalla corrente, anima
+            if (Math.abs(targetTop - currentCircleTop) > 1 || Math.abs(targetLeft - currentCircleLeft) > 1) {
+                // Usa una transizione CSS con la stessa velocità del menu (0.2s ease-out)
+                // Usa requestAnimationFrame per sincronizzare meglio con il menu
+                requestAnimationFrame(() => {
+                    logoCircle.style.transition = 'top 0.2s ease-out, left 0.2s ease-out';
+                    
+                    // Imposta direttamente la posizione usando setProperty con !important
+                    logoCircle.style.setProperty('top', targetTop + 'px', 'important');
+                    logoCircle.style.setProperty('left', targetLeft + 'px', 'important');
+                    logoCircle.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
+                    
+                    // Forza un reflow per assicurarsi che le modifiche siano applicate
+                    void logoCircle.offsetHeight;
+                });
+                
+                // Aggiorna anche circleRestLeft e circleRestTop
+                circleRestLeft = targetLeft;
+                circleRestTop = targetTop;
+                
+                // Rimuovi la transizione dopo l'animazione per permettere il drag
+                setTimeout(() => {
+                    if (logoCircle && !isDragging) {
+                        logoCircle.style.transition = '';
+                        logoCircle.style.removeProperty('transition');
+                    }
+                }, 200);
+            }
+            }
+        });
     }
     
     function updateCircleRestPosition() {
@@ -997,16 +1119,28 @@
     // Imposta posizione cerchio (rimuove animazione CSS e imposta posizione precisa)
     function setCirclePosition(left, top, preserveTransition = false) {
         if (!logoCircle) return;
-        // Rimuovi l'animazione CSS quando iniziamo a controllare con JavaScript
+        // Rimuovi sempre l'animazione CSS quando iniziamo a controllare con JavaScript
+        // (le animazioni CSS interferiscono con il controllo JavaScript)
+        logoCircle.style.animation = 'none';
+        logoCircle.style.removeProperty('animation');
+        logoCircle.style.removeProperty('animation-name');
+        logoCircle.style.removeProperty('animation-duration');
+        logoCircle.style.removeProperty('animation-timing-function');
+        logoCircle.style.removeProperty('animation-delay');
+        logoCircle.style.removeProperty('animation-iteration-count');
+        logoCircle.style.removeProperty('animation-direction');
+        logoCircle.style.removeProperty('animation-fill-mode');
         // Ma preserva la transizione se richiesto
         if (!preserveTransition) {
-            logoCircle.style.animation = 'none';
+            logoCircle.style.transition = '';
+            logoCircle.style.removeProperty('transition');
         }
-        logoCircle.style.left = left + 'px';
-        logoCircle.style.top = top + 'px';
-        logoCircle.style.transform = 'translate(-50%, -50%)';
+        // IMPORTANTE: imposta top e left come stili inline con !important per sovrascrivere qualsiasi CSS
+        logoCircle.style.setProperty('left', left + 'px', 'important');
+        logoCircle.style.setProperty('top', top + 'px', 'important');
+        logoCircle.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
         // Forza il reflow per assicurare che le modifiche siano applicate
-        logoCircle.offsetHeight;
+        void logoCircle.offsetHeight;
     }
 
     // Leggi la posizione reale del cerchio
@@ -1177,9 +1311,8 @@
                     
                     // Se il drag è minore di 8px, considera come click e apri/chiudi menu
                     if (totalDragDistance < 8) {
-                        // Usa la posizione INIZIALE del cerchio (prima del drag) per determinare lo stato
-                        // Questo è importante perché la posizione corrente potrebbe essere cambiata leggermente
-                        toggleMenuFromPosition(dragStartTop);
+                        // Usa toggleMenu() che legge la posizione corrente reale del cerchio
+                        toggleMenu();
                         
                         // Reset immediato per permettere click successivi
                         hasMoved = false;
@@ -1315,8 +1448,8 @@
                     
                     // Se il drag è minore di 8px, considera come click e apri/chiudi menu
                     if (totalTouchDistance < 8) {
-                        // Usa la posizione INIZIALE del cerchio (prima del drag) per determinare lo stato
-                        toggleMenuFromPosition(dragStartTop);
+                        // Usa toggleMenu() che legge la posizione corrente reale del cerchio
+                        toggleMenu();
                         
                         // Reset immediato per permettere click successivi
                         hasMoved = false;
