@@ -730,25 +730,65 @@
         });
     }
     
+    // Funzione per aspettare che finisca il ciclo corrente di rotazione
+    function waitForRotationCycle() {
+        return new Promise((resolve) => {
+            // L'animazione dura 1s, aspetta che finisca il ciclo corrente
+            // Calcola quando finirà il prossimo ciclo completo
+            const animationDuration = 1000; // 1 secondo
+            const now = performance.now();
+            const elapsed = now % animationDuration;
+            const timeUntilNextCycle = animationDuration - elapsed;
+            
+            // Aspetta che finisca il ciclo corrente (fino al 100% dell'animazione)
+            // Aggiungiamo un piccolo buffer per assicurarci che sia completato
+            setTimeout(() => {
+                resolve();
+            }, timeUntilNextCycle + 100);
+        });
+    }
+    
     // Carica tutte le immagini e poi avvia le animazioni
     preloadAllImages().then(() => {
-        // Quando tutte le immagini sono caricate, avvia le animazioni
-        const logoCircle = document.getElementById('logo-circle');
-        const header = document.querySelector('.header');
-        const headerRectangle = document.querySelector('.header-rectangle');
-        
-        if (logoCircle) {
-            logoCircle.classList.add('loaded');
-        }
-        if (header) {
-            header.classList.add('loaded');
-        }
-        if (headerRectangle) {
-            headerRectangle.classList.add('loaded');
-        }
-        
-        // Crea la griglia dopo un breve delay
-        setTimeout(() => createMasonryGrid(), LOGO_ANIMATION_DELAY);
+        // Aspetta che finisca l'ultimo ciclo di rotazione completo (360 gradi)
+        waitForRotationCycle().then(() => {
+            // Quando il ciclo è completato, ferma la rotazione e avvia le animazioni
+            const logoCircle = document.getElementById('logo-circle');
+            const header = document.querySelector('.header');
+            const headerRectangle = document.querySelector('.header-rectangle');
+            
+            if (logoCircle) {
+                // Ferma la rotazione infinita
+                logoCircle.style.animation = 'none';
+                // Leggi la posizione corrente per mantenere la continuità
+                const rect = logoCircle.getBoundingClientRect();
+                const currentTop = rect.top + rect.height / 2;
+                const currentLeft = rect.left + rect.width / 2;
+                
+                // Forza un reflow per assicurarsi che il cambio di animazione sia applicato
+                logoCircle.offsetHeight;
+                
+                // Imposta la posizione iniziale per l'animazione moveToBottomAndRotate
+                logoCircle.style.top = '50%';
+                logoCircle.style.left = '50%';
+                logoCircle.style.transform = 'translate(-50%, -50%)';
+                
+                // Forza un altro reflow
+                logoCircle.offsetHeight;
+                
+                // Ora avvia la nuova animazione
+                logoCircle.classList.add('loaded');
+            }
+            if (header) {
+                header.classList.add('loaded');
+            }
+            if (headerRectangle) {
+                headerRectangle.classList.add('loaded');
+            }
+            
+            // Crea la griglia dopo che le animazioni del cerchio e header sono partite
+            setTimeout(() => createMasonryGrid(), LOGO_ANIMATION_DELAY);
+        });
     });
 
     let resizeTimer;
