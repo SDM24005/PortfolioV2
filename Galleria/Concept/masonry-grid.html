@@ -324,6 +324,20 @@
         .masonry-column {
             gap: 15px;
         }
+        
+        /* Assicura che le animazioni funzionino anche su tablet */
+        .logo-circle {
+            animation: rotateLoading 1s ease-in-out infinite;
+        }
+        .logo-circle.loaded {
+            animation: moveToBottomAndRotate 0.5s ease-in-out 0s forwards !important;
+        }
+        .header.loaded {
+            animation: moveHeaderToTop 0.5s ease-in-out 0s forwards;
+        }
+        .header-rectangle.loaded {
+            animation: fadeInHeaderRectangle 0.5s ease-in-out 0s forwards;
+        }
     }
 
     @media (max-width: 576px) {
@@ -336,6 +350,33 @@
         }
         .masonry-column {
             gap: 10px;
+        }
+        
+        /* Assicura che le animazioni funzionino anche su mobile */
+        .logo-circle {
+            animation: rotateLoading 1s ease-in-out infinite;
+        }
+        .logo-circle.loaded {
+            animation: moveToBottomAndRotate 0.5s ease-in-out 0s forwards !important;
+        }
+        .header {
+            top: calc(50% - 100px);
+        }
+        .header.loaded {
+            animation: moveHeaderToTop 0.5s ease-in-out 0s forwards;
+        }
+        .header-rectangle.loaded {
+            animation: fadeInHeaderRectangle 0.5s ease-in-out 0s forwards;
+        }
+        
+        /* Assicura che l'animazione moveHeaderToTop funzioni su mobile */
+        @keyframes moveHeaderToTop {
+            from {
+                top: calc(50% - 100px);
+            }
+            to {
+                top: 0;
+            }
         }
     }
 </style>
