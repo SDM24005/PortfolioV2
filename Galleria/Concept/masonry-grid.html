@@ -42,6 +42,9 @@
         align-items: center;
         justify-content: center;
         background-color: #000000;
+    }
+
+    .header.loaded {
         animation: moveHeaderToTop 0.5s ease-in-out 0.7s forwards;
     }
 
@@ -53,6 +56,9 @@
         height: 60px;
         background-color: #000000;
         opacity: 0;
+    }
+
+    .header-rectangle.loaded {
         animation: fadeInHeaderRectangle 0.5s ease-in-out 0.7s forwards;
     }
 
@@ -85,6 +91,10 @@
         justify-content: center;
         z-index: 1000;
         cursor: pointer;
+        animation: rotateLoading 1s ease-in-out infinite;
+    }
+
+    .logo-circle.loaded {
         animation: moveToBottomAndRotate 0.5s ease-in-out 0.7s forwards;
     }
 
@@ -268,6 +278,18 @@
         }
     }
 
+
+    @keyframes rotateLoading {
+        0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+        80% {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
 
     @keyframes moveToBottomAndRotate {
         from {
@@ -651,40 +673,83 @@
         }
     }
 
-    // Pre-carica le immagini una ad una in sequenza per ottimizzare il caricamento
-    setTimeout(() => {
-        const images = getAllImages();
-        if (images.length > 0) {
-            // Pre-carica le prime immagini una ad una velocemente
-            const preloadImages = images.slice(0, Math.min(20, images.length));
-            let currentIndex = 0;
-            
-            function preloadNextImage() {
-                if (currentIndex >= preloadImages.length) return;
-                
-                const imageData = preloadImages[currentIndex];
-                const img = new Image();
-                img.onload = () => {
-                    loadedImages.add(imageData.src);
-                    currentIndex++;
-                    // Carica la prossima immagine dopo un breve delay (50ms per velocità)
-                    setTimeout(preloadNextImage, 50);
-                };
-                img.onerror = () => {
-                    // Continua anche se c'è un errore
-                    currentIndex++;
-                    setTimeout(preloadNextImage, 50);
-                };
-                img.src = imageData.src;
+    // Pre-carica tutte le immagini prima di avviare le animazioni
+    function preloadAllImages() {
+        return new Promise((resolve) => {
+            const images = getAllImages();
+            if (images.length === 0) {
+                resolve();
+                return;
             }
             
-            // Inizia il pre-caricamento sequenziale
-            preloadNextImage();
-        }
-    }, IMAGE_PRELOAD_DELAY);
+            let loadedCount = 0;
+            let errorCount = 0;
+            const totalImages = images.length;
+            
+            function checkComplete() {
+                if (loadedCount + errorCount >= totalImages) {
+                    resolve();
+                }
+            }
+            
+            // Carica tutte le immagini in parallelo (ma con un limite per non sovraccaricare)
+            const maxConcurrent = 10;
+            let currentIndex = 0;
+            let activeLoads = 0;
+            
+            function loadNextBatch() {
+                while (activeLoads < maxConcurrent && currentIndex < totalImages) {
+                    const imageData = images[currentIndex];
+                    currentIndex++;
+                    activeLoads++;
+                    
+                    const img = new Image();
+                    img.onload = () => {
+                        loadedImages.add(imageData.src);
+                        loadedCount++;
+                        activeLoads--;
+                        checkComplete();
+                        if (currentIndex < totalImages) {
+                            loadNextBatch();
+                        }
+                    };
+                    img.onerror = () => {
+                        errorCount++;
+                        activeLoads--;
+                        checkComplete();
+                        if (currentIndex < totalImages) {
+                            loadNextBatch();
+                        }
+                    };
+                    img.src = imageData.src;
+                }
+            }
+            
+            // Inizia il caricamento
+            loadNextBatch();
+        });
+    }
     
-    // Crea la griglia dopo il delay dell'animazione del cerchio
-    setTimeout(() => createMasonryGrid(), LOGO_ANIMATION_DELAY);
+    // Carica tutte le immagini e poi avvia le animazioni
+    preloadAllImages().then(() => {
+        // Quando tutte le immagini sono caricate, avvia le animazioni
+        const logoCircle = document.getElementById('logo-circle');
+        const header = document.querySelector('.header');
+        const headerRectangle = document.querySelector('.header-rectangle');
+        
+        if (logoCircle) {
+            logoCircle.classList.add('loaded');
+        }
+        if (header) {
+            header.classList.add('loaded');
+        }
+        if (headerRectangle) {
+            headerRectangle.classList.add('loaded');
+        }
+        
+        // Crea la griglia dopo un breve delay
+        setTimeout(() => createMasonryGrid(), LOGO_ANIMATION_DELAY);
+    });
 
     let resizeTimer;
     window.addEventListener('resize', () => {
