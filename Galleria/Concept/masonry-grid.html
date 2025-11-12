@@ -59,7 +59,7 @@
         color: white;
         font-size: 48px;
         font-family: 'PPKyoto', sans-serif;
-        font-style: normal;
+        font-style: italic;
         opacity: 0;
         transform: translateY(-20px);
         animation: fadeInFromTop 0.6s ease-out 0.3s forwards;
@@ -120,6 +120,18 @@
         width: 100%;
         height: auto;
         display: block;
+    }
+
+    .masonry-item a {
+        display: block;
+        width: 100%;
+        text-decoration: none;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+    }
+
+    .masonry-item a:hover {
+        opacity: 0.8;
     }
 
     .gallery-footer {
@@ -294,34 +306,65 @@
     <a href="#" class="back-to-top">back to the top</a>
 </footer>
 
+<script src="../../scripts/projects.js"></script>
 <script>
 (function() {
     const container = document.querySelector('.masonry-container');
-    const FOTO_TEST_IMAGES = [
-        '../../FotoTest/DSC04670.jpg',
-        '../../FotoTest/DSC04690.jpg',
-        '../../FotoTest/DSC04759.jpg',
-        '../../FotoTest/DSC04795.jpg',
-        '../../FotoTest/DSC04814.jpg',
-        '../../FotoTest/DSC04826.jpg',
-        '../../FotoTest/DSC04842.jpg',
-        '../../FotoTest/DSC04857.jpg',
-        '../../FotoTest/DSC04859.jpg',
-        '../../FotoTest/DSC04860.jpg',
-        '../../FotoTest/DSC04861.jpg'
-    ];
     const NUM_COPIES = 5;
     const ANIMATION_BASE_DELAY = 0.5;
     const COLUMN_DELAY = 0.1;
     const ITEM_DELAY = 0.05;
     const LOGO_ANIMATION_DELAY = 1200;
 
-    function getAllImages() {
-        const allImages = [];
-        for (let i = 0; i < NUM_COPIES; i++) {
-            allImages.push(...FOTO_TEST_IMAGES);
+    // Funzione per aggiustare i percorsi relativi (da Galleria/Concept/ serve un ../ in più)
+    function adjustPath(path) {
+        if (!path) return path;
+        // Se il percorso inizia con ../, aggiungi un altro ../
+        if (path.startsWith('../')) {
+            return '../' + path;
         }
-        return allImages;
+        return path;
+    }
+
+    function getAllImages() {
+        // Combina tutti i progetti (normali e open)
+        const allProjects = [...(projects || []), ...(openProjects || [])];
+        
+        // Raccogli tutte le immagini: preview + immagini dei progetti
+        // Ogni elemento contiene src e page del progetto
+        const allImages = [];
+        allProjects.forEach(project => {
+            // Aggiungi la preview se esiste (aggiustando il percorso)
+            if (project.preview) {
+                allImages.push({
+                    src: adjustPath(project.preview),
+                    page: adjustPath(project.page || '')
+                });
+            }
+            // Aggiungi tutte le immagini del progetto se esistono (aggiustando i percorsi)
+            if (Array.isArray(project.images) && project.images.length > 0) {
+                project.images.forEach(img => {
+                    allImages.push({
+                        src: adjustPath(img),
+                        page: adjustPath(project.page || '')
+                    });
+                });
+            }
+        });
+        
+        // Se non ci sono immagini, usa un array vuoto
+        if (allImages.length === 0) {
+            console.warn('Nessuna immagine trovata nei progetti');
+            return [];
+        }
+        
+        // Duplica le immagini per avere più contenuto (come prima con NUM_COPIES)
+        const duplicatedImages = [];
+        for (let i = 0; i < NUM_COPIES; i++) {
+            duplicatedImages.push(...allImages);
+        }
+        
+        return duplicatedImages;
     }
 
     function getResponsiveSettings() {
@@ -349,20 +392,21 @@
         }
     }
 
-    function loadImage(src, columnWidth) {
+    function loadImage(imageData, columnWidth) {
         return new Promise((resolve, reject) => {
             const img = new Image();
             img.onload = () => {
                 const aspectRatio = img.naturalHeight / img.naturalWidth;
                 resolve({
-                    src,
+                    src: imageData.src,
+                    page: imageData.page,
                     width: columnWidth,
                     height: columnWidth * aspectRatio,
                     aspectRatio
                 });
             };
             img.onerror = reject;
-            img.src = src;
+            img.src = imageData.src;
         });
     }
 
@@ -400,15 +444,37 @@
                 item.dataset.columnIndex = colIndex;
                 item.dataset.itemIndex = itemIndex;
 
-                const img = document.createElement('img');
-                img.src = imgData.src;
-                img.alt = '';
-                img.style.width = '100%';
-                img.style.height = 'auto';
-                img.style.display = 'block';
+                // Crea il link se c'è una pagina del progetto
+                if (imgData.page) {
+                    const link = document.createElement('a');
+                    link.href = imgData.page;
+                    link.style.display = 'block';
+                    link.style.textDecoration = 'none';
+                    link.style.width = '100%';
 
-                allImages.push(img);
-                item.appendChild(img);
+                    const img = document.createElement('img');
+                    img.src = imgData.src;
+                    img.alt = '';
+                    img.style.width = '100%';
+                    img.style.height = 'auto';
+                    img.style.display = 'block';
+
+                    link.appendChild(img);
+                    item.appendChild(link);
+                    allImages.push(img);
+                } else {
+                    // Se non c'è una pagina, crea solo l'immagine
+                    const img = document.createElement('img');
+                    img.src = imgData.src;
+                    img.alt = '';
+                    img.style.width = '100%';
+                    img.style.height = 'auto';
+                    img.style.display = 'block';
+
+                    item.appendChild(img);
+                    allImages.push(img);
+                }
+
                 colDiv.appendChild(item);
             });
 
@@ -479,7 +545,7 @@
         const columnHeights = Array(numColumns).fill(0);
 
         try {
-            const imagePromises = images.map(src => loadImage(src, columnWidth));
+            const imagePromises = images.map(imageData => loadImage(imageData, columnWidth));
             const results = await Promise.allSettled(imagePromises);
             const imageData = results
                 .filter(result => result.status === 'fulfilled')
