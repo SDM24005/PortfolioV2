@@ -199,15 +199,21 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: #000000;
+        background-color: rgba(0, 0, 0, 0.8);
         height: 0;
         z-index: 998;
         overflow: hidden;
-        transition: height 0.2s ease-out;
+        transition: height 0.2s ease-out, opacity 0.5s ease-out;
+        opacity: 1;
+    }
+
+    .bottom-menu.fade-out {
+        opacity: 0;
+        pointer-events: none;
     }
 
     .bottom-menu.open {
-        height: 300px;
+        height: 400px;
     }
     
     .bottom-menu.dragging {
@@ -215,12 +221,12 @@
     }
 
     .menu-content {
-        padding: 40px 20px 60px 20px;
+        padding: 30px 20px 40px 20px;
         display: flex;
         flex-direction: column;
         gap: 10px;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         max-width: 1200px;
         margin: 0 auto;
         height: 100%;
@@ -238,6 +244,11 @@
     }
 
     .menu-item:hover {
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    .menu-item.active {
         text-decoration: underline;
         text-underline-offset: 2px;
     }
@@ -299,8 +310,8 @@
             transform: translate(-50%, -50%) ;
         }
         to {
-            top: calc(100vh - 90px);
-            transform: translateX(-50%);
+            top: calc(100vh - 130px);
+            transform: translate(-50%, -50%);
         }
     }
 
@@ -816,14 +827,36 @@
                 // Aggiungi la classe loaded che avvierà la nuova animazione
                 logoCircle.classList.add('loaded');
                 
-                // Aspetta che l'animazione moveToBottomAndRotate finisca prima di inizializzare la fisica
-                // L'animazione dura 0.5s, quindi aspetta 0.6s per sicurezza
-                setTimeout(() => {
-                    // Ora inizializza la fisica del cerchio dopo che l'animazione è completata
-                    if (logoCircle && typeof initializeCirclePhysics === 'function') {
-                        initializeCirclePhysics();
+                // Usa animationend event per essere sicuri che l'animazione sia completata
+                const handleAnimationEnd = (e) => {
+                    if (e.animationName === 'moveToBottomAndRotate' || logoCircle.classList.contains('loaded')) {
+                        // Rimuovi l'event listener dopo l'uso
+                        logoCircle.removeEventListener('animationend', handleAnimationEnd);
+                        // Inizializza la fisica del cerchio dopo che l'animazione è completata
+                        setTimeout(() => {
+                            if (logoCircle && typeof initializeCirclePhysics === 'function') {
+                                initializeCirclePhysics();
+                            }
+                        }, 50); // Piccolo delay per assicurarsi che l'animazione sia completamente finita
                     }
-                }, 600);
+                };
+                
+                logoCircle.addEventListener('animationend', handleAnimationEnd);
+                
+                // Fallback con timeout nel caso animationend non funzioni
+                setTimeout(() => {
+                    if (logoCircle && typeof initializeCirclePhysics === 'function') {
+                        // Verifica se l'animazione è completata controllando la posizione
+                        const pos = getCirclePosition();
+                        const expectedBottom = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+                        const isAtBottom = Math.abs(pos.top - expectedBottom) < 100; // Tolleranza di 100px
+                        
+                        if (!isAtBottom && logoCircle.classList.contains('loaded')) {
+                            // Se non è nella posizione corretta ma l'animazione dovrebbe essere finita, forza il posizionamento
+                            initializeCirclePhysics();
+                        }
+                    }
+                }, 700); // Timeout più lungo per sicurezza
             }
             if (header) {
                 header.classList.add('loaded');
@@ -855,7 +888,7 @@
     // Menu functionality
     const logoCircle = document.getElementById('logo-circle');
     const bottomMenu = document.getElementById('bottom-menu');
-    const MENU_HEIGHT = 300;
+    const MENU_HEIGHT = 400;
     let menuOpen = false;
     
     function toggleMenuFromPosition(circleTop) {
@@ -1064,8 +1097,8 @@
     function updateCircleRestPosition() {
         // Calcola la nuova posizione di riposo basata sullo stato del menu
         if (menuOpen) {
-            // Quando il menu è aperto, il cerchio si alza della stessa altezza del menu
-            circleRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2 - MENU_HEIGHT;
+            // Quando il menu è aperto, il cerchio è al centro (come nella home)
+            circleRestTop = window.innerHeight / 2;
         } else {
             // Quando il menu è chiuso, posizione normale
             circleRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
@@ -1104,7 +1137,7 @@
     
 
     // Spring physics per il cerchio
-    const CIRCLE_REST_BOTTOM = 30;
+    const CIRCLE_REST_BOTTOM = 100;
     const CIRCLE_SIZE = 60;
     let circleRestTop = 0;
     let circleRestLeft = 0;
@@ -1211,21 +1244,38 @@
     function initializeCirclePhysics() {
         if (!logoCircle) return;
         
-        // Leggi la posizione REALE dopo l'animazione CSS e salvala
-        const pos = getCirclePosition();
-        circleRestLeft = pos.left;
-        circleRestTop = pos.top;
+        // Calcola sempre la posizione corretta basandosi sullo stato del menu
+        updateCircleRestPosition();
+        circleRestLeft = window.innerWidth / 2;
         
-        // Se per qualche motivo è 0, calcola dalla viewport
-        if (circleRestTop <= 0) {
-            updateCircleRestPosition(); // Calcola basandosi sullo stato del menu
+        // Se circleRestTop non è valido, calcolalo di nuovo
+        if (!circleRestTop || circleRestTop <= 0) {
+            // Menu è chiuso di default all'inizio
+            circleRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
         }
-        if (circleRestLeft <= 0) {
+        
+        // Leggi la posizione REALE corrente del cerchio
+        const currentPos = getCirclePosition();
+        const currentTop = currentPos.top;
+        const currentLeft = currentPos.left;
+        
+        // Se il cerchio è ancora al centro (circa window.innerHeight / 2), forza il posizionamento
+        const centerThreshold = window.innerHeight / 2;
+        const isAtCenter = Math.abs(currentTop - centerThreshold) < 50; // Tolleranza di 50px
+        
+        if (isAtCenter || currentTop <= 0 || currentTop === centerThreshold) {
+            // Il cerchio è ancora al centro o in posizione errata, forza il posizionamento corretto
+            circleRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
             circleRestLeft = window.innerWidth / 2;
+            
+            // Imposta direttamente la posizione corretta
+            setCirclePosition(circleRestLeft, circleRestTop);
+        } else {
+            // Il cerchio è in una posizione valida, usa quella
+            circleRestTop = currentTop;
+            circleRestLeft = currentLeft;
+            setCirclePosition(circleRestLeft, circleRestTop);
         }
-        
-        // Imposta la posizione in pixel per rimuovere qualsiasi calc() o percentuale
-        setCirclePosition(circleRestLeft, circleRestTop);
 
         if (bottomMenu) {
 
@@ -1525,15 +1575,47 @@
         }
     }
     
+    // Verifica periodica della posizione del cerchio per correggere eventuali problemi
+    function verifyCirclePosition() {
+        if (!logoCircle || isDragging || springAnimId) return;
+        
+        const pos = getCirclePosition();
+        const expectedBottom = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+        const centerThreshold = window.innerHeight / 2;
+        const isAtCenter = Math.abs(pos.top - centerThreshold) < 50;
+        const isAtExpectedBottom = Math.abs(pos.top - expectedBottom) < 50;
+        
+        // Se il menu è chiuso e il cerchio non è nella posizione corretta, correggilo
+        if (!menuOpen && !isAtExpectedBottom && !isAtCenter) {
+            // Il cerchio potrebbe essere in una posizione intermedia, forzalo nella posizione corretta
+            updateCircleRestPosition();
+            circleRestLeft = window.innerWidth / 2;
+            setCirclePosition(circleRestLeft, circleRestTop);
+        } else if (!menuOpen && isAtCenter) {
+            // Il cerchio è ancora al centro quando dovrebbe essere in basso, correggilo
+            circleRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+            circleRestLeft = window.innerWidth / 2;
+            setCirclePosition(circleRestLeft, circleRestTop);
+        }
+    }
+    
+    // Verifica la posizione periodicamente (ogni secondo) dopo che la pagina è caricata
+    setTimeout(() => {
+        setInterval(verifyCirclePosition, 1000);
+    }, 2000); // Aspetta 2 secondi dopo il caricamento per permettere alle animazioni di completarsi
+    
     // Inizializza quando l'animazione CSS è completata
     // NOTA: initializeCirclePhysics viene chiamata dopo che l'animazione moveToBottomAndRotate è completata
     // nel codice sopra, quindi non serve chiamarla qui se il cerchio ha la classe loaded
     if (logoCircle) {
-        // Usa animationend event se disponibile
+        // Usa animationend event se disponibile come fallback aggiuntivo
         logoCircle.addEventListener('animationend', (e) => {
             // Solo se l'animazione completata è moveToBottomAndRotate e non rotateLoading
             if (e.animationName === 'moveToBottomAndRotate' || logoCircle.classList.contains('loaded')) {
-                // La fisica viene già inizializzata nel codice sopra dopo il delay
+                // Verifica la posizione dopo l'animazione
+                setTimeout(() => {
+                    verifyCirclePosition();
+                }, 100);
                 return;
             }
             // Altrimenti inizializza normalmente (per l'animazione iniziale)
@@ -1547,8 +1629,11 @@
         setTimeout(() => {
             if (!logoCircle.classList.contains('loaded')) {
                 initializeCirclePhysics();
+            } else {
+                // Se è già loaded, verifica comunque la posizione
+                verifyCirclePosition();
             }
-        }, 1200);
+        }, 1500);
     }
 })();
 </script>
