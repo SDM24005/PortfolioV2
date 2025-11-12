@@ -6,414 +6,744 @@
 <title>Samueledemarch.com</title>
 <style>
 @font-face {
-font-family: 'FormaDJRDisplay';
-src: url('/Fonts/FormaDJRDisplay-Regular-Testing.otf') format('opentype');
+        font-family: 'PPKyoto';
+        src: url('Fonts/PPKyoto-MediumItalic.otf') format('opentype');
+        font-weight: normal;
+        font-style: italic;
+    }
+
+    @font-face {
+        font-family: 'PPKyoto';
+        src: url('Fonts/PPKyoto-Medium.otf') format('opentype');
 font-weight: normal;
 font-style: normal;
 }
 
-    body {
+    * {
         margin: 0;
-        font-family: sans-serif;
-        background-color: #000000;
-        cursor: none !important; /* Hide system cursor for the body */
-    }
-
-    /* Force regular weight across common elements */
-    b, strong, h1, h2, h3, h4, h5, h6 { font-weight: normal; }
-    /* Blur-up + fade-in for home background */
-    #fullscreen-bg.blur-up { filter: blur(20px); transform: scale(1.02); opacity: 0; }
-    #fullscreen-bg.loaded { filter: blur(0); transform: scale(1); opacity: 1; transition: filter 0.5s ease, transform 0.5s ease, opacity 0.6s ease; }
-
-    /* Underline effect for clickable text when hovered (toggled via JS) */
-    .hover-underline { text-decoration: underline !important; text-underline-offset: 2px; }
-
-    /* Ensure common interactive elements also hide their default cursors */
-    a, button, input[type="button"], input[type="submit"], select, textarea, label[for], #menu-trigger,
-    .title-gallery {
-        cursor: none !important;
-    }
-
-    #custom-cursor {
-        position: fixed;
-        width: 12px;
-        height: 12px;
-        background-color: grey;
-        border-radius: 50%;
-        pointer-events: none; /* Cursor div does not intercept mouse events */
-        transform: translate(-50%, -50%);
-        transition: width 0.15s ease-out, height 0.15s ease-out, background-color 0.15s ease-out;
-        z-index: 99999; /* Very high z-index */
-        display: none; /* Initially hidden, shown on first mousemove */
-    }
-
-    #custom-cursor.hover {
-        width: 24px;
-        height: 24px;
-        background-color: white;
-    }
-
-
-    .header-text {
-        font-family: 'FormaDJRDisplay', sans-serif;
-        font-size: 20px;
-        font-weight: normal;
-        color: white;
-        line-height: 1.2; /* Altezza riga effettiva ~24px */
-        margin: 0;
-        text-decoration: none;
-        display: block;
-    }
-
-    .main-title-name {
-        position: fixed;
-        top: 15px;
-        z-index: 1001;
-        cursor: default;
-        mix-blend-mode: difference; /* Negative style over images */
-    }
-
-    .header-line {
-        position: fixed;
-        background-color: white;
-        height: 1px;
-        z-index: 1000;
-    }
-
-    #line-1 {
-        top: calc(15px + (20px * 1.2) + 10px); /* 15px (margin) + 24px (text) + 10px (gap) = 49px */
-    }
-
-    .sub-links-block {
-        position: fixed;
-        top: calc( (15px + (20px * 1.2) + 10px) + 1px + 10px ); /* Sotto line-1: 49px + 1px + 10px = 60px */
-        z-index: 1001;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-        display: none;
-    }
-
-    #line-2 {
-        top: calc(
-            ( (15px + (20px * 1.2) + 10px) + 1px + 10px ) /* Fino a .sub-links-block top = 60px */
-            + (20px * 1.2)  /* Altezza "Home" = 24px */
-            + 8px           /* Gap */
-            + (20px * 1.2)  /* Altezza "Bio" = 24px */
-            + 10px          /* Padding sotto i link prima della linea 2 */
-        ); /* 60 + 24 + 8 + 24 + 10 = 126px */
-        display: none;
-    }
-
-    .title-gallery {
-        position: fixed;
-        top: 15px; /* Posizione default per schermi larghi */
-        z-index: 1001;
-        display: block;
-        cursor: default;
-        /* La transizione per 'top' verrà definita specificamente per max-width: 576px */
-    }
-
-    /* --- Stili Masonry e Allineamenti Orizzontali di Default (3 Colonne) --- */
-    .main-title-name,
-    .sub-links-block {
-        left: calc(8px + (100vw - 32px) / 3 + 8px);
-    }
-    .title-gallery {
-        left: calc(8px + 2 * ((100vw - 32px) / 3) + 2 * 8px);
-    }
-    .header-line {
-        left: 8px;
-        right: 8px;
-    }
-
-    .masonry-container {
-        column-count: 3;
-        column-gap: 8px;
-        padding: 8px;
-        width: 100%;
+        padding: 0;
         box-sizing: border-box;
-        padding-top: 150px; /* Spazio per l'header fisso (valore di base per 3 e 2 colonne) */
-        /* La transizione per 'padding-top' verrà definita specificamente per max-width: 576px */
-    }
-    .masonry-item { display: inline-block; width: 100%; margin-bottom: 4px; overflow: hidden; break-inside: avoid; -webkit-column-break-inside: avoid; page-break-inside: avoid; position: relative; }
-    .masonry-item a { display: block; text-decoration: none; }
-    .masonry-item img { width: 100%; height: auto; display: block; transition: transform 0.3s ease, filter 0.3s ease; }
-    .masonry-item:hover img { transform: scale(1.05); filter: brightness(115%); }
-    .image-hover-text { position: absolute; bottom: 8px; left: 8px; font-family: 'FormaDJRDisplay', sans-serif; font-size: 20px; color: white; line-height: 1.2; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; pointer-events: none; z-index: 2; }
-    .masonry-item:hover .image-hover-text { opacity: 1; visibility: visible; }
-
-    /* --- Media Query per schermi più stretti --- */
-
-    /* Max-width: 992px (Layout a 2 Colonne) - RIPRISTINATO COME DA ORIGINALE */
-    @media (max-width: 992px) {
-        /* Padding pagina: 10px, Gap colonne: 8px */
-        /* Larghezza colonna: (100vw - 2*10px - 8px) / 2 = (100vw - 28px) / 2 */
-
-        .main-title-name,
-        .sub-links-block {
-            /* Allineati alla prima colonna (di 2) */
-            left: 10px;
-        }
-        .title-gallery {
-            /* Allineati alla seconda colonna (di 2) - COME IN ORIGINE */
-            left: calc(10px + (100vw - 28px) / 2 + 8px);
-            display: block; /* Assicura che sia visibile per il riposizionamento */
-            /* top: 15px; implicito, non modificato rispetto al default e non dinamico qui */
-        }
-        .header-line {
-            left: 10px;
-            right: 10px;
-        }
-        .masonry-container {
-            column-count: 2; /* Layout a 2 colonne */
-            padding: 10px; /* Padding pagina aggiornato */
-            padding-top: 150px; /* COME IN ORIGINE, non dinamico qui */
-        }
     }
 
-    /* Max-width: 576px (Layout a 1 Colonna) - MANTIENE LE MODIFICHE PER IL COMPORTAMENTO DINAMICO */
-    @media (max-width: 576px) {
-        .main-title-name,
-        .sub-links-block {
-            left: 10px;
-        }
-        .title-gallery {
-            top: 15px;
-            left: auto;
-            right: 10px;
-            display: block;
-            transition: none;
-        }
+    body {
+        background-color: #000000;
+        overflow: hidden;
+        position: relative;
     }
 
-    /* Animazioni (invariate) */
-    @keyframes fadeInFromTop { from { opacity: 0; transform: translateY(-25px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-on-load { opacity: 0; animation: fadeInFromTop 0.8s ease-out forwards; }
-    .animate-delay-1 { animation-delay: 0.1s; }
-    .animate-delay-2 { animation-delay: 0.2s; }
-    .animate-delay-3 { animation-delay: 0.3s; }
-    .animate-delay-4 { animation-delay: 0.4s; }
-    .animate-delay-5 { animation-delay: 0.5s; }
-    @keyframes fadeInFromTopMenu { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeOutToTopMenu { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
-    .sub-links-block.animate-menu-open,
-    #line-2.animate-menu-open { opacity: 0; animation: fadeInFromTopMenu 0.6s ease-out forwards; pointer-events: auto; }
-    .sub-links-block.animate-menu-close,
-    #line-2.animate-menu-close { opacity: 1; animation: fadeOutToTopMenu 0.6s ease-out forwards; pointer-events: none; }
-
-    #fullscreen-bg {
+    .background-video {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100vw;
-        height: 100vh;
-        object-fit: cover; /* This will cover the entire area, cropping if necessary */
-        z-index: -1; /* Place it behind other content */
-    }
-    
-    /* Ensure video background covers fullscreen */
-    #fullscreen-bg video,
-    #fullscreen-bg {
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
         object-fit: cover;
+        z-index: 0;
+        opacity: 1;
+        transition: opacity 0.5s ease-out;
     }
 
-    /* Open gallery button */
-    .open-gallery-btn {
-        position: fixed;
-        bottom: 8px;
-        left: 8px;
-        font-family: 'FormaDJRDisplay', sans-serif;
-        font-size: 20px;
-        font-weight: normal;
-        color: white;
-        background: transparent;
-        border: none;
-        cursor: none !important;
-        z-index: 99998;
-        padding: 0;
-        text-decoration: none;
-        opacity: 0; /* Invisible but still clickable */
-        pointer-events: auto; /* Ensure it's clickable */
-        mix-blend-mode: difference;
+    .background-video.fade-out {
+        opacity: 0;
     }
-    .open-gallery-btn:hover {
+
+    .logo-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pulse-ring {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        border: 2px solid #333333;
+        border-radius: 50%;
+        background: transparent;
+        animation: shrinkPulse 2s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    .pulse-ring.hidden {
+        display: none;
+    }
+
+    .logo-circle {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        background-color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 1001;
+    }
+
+    .logo-circle.dragging {
+        transition: none;
+    }
+
+    .logo-circle img {
+        width: 95%;
+        height: 95%;
+        object-fit: contain;
+        display: block;
+    }
+
+    @keyframes shrinkPulse {
+        0% {
+            transform: scale(2);
+            opacity: 0.8;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 0;
+        }
+    }
+
+    .bottom-menu {
+        position: fixed;
+        bottom: 100px;
+        left: 0;
+        right: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        height: 0;
+        z-index: 998;
+        overflow: hidden;
+        transition: height 0.2s ease-out, opacity 0.5s ease-out;
+        opacity: 1;
+    }
+
+    .bottom-menu.fade-out {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .bottom-menu.open {
+        height: 300px;
+    }
+    
+    .bottom-menu.dragging {
+        transition: none;
+    }
+
+    .menu-content {
+        padding: 40px 20px 60px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+        justify-content: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 100%;
+    }
+
+    .menu-item {
+        color: white;
+        font-family: 'PPKyoto', sans-serif;
+        font-size: 48px;
+        font-style: italic;
+        text-decoration: none;
+        cursor: pointer;
+        transition: text-decoration 0.3s ease;
+        text-align: center;
+    }
+
+    .menu-item:hover {
         text-decoration: underline;
         text-underline-offset: 2px;
     }
 
-    @media (pointer: coarse) {
-        #custom-cursor {
-            display: none !important;
-        }
+    .menu-item.active {
+        text-decoration: underline;
+        text-underline-offset: 2px;
     }
-</style>
 
+    .header-text {
+        position: fixed;
+        z-index: 999;
+        pointer-events: none;
+        opacity: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .header-text.visible {
+        opacity: 1;
+    }
+
+    .header-text span {
+        color: white;
+        font-family: 'PPKyoto', sans-serif;
+        font-size: 48px;
+        font-style: italic;
+        text-align: center;
+        white-space: nowrap;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+
+    .menu-item.animating {
+        pointer-events: none;
+    }
+
+</style>
 </head>
 <body>
-<div id="custom-cursor"></div>
-<video id="fullscreen-bg" autoplay loop muted playsinline>
-    <source src="Galleria\galss-loop.mp4" type="video/mp4">
+<video class="background-video" autoplay muted loop playsinline>
+    <source src="Galleria/galss-loop.mp4" type="video/mp4">
 </video>
-
-<header class="fixed-header">
-    <h1 class="header-text main-title-name animate-on-load" id="menu-trigger">Samuele De March</h1>
-    <div class="header-line animate-on-load" id="line-1"></div>
-
-    <div class="sub-links-block" id="dropdown-links">
-    <a href="Galleria/index.html" class="header-text sub-title-link">Galleria</a>
-    <a href="Bio/index.html" class="header-text sub-title-link">Bio</a>
+<div class="logo-container" id="logo-container">
+    <div class="pulse-ring" id="pulse-ring"></div>
+    <div class="logo-circle" id="logo-circle">
+        <img src="Logo/logo-light.png" alt="Logo">
     </div>
-    <div class="header-line" id="line-2"></div>
-    <span class="header-text title-gallery animate-on-load">Home</span>
-</header>
+</div>
 
-<a href="Galleria\Concept\masonry-grid.html" class="header-text open-gallery-btn" id="open-gallery-btn">Open</a>
+<div class="bottom-menu" id="bottom-menu">
+    <div class="menu-content">
+        <a href="Galleria/Concept/masonry-grid.html" class="menu-item" data-text="Works">Works</a>
+        <a href="Bio/index.html" class="menu-item" data-text="Bio">Bio</a>
+        <a href="#" class="menu-item" data-text="Contatti">Contatti</a>
+    </div>
+</div>
+
+<div class="header-text" id="header-text">
+    <span id="header-text-content"></span>
+</div>
 
 <script>
-// Lo script JS rimane invariato rispetto alla versione precedente,
-// poiché la sua logica per le classi .menu-closed è già condizionata
-// dalla larghezza della finestra (<= 576px).
-document.addEventListener('DOMContentLoaded', function() {
-    const menuTrigger = document.getElementById('menu-trigger');
-    const dropdownLinks = document.getElementById('dropdown-links');
-    const line2 = document.getElementById('line-2');
-    const titleGallery = document.querySelector('.title-gallery');
-    let menuAnimating = false;
+(function() {
+    const logoContainer = document.getElementById('logo-container');
+    const logoCircle = document.getElementById('logo-circle');
+    const pulseRing = document.getElementById('pulse-ring');
+    const bottomMenu = document.getElementById('bottom-menu');
+    const CIRCLE_SIZE = 60;
+    const MENU_HEIGHT = 300;
+    let circleRestLeft = 0;
+    let circleRestTop = 0;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let dragStartLeft = 0;
+    let dragStartTop = 0;
+    let currentCircleLeft = 0;
+    let currentCircleTop = 0;
+    let springAnimId = null;
+    let menuOpen = false;
+    let hasClicked = false;
 
-    function applyOpenStyles(element, displayType) {
-        if (!element) return;
-        element.style.display = displayType;
-        element.classList.remove('animate-menu-close');
-        element.classList.add('animate-menu-open');
-        element.classList.add('is-open');
-        element.style.pointerEvents = 'auto';
-        menuAnimating = true;
+    // Inizializza la posizione al centro
+    function initializeCircle() {
+        circleRestLeft = window.innerWidth / 2;
+        circleRestTop = window.innerHeight / 2;
+        setCirclePosition(circleRestLeft, circleRestTop);
     }
 
-    function onOpenAnimationEnd(event) {
-        if ((event.target === dropdownLinks || event.target === line2) && event.animationName === 'fadeInFromTopMenu') {
-            event.target.classList.remove('animate-menu-open');
-            if (dropdownLinks && line2 && !dropdownLinks.classList.contains('animate-menu-open') && !line2.classList.contains('animate-menu-open')) {
-                menuAnimating = false;
+    // Imposta posizione cerchio
+    function setCirclePosition(left, top, preserveTransition = false) {
+        if (!logoContainer) return;
+        if (!preserveTransition) {
+            logoContainer.style.transition = '';
+            logoContainer.style.removeProperty('transition');
+        }
+        logoContainer.style.setProperty('left', left + 'px', 'important');
+        logoContainer.style.setProperty('top', top + 'px', 'important');
+        logoContainer.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
+        void logoContainer.offsetHeight;
+    }
+
+    // Leggi la posizione reale del cerchio
+    function getCirclePosition() {
+        if (!logoContainer) return { left: 0, top: 0 };
+        const rect = logoContainer.getBoundingClientRect();
+        return {
+            left: rect.left + rect.width / 2,
+            top: rect.top + rect.height / 2
+        };
+    }
+
+    // Aggiorna la posizione di riposo del cerchio - sempre al centro
+    function updateCircleRestPosition() {
+        // Il cerchio rimane sempre al centro
+        circleRestTop = window.innerHeight / 2;
+        circleRestLeft = window.innerWidth / 2;
+    }
+
+    // Animazione a molla
+    function animateSpring(targetLeft, targetTop, startLeft, startTop, velocityX = 0, velocityY = 0) {
+        if (springAnimId) {
+            cancelAnimationFrame(springAnimId);
+        }
+
+        const SPRING = 0.35;
+        const DAMPING = 0.75;
+        let posX = startLeft;
+        let posY = startTop;
+        let velX = velocityX;
+        let velY = velocityY;
+
+        function step() {
+            const distX = targetLeft - posX;
+            const distY = targetTop - posY;
+            
+            const forceX = distX * SPRING;
+            const forceY = distY * SPRING;
+            const dampingX = velX * DAMPING;
+            const dampingY = velY * DAMPING;
+            
+            const accelX = forceX - dampingX;
+            const accelY = forceY - dampingY;
+
+            velX += accelX;
+            velY += accelY;
+            posX += velX;
+            posY += velY;
+
+            setCirclePosition(posX, posY);
+
+            // Condizioni di stop
+            if (Math.abs(distX) < 0.3 && Math.abs(distY) < 0.3 && 
+                Math.abs(velX) < 0.15 && Math.abs(velY) < 0.15) {
+                setCirclePosition(targetLeft, targetTop);
+                circleRestLeft = targetLeft;
+                circleRestTop = targetTop;
+                springAnimId = null;
+                return;
+            }
+
+            springAnimId = requestAnimationFrame(step);
+        }
+
+        step();
+    }
+
+    // Apri menu (solo apertura, senza chiusura)
+    function openMenu(animated = true) {
+        // Se il menu è già aperto, non fare nulla
+        if (menuOpen) return;
+        
+        menuOpen = true;
+        
+        // Salva nello stato che il menu è stato aperto
+        localStorage.setItem('menuOpened', 'true');
+        
+        // Aggiorna il menu
+        if (bottomMenu) {
+            bottomMenu.classList.remove('dragging');
+            if (animated) {
+                bottomMenu.style.transition = 'height 0.2s ease-out';
+            } else {
+                bottomMenu.style.transition = 'none';
+            }
+            bottomMenu.classList.add('open');
+            bottomMenu.style.height = MENU_HEIGHT + 'px';
+            
+            // Se non è animato, rimuovi subito la transizione
+            if (!animated) {
+                setTimeout(() => {
+                    bottomMenu.style.transition = 'height 0.2s ease-out';
+                }, 0);
             }
         }
+        
+        // Nascondi l'animazione di pulsazione se non è già stata nascosta
+        if (!hasClicked) {
+            hidePulseAnimation();
+        }
+        
+        // Il cerchio rimane sempre al centro, non si muove
+    }
+
+    // Animazione del testo del menu verso l'alto
+    function animateMenuTextToTop(menuItem) {
+        const headerText = document.getElementById('header-text');
+        const headerTextContent = document.getElementById('header-text-content');
+        const backgroundVideo = document.querySelector('.background-video');
+        const text = menuItem.getAttribute('data-text') || menuItem.textContent;
+        
+        if (!headerText || !headerTextContent) return;
+        
+        // Ottieni la posizione Y del menu item (senza scroll, la pagina è fixed)
+        const menuItemRect = menuItem.getBoundingClientRect();
+        const menuItemTop = menuItemRect.top; // Solo top relativo al viewport, senza scrollY
+        
+        // Posizione target - stessa posizione di Works in masonry-grid.html
+        // In masonry-grid.html, l'header è a calc(50% - 100px) con altezza 70px
+        // Il centro verticale del testo (centrato nell'header) è a calc(50% - 100px + 35px) = calc(50% - 65px)
+        const targetTop = window.innerHeight / 2 - 65;
+        const targetLeft = window.innerWidth / 2;
+        
+        // Salva quale voce è stata cliccata
+        const href = menuItem.getAttribute('href');
+        if (href) {
+            sessionStorage.setItem('activeMenuLink', href);
+        }
+        
+        // Rimuovi active da tutte le voci
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Aggiungi active alla voce cliccata
+        menuItem.classList.add('active');
+        
+        // Nascondi il menu item originale
+        menuItem.classList.add('animating');
+        menuItem.style.opacity = '0';
+        menuItem.style.transition = 'opacity 0.3s ease-out';
+        
+        // Fade out di tutti gli elementi tranne il cerchio
+        // Fade out del video di sfondo
+        if (backgroundVideo) {
+            backgroundVideo.classList.add('fade-out');
+        }
+        
+        // Fade out del menu
+        if (bottomMenu) {
+            bottomMenu.classList.add('fade-out');
+        }
+        
+        // Fade out del pulse-ring (se visibile)
+        if (pulseRing && !pulseRing.classList.contains('hidden')) {
+            pulseRing.style.transition = 'opacity 0.5s ease-out';
+            pulseRing.style.opacity = '0';
+        }
+        
+        // Imposta il testo nell'header e posizionalo inizialmente
+        // X sempre al centro della pagina fin dall'inizio
+        headerTextContent.textContent = text;
+        headerText.style.position = 'fixed';
+        headerText.style.left = targetLeft + 'px'; // X sempre al centro
+        headerText.style.top = menuItemTop + 'px'; // Y dalla posizione del menu item
+        headerText.style.transform = 'translate(-50%, -50%)';
+        headerText.style.opacity = '1';
+        headerText.style.transition = 'top 0.5s ease-out'; // Solo top, X resta invariato
+        
+        // Forza un reflow per applicare le modifiche
+        void headerText.offsetHeight;
+        
+        // Anima solo verticalmente verso la posizione target
+        requestAnimationFrame(() => {
+            headerText.style.top = targetTop + 'px'; // Solo Y cambia, X resta al centro
+            headerText.classList.add('visible');
+        });
+        
+        // Dopo l'animazione, naviga alla pagina
+        setTimeout(() => {
+            if (href && href !== '#') {
+                window.location.href = href;
+            }
+        }, 500);
+    }
+
+    // Nascondi l'animazione di pulsazione quando si clicca
+    function hidePulseAnimation() {
+        if (pulseRing) {
+            pulseRing.classList.add('hidden');
+            hasClicked = true;
+        }
+    }
+
+    // Inizializza
+    initializeCircle();
+
+    // Controlla se il menu è stato aperto in precedenza
+    const menuWasOpened = localStorage.getItem('menuOpened') === 'true';
+    
+    if (menuWasOpened) {
+        // Se il menu è stato aperto, nascondi l'animazione di pulsazione
+        hidePulseAnimation();
+        // Imposta lo stato del menu come aperto
+        menuOpen = true;
+        hasClicked = true;
+        // Apri il menu senza animazione per evitare che si veda l'animazione al reload
+        if (bottomMenu) {
+            bottomMenu.classList.add('open');
+            bottomMenu.style.height = MENU_HEIGHT + 'px';
+            bottomMenu.style.transition = 'none';
+            // Ripristina la transizione normale dopo un breve delay
+            setTimeout(() => {
+                bottomMenu.style.transition = 'height 0.2s ease-out';
+            }, 100);
+        }
+    }
+
+    // Controlla se siamo sulla home
+    function isHomePage() {
+        const currentPath = window.location.pathname;
+        const currentHref = window.location.href;
+        return currentPath === '/' || 
+               currentPath.endsWith('index.html') || 
+               currentPath.endsWith('/') || 
+               currentPath.includes('/index.html') ||
+               currentHref.endsWith('/') ||
+               currentHref.endsWith('index.html');
     }
     
-    function updateGalleryPositioning() {
-        if(!titleGallery) return; // Safety check, masonryContainer removed
-
-        if (window.innerWidth <= 576) {
-            if (dropdownLinks && dropdownLinks.classList.contains('is-open')) {
-                titleGallery.classList.remove('menu-closed');
-            } else {
-                titleGallery.classList.add('menu-closed');
-            }
-        } else {
-            titleGallery.classList.remove('menu-closed');
+    // Controlla quale voce del menu è attiva e sottolineala
+    function setActiveMenuItem() {
+        // Se siamo sulla home, non sottolineare nulla (resetta)
+        if (isHomePage()) {
+            sessionStorage.removeItem('activeMenuLink');
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            return;
+        }
+        
+        // Se non siamo sulla home, controlla quale voce è attiva e sottolineala
+        const activeLink = sessionStorage.getItem('activeMenuLink');
+        if (activeLink) {
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                const itemHref = item.getAttribute('href');
+                if (itemHref === activeLink) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
         }
     }
 
-    if (dropdownLinks) {
-        dropdownLinks.addEventListener('animationend', (e) => {
-            if (e.animationName === 'fadeInFromTopMenu') onOpenAnimationEnd(e);
+    // Aggiungi event listener ai menu items
+    const menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            animateMenuTextToTop(item);
         });
-    }
-    if (line2) {
-        line2.addEventListener('animationend', (e) => {
-            if (e.animationName === 'fadeInFromTopMenu') onOpenAnimationEnd(e);
-        });
-    }
+    });
+    
+    // Imposta la voce attiva al caricamento
+    setActiveMenuItem();
+    
+    // Quando si naviga (incluso quando si torna indietro), controlla di nuovo
+    window.addEventListener('pageshow', (e) => {
+        setActiveMenuItem();
+    });
+    
+    // Quando si usa il pulsante indietro del browser
+    window.addEventListener('popstate', () => {
+        // Piccolo delay per permettere al browser di navigare
+        setTimeout(() => {
+            setActiveMenuItem();
+        }, 0);
+    });
 
-    function openMenu() {
-        if (menuAnimating || (dropdownLinks && dropdownLinks.classList.contains('is-open'))) return;
-        applyOpenStyles(dropdownLinks, 'flex');
-        applyOpenStyles(line2, 'block');
-        updateGalleryPositioning();
-    }
+    // Click sul cerchio
+    let totalDragDistance = 0;
+    let hasMoved = false;
 
-    if (dropdownLinks && line2) {
-        const initialMenuLoadDelay = 400;
-        setTimeout(function() {
-            openMenu();
-        }, initialMenuLoadDelay);
-    } else {
-        console.warn('Elementi dropdownLinks o line2 non trovati per apertura iniziale.');
-    }
-
-    window.addEventListener('resize', updateGalleryPositioning);
-    // updateGalleryPositioning(); // Chiamata iniziale è già gestita da openMenu() dopo il delay
-
-    // --- Custom Cursor Logic ---
-    const customCursorDiv = document.getElementById('custom-cursor');
-
-    if (customCursorDiv) {
-        document.addEventListener('mousemove', function(e) {
-            customCursorDiv.style.display = 'block'; // Show on first move
-            customCursorDiv.style.left = e.clientX + 'px';
-            customCursorDiv.style.top = e.clientY + 'px';
-        });
-
-        document.addEventListener('mouseleave', function() { customCursorDiv.style.display = 'none'; });
-        document.addEventListener('mouseenter', function() { customCursorDiv.style.display = 'block'; });
-
-        const hoverables = document.querySelectorAll('a, button, #menu-trigger, #open-gallery-btn');
-
-        hoverables.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                let applyHover = false;
-                if (el.tagName === 'A' || el.tagName === 'BUTTON' || el.id === 'open-gallery-btn') {
-                    applyHover = true;
-                } else if (el.id === 'menu-trigger') {
-                    // For #menu-trigger, only apply hover if its computed cursor style is 'pointer'.
-                    // This respects its current state (static 'default' in Home.html, dynamic in others).
-                    if (window.getComputedStyle(el).cursor === 'pointer') {
-                        applyHover = true;
-                    }
-                }
-                // Add other specific hoverable elements by ID or class here if needed
-
-                if (applyHover) {
-                    customCursorDiv.classList.add('hover');
-                    el.classList.add('hover-underline');
-                }
-            });
-
-            el.addEventListener('mouseleave', () => {
-                customCursorDiv.classList.remove('hover');
-                el.classList.remove('hover-underline');
-            });
-        });
-    }
-    // --- End Custom Cursor Logic ---
-
-    // --- Blur-up + fade-in for home background video ---
-    const bg = document.getElementById('fullscreen-bg');
-    if (bg) {
-        bg.classList.add('blur-up');
-        const onBgLoad = () => { bg.classList.add('loaded'); };
-        // For video, use 'loadedmetadata' or 'canplay' event
-        if (bg.tagName === 'VIDEO') {
-            if (bg.readyState >= 2) {
-                // Video has loaded metadata
-                onBgLoad();
-            } else {
-                bg.addEventListener('loadedmetadata', onBgLoad, { once: true });
-                bg.addEventListener('canplay', onBgLoad, { once: true });
-            }
-        } else {
-            // Fallback for images
-            if (bg.complete) {
-                onBgLoad();
-            } else {
-                bg.addEventListener('load', onBgLoad, { once: true });
-            }
+    logoCircle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (springAnimId) {
+            cancelAnimationFrame(springAnimId);
+            springAnimId = null;
         }
-    }
-});
+        
+        logoContainer.style.transition = 'none';
+        if (bottomMenu) {
+            bottomMenu.classList.add('dragging');
+        }
+        
+        isDragging = true;
+        hasMoved = false;
+        totalDragDistance = 0;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        
+        const pos = getCirclePosition();
+        dragStartLeft = pos.left;
+        dragStartTop = pos.top;
+        currentCircleLeft = dragStartLeft;
+        currentCircleTop = dragStartTop;
+        
+        logoCircle.classList.add('dragging');
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging && logoCircle) {
+            const deltaX = e.clientX - dragStartX;
+            const deltaY = e.clientY - dragStartY;
+            
+            totalDragDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+                hasMoved = true;
+            }
+            
+            const moveRatio = 0.75;
+            currentCircleLeft = dragStartLeft + (deltaX * moveRatio);
+            currentCircleTop = dragStartTop + (deltaY * moveRatio);
+            
+            const minLeft = CIRCLE_SIZE / 2;
+            const maxLeft = window.innerWidth - CIRCLE_SIZE / 2;
+            const minTop = CIRCLE_SIZE / 2;
+            const maxTop = window.innerHeight - CIRCLE_SIZE / 2;
+            
+            currentCircleLeft = Math.max(minLeft, Math.min(maxLeft, currentCircleLeft));
+            currentCircleTop = Math.max(minTop, Math.min(maxTop, currentCircleTop));
+            
+            setCirclePosition(currentCircleLeft, currentCircleTop);
+        }
+    });
+
+    document.addEventListener('mouseup', (e) => {
+        if (isDragging) {
+            isDragging = false;
+            logoCircle.classList.remove('dragging');
+            
+            if (bottomMenu) {
+                bottomMenu.classList.remove('dragging');
+            }
+            
+            // Se il drag è minore di 8px, considera come click
+            if (totalDragDistance < 8 && !hasMoved) {
+                if (!hasClicked) {
+                    // Prima volta: nascondi animazione e apri menu
+                    hidePulseAnimation();
+                    openMenu(true);
+                }
+                // Dopo il primo click, i click non fanno nulla (menu rimane aperto)
+                
+                totalDragDistance = 0;
+                hasMoved = false;
+                return;
+            }
+            
+            // Se è un drag, applica fisica a molla - sempre al centro
+            updateCircleRestPosition();
+            
+            const velocityX = (currentCircleLeft - dragStartLeft) * 0.3;
+            const velocityY = (currentCircleTop - dragStartTop) * 0.3;
+            
+            animateSpring(circleRestLeft, circleRestTop, currentCircleLeft, currentCircleTop, velocityX, velocityY);
+            
+            setTimeout(() => {
+                hasMoved = false;
+                totalDragDistance = 0;
+            }, 100);
+        }
+    });
+
+    // Touch support
+    let totalTouchDistance = 0;
+    
+    logoCircle.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (springAnimId) {
+            cancelAnimationFrame(springAnimId);
+            springAnimId = null;
+        }
+        
+        logoContainer.style.transition = 'none';
+        if (bottomMenu) {
+            bottomMenu.classList.add('dragging');
+        }
+        
+        isDragging = true;
+        hasMoved = false;
+        totalTouchDistance = 0;
+        dragStartX = e.touches[0].clientX;
+        dragStartY = e.touches[0].clientY;
+        
+        const pos = getCirclePosition();
+        dragStartLeft = pos.left;
+        dragStartTop = pos.top;
+        currentCircleLeft = dragStartLeft;
+        currentCircleTop = dragStartTop;
+        
+        logoCircle.classList.add('dragging');
+    }, { passive: false });
+
+    document.addEventListener('touchmove', (e) => {
+        if (isDragging && logoCircle) {
+            e.preventDefault();
+            const deltaX = e.touches[0].clientX - dragStartX;
+            const deltaY = e.touches[0].clientY - dragStartY;
+            
+            totalTouchDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+                hasMoved = true;
+            }
+            
+            const moveRatio = 0.75;
+            currentCircleLeft = dragStartLeft + (deltaX * moveRatio);
+            currentCircleTop = dragStartTop + (deltaY * moveRatio);
+            
+            const minLeft = CIRCLE_SIZE / 2;
+            const maxLeft = window.innerWidth - CIRCLE_SIZE / 2;
+            const minTop = CIRCLE_SIZE / 2;
+            const maxTop = window.innerHeight - CIRCLE_SIZE / 2;
+            
+            currentCircleLeft = Math.max(minLeft, Math.min(maxLeft, currentCircleLeft));
+            currentCircleTop = Math.max(minTop, Math.min(maxTop, currentCircleTop));
+            
+            setCirclePosition(currentCircleLeft, currentCircleTop);
+        }
+    }, { passive: false });
+
+    document.addEventListener('touchend', (e) => {
+        if (isDragging) {
+            isDragging = false;
+            logoCircle.classList.remove('dragging');
+            
+            if (bottomMenu) {
+                bottomMenu.classList.remove('dragging');
+            }
+            
+            // Se il drag è minore di 8px, considera come click
+            if (totalTouchDistance < 8 && !hasMoved) {
+                if (!hasClicked) {
+                    // Prima volta: nascondi animazione e apri menu
+                    hidePulseAnimation();
+                    openMenu(true);
+                }
+                // Dopo il primo click, i click non fanno nulla (menu rimane aperto)
+                
+                totalTouchDistance = 0;
+                hasMoved = false;
+                return;
+            }
+            
+            // Se è un drag, applica fisica a molla - sempre al centro
+            updateCircleRestPosition();
+            
+            const velocityX = (currentCircleLeft - dragStartLeft) * 0.3;
+            const velocityY = (currentCircleTop - dragStartTop) * 0.3;
+            animateSpring(circleRestLeft, circleRestTop, currentCircleLeft, currentCircleTop, velocityX, velocityY);
+            
+            setTimeout(() => {
+                hasMoved = false;
+                totalTouchDistance = 0;
+            }, 100);
+        }
+    });
+
+    // Aggiorna posizione su resize - sempre al centro
+    window.addEventListener('resize', () => {
+        if (!isDragging && !springAnimId) {
+            updateCircleRestPosition();
+            setCirclePosition(circleRestLeft, circleRestTop);
+        }
+    });
+})();
 </script>
-
 </body>
 </html>
