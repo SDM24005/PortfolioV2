@@ -45,7 +45,7 @@
     }
 
     .header.loaded {
-        animation: moveHeaderToTop 0.5s ease-in-out 0.7s forwards;
+        animation: moveHeaderToTop 0.5s ease-in-out 0s forwards;
     }
 
     .header-rectangle {
@@ -59,7 +59,7 @@
     }
 
     .header-rectangle.loaded {
-        animation: fadeInHeaderRectangle 0.5s ease-in-out 0.7s forwards;
+        animation: fadeInHeaderRectangle 0.5s ease-in-out 0s forwards;
     }
 
     .header-text {
@@ -95,7 +95,7 @@
     }
 
     .logo-circle.loaded {
-        animation: moveToBottomAndRotate 0.5s ease-in-out 0.7s forwards;
+        animation: moveToBottomAndRotate 0.5s ease-in-out 0s forwards !important;
     }
 
     .logo-circle.dragging {
@@ -758,26 +758,36 @@
             const headerRectangle = document.querySelector('.header-rectangle');
             
             if (logoCircle) {
-                // Ferma la rotazione infinita
+                // Ferma l'animazione di rotazione
                 logoCircle.style.animation = 'none';
-                // Leggi la posizione corrente per mantenere la continuità
-                const rect = logoCircle.getBoundingClientRect();
-                const currentTop = rect.top + rect.height / 2;
-                const currentLeft = rect.left + rect.width / 2;
                 
-                // Forza un reflow per assicurarsi che il cambio di animazione sia applicato
-                logoCircle.offsetHeight;
+                // Forza un reflow per applicare il cambio
+                void logoCircle.offsetHeight;
                 
-                // Imposta la posizione iniziale per l'animazione moveToBottomAndRotate
-                logoCircle.style.top = '50%';
-                logoCircle.style.left = '50%';
-                logoCircle.style.transform = 'translate(-50%, -50%)';
+                // Rimuovi tutti gli stili inline che potrebbero interferire
+                logoCircle.style.removeProperty('animation');
+                logoCircle.style.removeProperty('animation-name');
+                logoCircle.style.removeProperty('animation-duration');
+                logoCircle.style.removeProperty('animation-timing-function');
+                logoCircle.style.removeProperty('animation-delay');
+                logoCircle.style.removeProperty('animation-iteration-count');
+                logoCircle.style.removeProperty('animation-direction');
+                logoCircle.style.removeProperty('animation-fill-mode');
                 
                 // Forza un altro reflow
-                logoCircle.offsetHeight;
+                void logoCircle.offsetHeight;
                 
-                // Ora avvia la nuova animazione
+                // Aggiungi la classe loaded che avvierà la nuova animazione
                 logoCircle.classList.add('loaded');
+                
+                // Aspetta che l'animazione moveToBottomAndRotate finisca prima di inizializzare la fisica
+                // L'animazione dura 0.5s, quindi aspetta 0.6s per sicurezza
+                setTimeout(() => {
+                    // Ora inizializza la fisica del cerchio dopo che l'animazione è completata
+                    if (logoCircle && typeof initializeCirclePhysics === 'function') {
+                        initializeCirclePhysics();
+                    }
+                }, 600);
             }
             if (header) {
                 header.classList.add('loaded');
@@ -1340,15 +1350,28 @@
     }
     
     // Inizializza quando l'animazione CSS è completata
+    // NOTA: initializeCirclePhysics viene chiamata dopo che l'animazione moveToBottomAndRotate è completata
+    // nel codice sopra, quindi non serve chiamarla qui se il cerchio ha la classe loaded
     if (logoCircle) {
         // Usa animationend event se disponibile
-        logoCircle.addEventListener('animationend', () => {
-            initializeCirclePhysics();
-        }, { once: true });
+        logoCircle.addEventListener('animationend', (e) => {
+            // Solo se l'animazione completata è moveToBottomAndRotate e non rotateLoading
+            if (e.animationName === 'moveToBottomAndRotate' || logoCircle.classList.contains('loaded')) {
+                // La fisica viene già inizializzata nel codice sopra dopo il delay
+                return;
+            }
+            // Altrimenti inizializza normalmente (per l'animazione iniziale)
+            if (!logoCircle.classList.contains('loaded')) {
+                initializeCirclePhysics();
+            }
+        }, { once: false });
         
         // Fallback con timeout nel caso animationend non funzioni
+        // Solo se non è già loaded (altrimenti viene gestito nel codice sopra)
         setTimeout(() => {
-            initializeCirclePhysics();
+            if (!logoCircle.classList.contains('loaded')) {
+                initializeCirclePhysics();
+            }
         }, 1200);
     }
 })();
