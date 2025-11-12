@@ -52,6 +52,8 @@
         right: 0;
         height: 60px;
         background-color: #000000;
+        opacity: 0;
+        animation: fadeInHeaderRectangle 0.5s ease-in-out 0.7s forwards;
     }
 
     .header-text {
@@ -61,6 +63,12 @@
         font-size: 48px;
         font-family: 'PPKyoto', sans-serif;
         font-style: italic;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+    }
+
+    .header-text:hover {
+        opacity: 0.7;
     }
 
     .logo-circle {
@@ -242,6 +250,15 @@
         }
     }
 
+    @keyframes fadeInHeaderRectangle {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
     @keyframes typewriter {
         from {
             width: 0;
@@ -327,12 +344,21 @@
 <script src="../../scripts/projects.js"></script>
 <script>
 (function() {
+    // Click su "Works" per tornare in cima
+    const headerText = document.querySelector('.header-text');
+    if (headerText) {
+        headerText.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+    
     const container = document.querySelector('.masonry-container');
     const NUM_COPIES = 5;
-    const ANIMATION_BASE_DELAY = 0.2;
-    const COLUMN_DELAY = 0.1;
-    const ITEM_DELAY = 0.05;
-    const LOGO_ANIMATION_DELAY = 1200;
+    const ANIMATION_BASE_DELAY = 0.5;
+    const COLUMN_DELAY = 0.15;
+    const ITEM_DELAY = 0.08;
+    const LOGO_ANIMATION_DELAY = 1000; // Ridotto per iniziare prima (cerchio finisce a ~1200ms, griglia inizia a 1000ms)
+    const IMAGE_PRELOAD_DELAY = 200; // Inizia a pre-caricare le immagini molto prima
     
     // Set per tracciare le immagini già caricate
     const loadedImages = new Set();
@@ -625,6 +651,39 @@
         }
     }
 
+    // Pre-carica le immagini una ad una in sequenza per ottimizzare il caricamento
+    setTimeout(() => {
+        const images = getAllImages();
+        if (images.length > 0) {
+            // Pre-carica le prime immagini una ad una velocemente
+            const preloadImages = images.slice(0, Math.min(20, images.length));
+            let currentIndex = 0;
+            
+            function preloadNextImage() {
+                if (currentIndex >= preloadImages.length) return;
+                
+                const imageData = preloadImages[currentIndex];
+                const img = new Image();
+                img.onload = () => {
+                    loadedImages.add(imageData.src);
+                    currentIndex++;
+                    // Carica la prossima immagine dopo un breve delay (50ms per velocità)
+                    setTimeout(preloadNextImage, 50);
+                };
+                img.onerror = () => {
+                    // Continua anche se c'è un errore
+                    currentIndex++;
+                    setTimeout(preloadNextImage, 50);
+                };
+                img.src = imageData.src;
+            }
+            
+            // Inizia il pre-caricamento sequenziale
+            preloadNextImage();
+        }
+    }, IMAGE_PRELOAD_DELAY);
+    
+    // Crea la griglia dopo il delay dell'animazione del cerchio
     setTimeout(() => createMasonryGrid(), LOGO_ANIMATION_DELAY);
 
     let resizeTimer;
