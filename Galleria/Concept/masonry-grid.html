@@ -33,7 +33,7 @@
 
     .header {
         position: fixed;
-        top: 0;
+        top: calc(50% - 100px);
         left: 0;
         right: 0;
         height: 60px;
@@ -42,6 +42,7 @@
         align-items: center;
         justify-content: center;
         background-color: #000000;
+        animation: moveHeaderToTop 0.5s ease-in-out 0.7s forwards;
     }
 
     .header-rectangle {
@@ -60,9 +61,6 @@
         font-size: 48px;
         font-family: 'PPKyoto', sans-serif;
         font-style: italic;
-        opacity: 0;
-        transform: translateY(-20px);
-        animation: fadeInFromTop 0.6s ease-out 0.3s forwards;
     }
 
     .logo-circle {
@@ -235,6 +233,25 @@
         }
     }
 
+    @keyframes moveHeaderToTop {
+        from {
+            top: calc(50% - 100px);
+        }
+        to {
+            top: 0;
+        }
+    }
+
+    @keyframes typewriter {
+        from {
+            width: 0;
+        }
+        to {
+            width: 100%;
+        }
+    }
+
+
     @keyframes moveToBottomAndRotate {
         from {
             top: 50%;
@@ -316,6 +333,9 @@
     const COLUMN_DELAY = 0.1;
     const ITEM_DELAY = 0.05;
     const LOGO_ANIMATION_DELAY = 1200;
+    
+    // Set per tracciare le immagini già caricate
+    const loadedImages = new Set();
 
     // Funzione per aggiustare i percorsi relativi (da Galleria/Concept/ serve un ../ in più)
     function adjustPath(path) {
@@ -460,6 +480,12 @@
                     img.style.width = '100%';
                     img.style.height = 'auto';
                     img.style.display = 'block';
+                    
+                    // Traccia se l'immagine è già stata caricata
+                    img.dataset.src = imgData.src;
+                    if (loadedImages.has(imgData.src)) {
+                        item.dataset.alreadyLoaded = 'true';
+                    }
 
                     link.appendChild(img);
                     item.appendChild(link);
@@ -473,6 +499,12 @@
                     img.style.width = '100%';
                     img.style.height = 'auto';
                     img.style.display = 'block';
+                    
+                    // Traccia se l'immagine è già stata caricata
+                    img.dataset.src = imgData.src;
+                    if (loadedImages.has(imgData.src)) {
+                        item.dataset.alreadyLoaded = 'true';
+                    }
 
                     item.appendChild(img);
                     allImages.push(img);
@@ -490,6 +522,12 @@
         // Avvia le animazioni immediatamente, senza aspettare il caricamento delle immagini
         const allItems = container.querySelectorAll('.masonry-item');
         allItems.forEach(item => {
+            // Se l'immagine è già stata caricata, non animarla di nuovo
+            if (item.dataset.alreadyLoaded === 'true') {
+                item.classList.add('animate');
+                return;
+            }
+            
             const colIndex = parseInt(item.dataset.columnIndex) || 0;
             const itemIndex = parseInt(item.dataset.itemIndex) || 0;
             const delay = (ANIMATION_BASE_DELAY + colIndex * COLUMN_DELAY + itemIndex * ITEM_DELAY) * 1000;
@@ -539,9 +577,19 @@
 
         allImages.forEach(img => {
             if (img.complete) {
+                // Se l'immagine è già caricata, aggiungila al set
+                if (img.dataset.src) {
+                    loadedImages.add(img.dataset.src);
+                }
                 checkLoaded();
             } else {
-                img.addEventListener('load', checkLoaded);
+                img.addEventListener('load', () => {
+                    // Aggiungi l'immagine al set quando viene caricata
+                    if (img.dataset.src) {
+                        loadedImages.add(img.dataset.src);
+                    }
+                    checkLoaded();
+                });
                 img.addEventListener('error', checkLoaded);
             }
         });
