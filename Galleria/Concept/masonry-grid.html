@@ -28,7 +28,7 @@
     body {
         background-color: #000000;
         padding: 20px;
-        padding-top: 70px;
+        padding-top: 120px;
     }
 
     .header {
@@ -36,7 +36,7 @@
         top: 0;
         left: 0;
         right: 0;
-        height: 50px;
+        height: 100px;
         z-index: 999;
         display: flex;
         align-items: center;
@@ -49,7 +49,7 @@
         top: 0;
         left: 0;
         right: 0;
-        height: 50px;
+        height: 100px;
         background-color: #000000;
     }
 
@@ -259,7 +259,7 @@
     @media (max-width: 992px) {
         body {
             padding: 15px;
-            padding-top: 65px;
+            padding-top: 115px;
         }
         .masonry-container {
             gap: 15px;
@@ -272,7 +272,7 @@
     @media (max-width: 576px) {
         body {
             padding: 10px;
-            padding-top: 60px;
+            padding-top: 110px;
         }
         .masonry-container {
             gap: 10px;
@@ -484,7 +484,17 @@
 
         if (allImages.length === 0) return;
 
-        const alignAndAnimate = () => {
+        // Avvia le animazioni immediatamente, senza aspettare il caricamento delle immagini
+        const allItems = container.querySelectorAll('.masonry-item');
+        allItems.forEach(item => {
+            const colIndex = parseInt(item.dataset.columnIndex) || 0;
+            const itemIndex = parseInt(item.dataset.itemIndex) || 0;
+            const delay = (ANIMATION_BASE_DELAY + colIndex * COLUMN_DELAY + itemIndex * ITEM_DELAY) * 1000;
+            setTimeout(() => item.classList.add('animate'), delay);
+        });
+
+        // Funzione per allineare le colonne (può essere chiamata dopo il caricamento)
+        const alignColumns = () => {
             container.offsetHeight;
 
             const actualHeights = columnDivs.map(colDiv => {
@@ -499,27 +509,28 @@
                     colDiv.style.paddingBottom = (maxHeight - currentHeight) + 'px';
                 }
             });
-
-            const allItems = container.querySelectorAll('.masonry-item');
-            allItems.forEach(item => {
-                const colIndex = parseInt(item.dataset.columnIndex) || 0;
-                const itemIndex = parseInt(item.dataset.itemIndex) || 0;
-                const delay = (ANIMATION_BASE_DELAY + colIndex * COLUMN_DELAY + itemIndex * ITEM_DELAY) * 1000;
-                setTimeout(() => item.classList.add('animate'), delay);
-            });
-
-            // Mostra il footer dopo che le immagini sono caricate
-            const footer = document.querySelector('.gallery-footer');
-            if (footer) {
-                footer.classList.add('visible');
-            }
         };
 
+        // Allinea le colonne dopo un breve delay per permettere al layout di stabilizzarsi
+        requestAnimationFrame(() => {
+            setTimeout(alignColumns, 100);
+        });
+
+        // Allinea nuovamente quando tutte le immagini sono caricate (per correggere eventuali disallineamenti)
         let loadedCount = 0;
         const checkLoaded = () => {
             loadedCount++;
             if (loadedCount === allImages.length) {
-                requestAnimationFrame(() => setTimeout(alignAndAnimate, 0));
+                // Aspetta un frame per permettere alle immagini di renderizzarsi
+                requestAnimationFrame(() => {
+                    setTimeout(alignColumns, 0);
+                });
+                
+                // Mostra il footer dopo che le immagini sono caricate
+                const footer = document.querySelector('.gallery-footer');
+                if (footer) {
+                    footer.classList.add('visible');
+                }
             }
         };
 
