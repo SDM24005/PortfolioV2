@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Samueledemarch.com</title>
+<link rel="icon" type="image/png" href="Logo/logo-light.png" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" href="Logo/logo-dark.png" media="(prefers-color-scheme: dark)">
 <style>
 @font-face {
         font-family: 'PPKyoto';
@@ -113,7 +115,7 @@ font-style: normal;
         bottom: 100px;
         left: 0;
         right: 0;
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: #000000;
         height: 0;
         z-index: 998;
         overflow: hidden;
@@ -194,6 +196,18 @@ font-style: normal;
 
     .menu-item.animating {
         pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+        .bottom-menu {
+            bottom: 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .bottom-menu {
+            bottom: 0;
+        }
     }
 
 </style>

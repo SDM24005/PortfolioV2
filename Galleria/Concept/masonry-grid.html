@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Griglia Masonry</title>
+<link rel="icon" type="image/png" href="../../Logo/logo-light.png" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/png" href="../../Logo/logo-dark.png" media="(prefers-color-scheme: dark)">
 <style>
     @font-face {
         font-family: 'PPKyoto';
@@ -199,7 +201,7 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: rgba(0, 0, 0, 0.8);
+        background-color: #000000;
         height: 0;
         z-index: 998;
         overflow: hidden;
@@ -314,6 +316,18 @@
             transform: translate(-50%, -50%);
         }
     }
+    
+    /* Animazione ottimizzata per mobile */
+    @keyframes moveToBottomAndRotateMobile {
+        from {
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        to {
+            top: calc(100vh - 110px);
+            transform: translate(-50%, -50%);
+        }
+    }
 
     @keyframes fadeInFromLeft {
         from {
@@ -354,8 +368,20 @@
         .header-rectangle.loaded {
             animation: fadeInHeaderRectangle 0.5s ease-in-out 0s forwards;
         }
+        
+        /* Menu più in basso su tablet */
+        .bottom-menu {
+            bottom: 0;
+        }
     }
 
+    @media (max-width: 768px) {
+        /* Ottimizzazioni per tablet e mobile - animazione mobile */
+        .logo-circle.loaded {
+            animation: moveToBottomAndRotateMobile 0.5s ease-in-out 0s forwards !important;
+        }
+    }
+    
     @media (max-width: 576px) {
         body {
             padding: 10px;
@@ -373,7 +399,7 @@
             animation: rotateLoading 1s ease-in-out infinite;
         }
         .logo-circle.loaded {
-            animation: moveToBottomAndRotate 0.5s ease-in-out 0s forwards !important;
+            animation: moveToBottomAndRotateMobile 0.5s ease-in-out 0s forwards !important;
         }
         .header {
             top: calc(50% - 100px);
@@ -383,6 +409,11 @@
         }
         .header-rectangle.loaded {
             animation: fadeInHeaderRectangle 0.5s ease-in-out 0s forwards;
+        }
+        
+        /* Menu più in basso su mobile */
+        .bottom-menu {
+            bottom: 0;
         }
     }
 </style>
@@ -829,34 +860,56 @@
                 
                 // Usa animationend event per essere sicuri che l'animazione sia completata
                 const handleAnimationEnd = (e) => {
-                    if (e.animationName === 'moveToBottomAndRotate' || logoCircle.classList.contains('loaded')) {
+                    // Supporta sia l'animazione desktop che mobile
+                    if (e.animationName === 'moveToBottomAndRotate' || 
+                        e.animationName === 'moveToBottomAndRotateMobile' || 
+                        logoCircle.classList.contains('loaded')) {
                         // Rimuovi l'event listener dopo l'uso
                         logoCircle.removeEventListener('animationend', handleAnimationEnd);
                         // Inizializza la fisica del cerchio dopo che l'animazione è completata
+                        // Su mobile, aspetta un po' di più per assicurarsi che l'animazione sia completamente finita
+                        const isMobile = window.innerWidth <= 768;
+                        const delay = isMobile ? 100 : 50;
                         setTimeout(() => {
                             if (logoCircle && typeof initializeCirclePhysics === 'function') {
                                 initializeCirclePhysics();
                             }
-                        }, 50); // Piccolo delay per assicurarsi che l'animazione sia completamente finita
+                        }, delay);
                     }
                 };
                 
                 logoCircle.addEventListener('animationend', handleAnimationEnd);
                 
                 // Fallback con timeout nel caso animationend non funzioni
+                // Su mobile, aspetta più tempo per l'animazione
+                const isMobileDevice = window.innerWidth <= 768;
+                const fallbackTimeout = isMobileDevice ? 900 : 700;
+                
                 setTimeout(() => {
                     if (logoCircle && typeof initializeCirclePhysics === 'function') {
+                        // Calcola l'offset corretto per mobile
+                        const isMobile = window.innerWidth <= 768;
+                        const circleBottomOffset = isMobile ? 80 : CIRCLE_REST_BOTTOM;
+                        
                         // Verifica se l'animazione è completata controllando la posizione
                         const pos = getCirclePosition();
-                        const expectedBottom = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
-                        const isAtBottom = Math.abs(pos.top - expectedBottom) < 100; // Tolleranza di 100px
+                        const expectedBottom = window.innerHeight - circleBottomOffset - CIRCLE_SIZE / 2;
+                        const centerThreshold = window.innerHeight / 2;
                         
-                        if (!isAtBottom && logoCircle.classList.contains('loaded')) {
+                        // Tolleranza adattiva (più grande su mobile)
+                        const tolerance = Math.max(100, window.innerHeight * 0.15);
+                        const isAtBottom = Math.abs(pos.top - expectedBottom) < tolerance;
+                        const isAtCenter = Math.abs(pos.top - centerThreshold) < tolerance;
+                        
+                        if ((!isAtBottom && !isAtCenter) && logoCircle.classList.contains('loaded')) {
                             // Se non è nella posizione corretta ma l'animazione dovrebbe essere finita, forza il posizionamento
+                            initializeCirclePhysics();
+                        } else if (isAtCenter && !menuOpen && logoCircle.classList.contains('loaded')) {
+                            // Se è ancora al centro, correggilo
                             initializeCirclePhysics();
                         }
                     }
-                }, 700); // Timeout più lungo per sicurezza
+                }, fallbackTimeout);
             }
             if (header) {
                 header.classList.add('loaded');
@@ -892,8 +945,12 @@
     let menuOpen = false;
     
     function toggleMenuFromPosition(circleTop) {
+        // Calcola l'offset corretto per mobile
+        const isMobile = window.innerWidth <= 768;
+        const circleBottomOffset = isMobile ? 80 : CIRCLE_REST_BOTTOM;
+        
         // Determina lo stato corrente del menu basandosi sulla posizione del cerchio fornita
-        const closedRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+        const closedRestTop = window.innerHeight - circleBottomOffset - CIRCLE_SIZE / 2;
         const currentDragUpDistance = closedRestTop - circleTop;
         
         // Se il cerchio è sopra la posizione di riposo, il menu è aperto (almeno parzialmente)
@@ -996,8 +1053,12 @@
         const pos = getCirclePosition();
         const currentTop = pos.top;
         
+        // Calcola l'offset corretto per mobile
+        const isMobile = window.innerWidth <= 768;
+        const circleBottomOffset = isMobile ? 80 : CIRCLE_REST_BOTTOM;
+        
         // Determina lo stato corrente del menu basandosi sulla posizione del cerchio
-        const closedRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+        const closedRestTop = window.innerHeight - circleBottomOffset - CIRCLE_SIZE / 2;
         const currentDragUpDistance = closedRestTop - currentTop;
         
         // Se il cerchio è sopra la posizione di riposo, il menu è aperto (almeno parzialmente)
@@ -1096,20 +1157,28 @@
     
     function updateCircleRestPosition() {
         // Calcola la nuova posizione di riposo basata sullo stato del menu
+        // Su mobile, usa un valore più basso per CIRCLE_REST_BOTTOM
+        const isMobile = window.innerWidth <= 768;
+        const circleBottomOffset = isMobile ? 80 : CIRCLE_REST_BOTTOM;
+        
         if (menuOpen) {
             // Quando il menu è aperto, il cerchio è al centro (come nella home)
             circleRestTop = window.innerHeight / 2;
         } else {
             // Quando il menu è chiuso, posizione normale
-            circleRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+            circleRestTop = window.innerHeight - circleBottomOffset - CIRCLE_SIZE / 2;
         }
     }
     
     function updateMenuHeightFromCircle(circleTop) {
         if (!bottomMenu) return;
         
+        // Calcola l'offset corretto per mobile
+        const isMobile = window.innerWidth <= 768;
+        const circleBottomOffset = isMobile ? 80 : CIRCLE_REST_BOTTOM;
+        
         // Calcola la posizione di riposo quando il menu è chiuso
-        const closedRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+        const closedRestTop = window.innerHeight - circleBottomOffset - CIRCLE_SIZE / 2;
         
         // Calcola quanto il cerchio è sopra la posizione di riposo chiusa
         const dragUpDistance = closedRestTop - circleTop;
@@ -1248,10 +1317,14 @@
         updateCircleRestPosition();
         circleRestLeft = window.innerWidth / 2;
         
+        // Calcola l'offset corretto per mobile
+        const isMobile = window.innerWidth <= 768;
+        const circleBottomOffset = isMobile ? 80 : CIRCLE_REST_BOTTOM;
+        
         // Se circleRestTop non è valido, calcolalo di nuovo
         if (!circleRestTop || circleRestTop <= 0) {
             // Menu è chiuso di default all'inizio
-            circleRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+            circleRestTop = window.innerHeight - circleBottomOffset - CIRCLE_SIZE / 2;
         }
         
         // Leggi la posizione REALE corrente del cerchio
@@ -1259,16 +1332,21 @@
         const currentTop = currentPos.top;
         const currentLeft = currentPos.left;
         
-        // Se il cerchio è ancora al centro (circa window.innerHeight / 2), forza il posizionamento
+        // Calcola la posizione target corretta
+        const expectedBottom = window.innerHeight - circleBottomOffset - CIRCLE_SIZE / 2;
         const centerThreshold = window.innerHeight / 2;
-        const isAtCenter = Math.abs(currentTop - centerThreshold) < 50; // Tolleranza di 50px
         
-        if (isAtCenter || currentTop <= 0 || currentTop === centerThreshold) {
+        // Tolleranza maggiore su mobile (circa 10% dell'altezza dello schermo)
+        const tolerance = Math.max(50, window.innerHeight * 0.1);
+        const isAtCenter = Math.abs(currentTop - centerThreshold) < tolerance;
+        const isAtExpectedBottom = Math.abs(currentTop - expectedBottom) < tolerance;
+        
+        if (isAtCenter || currentTop <= 0 || (!isAtExpectedBottom && !menuOpen)) {
             // Il cerchio è ancora al centro o in posizione errata, forza il posizionamento corretto
-            circleRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+            circleRestTop = expectedBottom;
             circleRestLeft = window.innerWidth / 2;
             
-            // Imposta direttamente la posizione corretta
+            // Imposta direttamente la posizione corretta senza transizione per essere sicuri
             setCirclePosition(circleRestLeft, circleRestTop);
         } else {
             // Il cerchio è in una posizione valida, usa quella
@@ -1276,6 +1354,25 @@
             circleRestLeft = currentLeft;
             setCirclePosition(circleRestLeft, circleRestTop);
         }
+        
+        // Verifica nuovamente dopo un breve delay per assicurarsi che la posizione sia corretta
+        // Su mobile, aspetta un po' di più
+        const verifyDelay = isMobile ? 150 : 100;
+        setTimeout(() => {
+            if (!isDragging && !springAnimId) {
+                const verifyPos = getCirclePosition();
+                const verifyExpectedBottom = window.innerHeight - circleBottomOffset - CIRCLE_SIZE / 2;
+                const verifyCenter = window.innerHeight / 2;
+                const verifyTolerance = Math.max(50, window.innerHeight * 0.1);
+                
+                if (Math.abs(verifyPos.top - verifyCenter) < verifyTolerance && !menuOpen) {
+                    // Il cerchio è ancora al centro, correggilo
+                    circleRestTop = verifyExpectedBottom;
+                    circleRestLeft = window.innerWidth / 2;
+                    setCirclePosition(circleRestLeft, circleRestTop);
+                }
+            }
+        }, verifyDelay);
 
         if (bottomMenu) {
 
@@ -1377,8 +1474,12 @@
                         circleRestLeft = window.innerWidth / 2;
                     }
                     
+                    // Calcola l'offset corretto per mobile
+                    const isMobile = window.innerWidth <= 768;
+                    const circleBottomOffset = isMobile ? 80 : CIRCLE_REST_BOTTOM;
+                    
                     // Determina l'altezza finale del menu basandosi sulla posizione finale del cerchio
-                    const closedRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+                    const closedRestTop = window.innerHeight - circleBottomOffset - CIRCLE_SIZE / 2;
                     const finalDragUpDistance = closedRestTop - currentCircleTop;
                     const finalMenuHeight = Math.max(0, Math.min(MENU_HEIGHT, finalDragUpDistance));
                     
@@ -1509,8 +1610,12 @@
                         return;
                     }
                     
+                    // Calcola l'offset corretto per mobile
+                    const isMobileTouch = window.innerWidth <= 768;
+                    const circleBottomOffsetTouch = isMobileTouch ? 80 : CIRCLE_REST_BOTTOM;
+                    
                     // Determina l'altezza finale del menu basandosi sulla posizione finale del cerchio
-                    const closedRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+                    const closedRestTop = window.innerHeight - circleBottomOffsetTouch - CIRCLE_SIZE / 2;
                     const finalDragUpDistance = closedRestTop - currentCircleTop;
                     const finalMenuHeight = Math.max(0, Math.min(MENU_HEIGHT, finalDragUpDistance));
                     
@@ -1580,10 +1685,16 @@
         if (!logoCircle || isDragging || springAnimId) return;
         
         const pos = getCirclePosition();
-        const expectedBottom = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+        // Calcola l'offset corretto per mobile
+        const isMobile = window.innerWidth <= 768;
+        const circleBottomOffset = isMobile ? 80 : CIRCLE_REST_BOTTOM;
+        const expectedBottom = window.innerHeight - circleBottomOffset - CIRCLE_SIZE / 2;
         const centerThreshold = window.innerHeight / 2;
-        const isAtCenter = Math.abs(pos.top - centerThreshold) < 50;
-        const isAtExpectedBottom = Math.abs(pos.top - expectedBottom) < 50;
+        
+        // Tolleranza adattiva basata sull'altezza dello schermo (più tolleranza su mobile)
+        const tolerance = Math.max(50, window.innerHeight * 0.1);
+        const isAtCenter = Math.abs(pos.top - centerThreshold) < tolerance;
+        const isAtExpectedBottom = Math.abs(pos.top - expectedBottom) < tolerance;
         
         // Se il menu è chiuso e il cerchio non è nella posizione corretta, correggilo
         if (!menuOpen && !isAtExpectedBottom && !isAtCenter) {
@@ -1593,16 +1704,24 @@
             setCirclePosition(circleRestLeft, circleRestTop);
         } else if (!menuOpen && isAtCenter) {
             // Il cerchio è ancora al centro quando dovrebbe essere in basso, correggilo
-            circleRestTop = window.innerHeight - CIRCLE_REST_BOTTOM - CIRCLE_SIZE / 2;
+            circleRestTop = expectedBottom;
             circleRestLeft = window.innerWidth / 2;
             setCirclePosition(circleRestLeft, circleRestTop);
         }
     }
     
     // Verifica la posizione periodicamente (ogni secondo) dopo che la pagina è caricata
+    // Su mobile, verifica più spesso inizialmente
+    const isMobile = window.innerWidth <= 768;
+    const initialDelay = isMobile ? 1500 : 2000;
+    const checkInterval = isMobile ? 500 : 1000;
+    
     setTimeout(() => {
-        setInterval(verifyCirclePosition, 1000);
-    }, 2000); // Aspetta 2 secondi dopo il caricamento per permettere alle animazioni di completarsi
+        // Verifica immediata dopo il delay iniziale
+        verifyCirclePosition();
+        // Poi verifica periodicamente
+        setInterval(verifyCirclePosition, checkInterval);
+    }, initialDelay);
     
     // Inizializza quando l'animazione CSS è completata
     // NOTA: initializeCirclePhysics viene chiamata dopo che l'animazione moveToBottomAndRotate è completata
@@ -1610,12 +1729,17 @@
     if (logoCircle) {
         // Usa animationend event se disponibile come fallback aggiuntivo
         logoCircle.addEventListener('animationend', (e) => {
-            // Solo se l'animazione completata è moveToBottomAndRotate e non rotateLoading
-            if (e.animationName === 'moveToBottomAndRotate' || logoCircle.classList.contains('loaded')) {
+            // Supporta sia l'animazione desktop che mobile
+            if (e.animationName === 'moveToBottomAndRotate' || 
+                e.animationName === 'moveToBottomAndRotateMobile' || 
+                logoCircle.classList.contains('loaded')) {
                 // Verifica la posizione dopo l'animazione
+                // Su mobile, aspetta un po' di più
+                const isMobile = window.innerWidth <= 768;
+                const delay = isMobile ? 150 : 100;
                 setTimeout(() => {
                     verifyCirclePosition();
-                }, 100);
+                }, delay);
                 return;
             }
             // Altrimenti inizializza normalmente (per l'animazione iniziale)
@@ -1626,14 +1750,34 @@
         
         // Fallback con timeout nel caso animationend non funzioni
         // Solo se non è già loaded (altrimenti viene gestito nel codice sopra)
+        // Su mobile, aspetta più tempo
+        const isMobileDeviceFallback = window.innerWidth <= 768;
+        const fallbackDelay = isMobileDeviceFallback ? 2000 : 1500;
+        
         setTimeout(() => {
             if (!logoCircle.classList.contains('loaded')) {
                 initializeCirclePhysics();
             } else {
                 // Se è già loaded, verifica comunque la posizione
                 verifyCirclePosition();
+                // Forza un'inizializzazione se necessario
+                setTimeout(() => {
+                    if (!isDragging && !springAnimId) {
+                        const pos = getCirclePosition();
+                        // Calcola l'offset corretto per mobile
+                        const isMobile = window.innerWidth <= 768;
+                        const circleBottomOffset = isMobile ? 80 : CIRCLE_REST_BOTTOM;
+                        const expectedBottom = window.innerHeight - circleBottomOffset - CIRCLE_SIZE / 2;
+                        const centerThreshold = window.innerHeight / 2;
+                        const tolerance = Math.max(50, window.innerHeight * 0.1);
+                        
+                        if (Math.abs(pos.top - centerThreshold) < tolerance && !menuOpen) {
+                            initializeCirclePhysics();
+                        }
+                    }
+                }, 200);
             }
-        }, 1500);
+        }, fallbackDelay);
     }
 })();
 </script>
