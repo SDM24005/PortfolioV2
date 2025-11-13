@@ -803,10 +803,8 @@
         // Inizializza il drag e lo scroll con la rotella per gli anni
         initYearContainerScroll();
         
-        // Avvia l'animazione automatica dopo 2 secondi
-        setTimeout(() => {
-            startAutoScrollYear();
-        }, 2000);
+        // Avvia l'animazione automatica (il delay di 2 secondi è gestito all'interno della funzione)
+        startAutoScrollYear();
     }
 
     // Funzione per selezionare/deselezionare un anno
@@ -851,10 +849,8 @@
         // Inizializza il drag e lo scroll con la rotella
         initTagContainerScroll();
         
-        // Avvia l'animazione automatica dopo 2 secondi
-        setTimeout(() => {
-            startAutoScroll();
-        }, 2000);
+        // Avvia l'animazione automatica (il delay di 2 secondi è gestito all'interno della funzione)
+        startAutoScroll();
     }
 
     // Funzione per controllare se c'è contenuto scrollabile (tag)
@@ -929,8 +925,10 @@
             autoScrollAnimation = requestAnimationFrame(animate);
         }
         
-        // Avvia l'animazione
-        animate();
+        // Avvia l'animazione dopo 2 secondi (stesso delay degli anni)
+        setTimeout(() => {
+            animate();
+        }, 2000);
     }
 
     // Funzione per mettere in pausa l'animazione per 5 secondi (tag)
@@ -999,8 +997,10 @@
             autoScrollYearAnimation = requestAnimationFrame(animate);
         }
         
-        // Avvia l'animazione
-        animate();
+        // Avvia l'animazione dopo 2 secondi (stesso delay dei tag)
+        setTimeout(() => {
+            animate();
+        }, 2000);
     }
 
     // Funzione per mettere in pausa l'animazione per 5 secondi (anni)
@@ -1684,24 +1684,56 @@
             }
 
             const { numColumns, columnWidth, gap } = getResponsiveSettings();
-            const columns = Array(numColumns).fill(null).map(() => []);
-            const columnHeights = Array(numColumns).fill(0);
-
-            const imagePromises = images.map(imageData => loadImage(imageData, columnWidth));
-            const results = await Promise.allSettled(imagePromises);
-            const imageData = results
-                .filter(result => result.status === 'fulfilled')
-                .map(result => result.value);
-
-            if (imageData.length === 0) {
+            
+            // Carica le immagini in batch progressivi per migliorare le prestazioni
+            const BATCH_SIZE = 20; // Carica 20 immagini alla volta
+            let allImageData = [];
+            let currentBatch = 0;
+            
+            // Funzione per caricare un batch di immagini
+            const loadBatch = async (batchStart) => {
+                const batchEnd = Math.min(batchStart + BATCH_SIZE, images.length);
+                const batch = images.slice(batchStart, batchEnd);
+                
+                const imagePromises = batch.map(imageData => loadImage(imageData, columnWidth));
+                const results = await Promise.allSettled(imagePromises);
+                const batchImageData = results
+                    .filter(result => result.status === 'fulfilled')
+                    .map(result => result.value);
+                
+                return batchImageData;
+            };
+            
+            // Carica il primo batch e mostra subito la griglia
+            const firstBatch = await loadBatch(0);
+            allImageData.push(...firstBatch);
+            
+            if (allImageData.length === 0) {
                 container.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Nessuna immagine disponibile</p>';
                 clearTimeout(safetyTimeout);
                 isCreatingGrid = false;
                 return;
             }
-
-            const { columns: distributedColumns, columnHeights: distributedHeights } = distributeImages(imageData, numColumns, gap);
+            
+            // Mostra subito la griglia con il primo batch
+            const { columns: distributedColumns, columnHeights: distributedHeights } = distributeImages(allImageData, numColumns, gap);
             renderColumns(distributedColumns, distributedHeights, columnWidth, gap, shouldAnimate);
+            
+            // Carica il resto delle immagini in background e aggiorna la griglia progressivamente
+            currentBatch = BATCH_SIZE;
+            while (currentBatch < images.length) {
+                const nextBatch = await loadBatch(currentBatch);
+                if (nextBatch.length > 0) {
+                    allImageData.push(...nextBatch);
+                    // Ricalcola la distribuzione con tutte le immagini caricate finora
+                    const { columns: updatedColumns, columnHeights: updatedHeights } = distributeImages(allImageData, numColumns, gap);
+                    renderColumns(updatedColumns, updatedHeights, columnWidth, gap, false); // false per evitare animazioni multiple
+                }
+                currentBatch += BATCH_SIZE;
+                
+                // Piccola pausa tra i batch per non bloccare il browser
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
         } catch (error) {
             console.error('Errore nel caricamento delle immagini:', error);
         } finally {
@@ -1786,10 +1818,9 @@
         });
     }
     
-    // Carica tutte le immagini e poi avvia le animazioni
-    preloadAllImages().then(() => {
-        // Aspetta che finisca l'ultimo ciclo di rotazione completo (360 gradi)
-        waitForRotationCycle().then(() => {
+    // Avvia le animazioni senza aspettare il pre-caricamento completo delle immagini
+    // Le immagini verranno caricate in modo lazy durante il rendering
+    waitForRotationCycle().then(() => {
             // Quando il ciclo è completato, ferma la rotazione e avvia le animazioni
             const logoCircle = document.getElementById('logo-circle');
             const header = document.querySelector('.header');
@@ -1935,7 +1966,6 @@
             const gridDelay = isMobile ? LOGO_ANIMATION_DELAY + 500 + headerAnimationDelay : LOGO_ANIMATION_DELAY + headerAnimationDelay;
             setTimeout(() => createMasonryGrid(), gridDelay);
         });
-    });
 
     let resizeTimer;
     let tagResizeTimer;
