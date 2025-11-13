@@ -526,25 +526,33 @@
         isCreatingGrid = true;
 
         try {
+            // 1. Ottieni i dati delle immagini
             const images = getAllImagesData();
             if (images.length === 0) {
                 container.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Nessuna immagine trovata.</p>';
+                isCreatingGrid = false;
                 return;
             }
 
             const { numColumns, columnWidth, gap } = getResponsiveSettings();
 
-            const imagePromises = allProjectsData.map(data => loadImage(data, columnWidth));
+            // 2. CARICA TUTTE LE IMMAGINI (il logo sta girando)
+            const imagePromises = allProjectsData.map(imgData => loadImage(imgData, columnWidth));
             const results = await Promise.allSettled(imagePromises);
-            const imageData = results.filter(result => result.status === 'fulfilled').map(result => result.value);
+            const imageData = results
+                .filter(result => result.status === 'fulfilled')
+                .map(result => result.value);
 
             if (imageData.length === 0) {
                 container.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Nessuna immagine disponibile.</p>';
+                isCreatingGrid = false;
                 return;
             }
 
+            // 3. IMMAGINI CARICATE. Aspetta la fine del giro del logo.
             await waitForRotationCycle();
 
+            // 4. AVVIA LE ANIMAZIONI DI TRANSIZIONE (Header, Logo, Filtri)
             if (logoCircle) {
                 logoCircle.style.animation = 'none';
                 void logoCircle.offsetHeight;
@@ -564,17 +572,32 @@
                 createYearButtons();
             }, 600);
 
+            // 5. Inizializza la fisica SOLO DOPO l'animazione di spostamento
             if (logoCircle) {
-                logoCircle.addEventListener('animationend', event => {
-                    if (event.animationName.includes('moveToBottom')) {
-                        initializeCirclePhysics();
-                    }
-                }, { once: true });
-                setTimeout(initializeCirclePhysics, 1500);
+
+                const onAnimationDone = () => {
+                    if (logoCircle.dataset.physicsInitialized) return;
+                    logoCircle.dataset.physicsInitialized = 'true';
+                    initializeCirclePhysics();
+                };
+
+                logoCircle.addEventListener(
+                    'animationend',
+                    e => {
+                        if (e.animationName.includes('moveToBottom')) {
+                            onAnimationDone();
+                        }
+                    },
+                    { once: true }
+                );
+
+                setTimeout(onAnimationDone, 1000);
             }
 
+            // 6. RENDERIZZA LA GRIGLIA (con il suo delay)
             const { columns, columnHeights } = distributeImages(imageData, numColumns, gap);
-            const gridDelay = LOGO_ANIMATION_DELAY + 10;
+            const gridDelay = LOGO_ANIMATION_DELAY + 500;
+
             setTimeout(() => {
                 renderColumns(columns, columnHeights, columnWidth, gap, shouldAnimate);
             }, gridDelay);
