@@ -549,4 +549,8 @@ body {
     .masonry-column {
         gap: 10px;
     }
+
+    :root {
+        --menu-height: 320px;
+    }
 }

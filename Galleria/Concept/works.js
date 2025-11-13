@@ -37,7 +37,7 @@
     let lastWindowHeight = window.innerHeight;
 
     // Logo/menu constants/state
-    const MENU_HEIGHT = 400;
+    let MENU_HEIGHT = 400;
     const LOGO_SIZE = 60;
     const CIRCLE_REST_BOTTOM_DESKTOP = 100;
     const CIRCLE_REST_BOTTOM_MOBILE = 80;
@@ -628,6 +628,16 @@
     }
 
     // Logo/menu helpers
+    function updateMenuHeightFromCSS() {
+        if (!bottomMenu) return;
+        const menuHeightStr = getComputedStyle(bottomMenu).getPropertyValue('--menu-height').trim();
+        const parsed = parseFloat(menuHeightStr);
+        if (!Number.isNaN(parsed)) {
+            MENU_HEIGHT = parsed;
+            console.log('Altezza menu aggiornata a:', MENU_HEIGHT);
+        }
+    }
+
     function getCircleRestBottom() {
         return window.innerWidth <= 768 ? CIRCLE_REST_BOTTOM_MOBILE : CIRCLE_REST_BOTTOM_DESKTOP;
     }
@@ -818,6 +828,7 @@
     }
 
     function initializeCirclePhysics() {
+        updateMenuHeightFromCSS();
         updateCircleRestPosition();
         setLogoPosition(circleRestLeft, circleRestTop);
 
@@ -864,5 +875,12 @@
     initHeaderClick();
     initializePage();
     handleNavigation();
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', () => {
+        handleResize();
+        if (!isDraggingLogo && !springAnimId) {
+            updateMenuHeightFromCSS();
+            updateCircleRestPosition();
+            setLogoPosition(circleRestLeft, circleRestTop);
+        }
+    });
 })();
