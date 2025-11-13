@@ -341,7 +341,7 @@
         }
     }
 
-    function collectProjectsData() {
+    function getAllImagesData() {
         const all = [];
 
         if (typeof baseProjects !== 'undefined' && Array.isArray(baseProjects)) {
@@ -512,59 +512,39 @@
         });
     }
 
+    function waitForRotationCycle() {
+        return new Promise(resolve => {
+            const animationDuration = 1000;
+            const elapsed = performance.now() % animationDuration;
+            const timeUntilEnd = animationDuration - elapsed;
+            setTimeout(resolve, timeUntilEnd + 50);
+        });
+    }
+
     async function createMasonryGrid(shouldAnimate = true) {
         if (isCreatingGrid) return;
         isCreatingGrid = true;
 
         try {
-            const imagesData = collectProjectsData();
-            if (imagesData.length === 0) {
+            const images = getAllImagesData();
+            if (images.length === 0) {
                 container.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Nessuna immagine trovata.</p>';
                 return;
             }
 
             const { numColumns, columnWidth, gap } = getResponsiveSettings();
-            const aggregatedData = [];
 
-            const loadBatch = async startIndex => {
-                const batchEnd = Math.min(startIndex + BATCH_SIZE, imagesData.length);
-                const slice = imagesData.slice(startIndex, batchEnd);
-                const promises = slice.map(data => loadImage(data, columnWidth));
-                const results = await Promise.allSettled(promises);
-                return results.filter(result => result.status === 'fulfilled').map(result => result.value);
-            };
+            const imagePromises = allProjectsData.map(data => loadImage(data, columnWidth));
+            const results = await Promise.allSettled(imagePromises);
+            const imageData = results.filter(result => result.status === 'fulfilled').map(result => result.value);
 
-            const firstBatch = await loadBatch(0);
-            aggregatedData.push(...firstBatch);
-
-            if (aggregatedData.length === 0) {
+            if (imageData.length === 0) {
                 container.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Nessuna immagine disponibile.</p>';
                 return;
             }
 
-            const initial = distributeImages(aggregatedData, numColumns, gap);
-            renderColumns(initial.columns, initial.columnHeights, columnWidth, gap, shouldAnimate);
+            await waitForRotationCycle();
 
-            let index = BATCH_SIZE;
-            while (index < imagesData.length) {
-                const nextBatch = await loadBatch(index);
-                if (nextBatch.length > 0) {
-                    aggregatedData.push(...nextBatch);
-                    const update = distributeImages(aggregatedData, numColumns, gap);
-                    renderColumns(update.columns, update.columnHeights, columnWidth, gap, false);
-                }
-                index += BATCH_SIZE;
-                await new Promise(resolve => setTimeout(resolve, 50));
-            }
-        } catch (error) {
-            console.error('Errore nella creazione della griglia:', error);
-        } finally {
-            isCreatingGrid = false;
-        }
-    }
-
-    function initializePage() {
-        setTimeout(() => {
             if (logoCircle) {
                 logoCircle.style.animation = 'none';
                 void logoCircle.offsetHeight;
@@ -584,18 +564,29 @@
                 createYearButtons();
             }, 600);
 
+            if (logoCircle) {
+                logoCircle.addEventListener('animationend', event => {
+                    if (event.animationName.includes('moveToBottom')) {
+                        initializeCirclePhysics();
+                    }
+                }, { once: true });
+                setTimeout(initializeCirclePhysics, 1500);
+            }
+
+            const { columns, columnHeights } = distributeImages(imageData, numColumns, gap);
             const gridDelay = LOGO_ANIMATION_DELAY + 500;
-            setTimeout(() => createMasonryGrid(true), gridDelay);
+            setTimeout(() => {
+                renderColumns(columns, columnHeights, columnWidth, gap, shouldAnimate);
+            }, gridDelay);
+        } catch (error) {
+            console.error('Errore nella creazione della griglia:', error);
+        } finally {
+            isCreatingGrid = false;
+        }
+    }
 
-            const handleAnimationEnd = event => {
-                if (event.animationName.includes('moveToBottom')) {
-                    initializeCirclePhysics();
-                }
-            };
-
-            logoCircle.addEventListener('animationend', handleAnimationEnd, { once: true });
-            setTimeout(initializeCirclePhysics, 1500);
-        }, 1100);
+    function initializePage() {
+        createMasonryGrid(true);
     }
 
     function handleResize() {
