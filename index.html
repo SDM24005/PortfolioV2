@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Samueledemarch.com</title>
-<link rel="icon" type="image/png" href="Logo/logo-light.png" media="(prefers-color-scheme: light)">
-<link rel="icon" type="image/png" href="Logo/logo-dark.png" media="(prefers-color-scheme: dark)">
-<style>
-@font-face {
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samueledemarch.com</title>
+
+    <link rel="icon" type="image/png" href="Logo/logo-light.png" media="(prefers-color-scheme: light)">
+    <link rel="icon" type="image/png" href="Logo/logo-dark.png" media="(prefers-color-scheme: dark)">
+
+    <style>
+    /* Definizione dei font (invariata) */
+    @font-face {
         font-family: 'PPKyoto';
         src: url('Fonts/PPKyoto-MediumItalic.otf') format('opentype');
         font-weight: normal;
@@ -17,9 +20,19 @@
     @font-face {
         font-family: 'PPKyoto';
         src: url('Fonts/PPKyoto-Medium.otf') format('opentype');
-font-weight: normal;
-font-style: normal;
-}
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    /* Definizione delle Variabili Globali */
+    :root {
+        --color-background: #000000;
+        --color-text: #ffffff;
+        --color-pulse-ring: #333333;
+        --font-main: 'PPKyoto', sans-serif;
+        --menu-height: 300px;
+        --circle-size: 60px;
+    }
 
     * {
         margin: 0;
@@ -28,9 +41,10 @@ font-style: normal;
     }
 
     body {
-        background-color: #000000;
+        background-color: var(--color-background);
         overflow: hidden;
         position: relative;
+        font-family: var(--font-main);
     }
 
     .background-video {
@@ -64,7 +78,7 @@ font-style: normal;
         position: absolute;
         width: 120px;
         height: 120px;
-        border: 2px solid #333333;
+        border: 2px solid var(--color-pulse-ring);
         border-radius: 50%;
         background: transparent;
         animation: shrinkPulse 2s ease-in-out infinite;
@@ -77,9 +91,9 @@ font-style: normal;
 
     .logo-circle {
         position: relative;
-        width: 60px;
-        height: 60px;
-        background-color: white;
+        width: var(--circle-size);
+        height: var(--circle-size);
+        background-color: var(--color-text);
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -115,12 +129,22 @@ font-style: normal;
         bottom: 100px;
         left: 0;
         right: 0;
-        background-color: #000000;
+        background-color: var(--color-background);
         height: 0;
         z-index: 998;
         overflow: hidden;
         transition: height 0.2s ease-out, opacity 0.5s ease-out;
         opacity: 1;
+    }
+
+    .bottom-menu::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: var(--color-text);
     }
 
     .bottom-menu.fade-out {
@@ -129,9 +153,9 @@ font-style: normal;
     }
 
     .bottom-menu.open {
-        height: 300px;
+        height: var(--menu-height);
     }
-    
+
     .bottom-menu.dragging {
         transition: none;
     }
@@ -149,8 +173,8 @@ font-style: normal;
     }
 
     .menu-item {
-        color: white;
-        font-family: 'PPKyoto', sans-serif;
+        color: var(--color-text);
+        font-family: var(--font-main);
         font-size: 48px;
         font-style: italic;
         text-decoration: none;
@@ -159,14 +183,16 @@ font-style: normal;
         text-align: center;
     }
 
-    .menu-item:hover {
+    .menu-item:hover,
+    .menu-item.active {
         text-decoration: underline;
         text-underline-offset: 2px;
     }
 
-    .menu-item.active {
-        text-decoration: underline;
-        text-underline-offset: 2px;
+    .menu-item.animating {
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease-out;
     }
 
     .header-text {
@@ -177,6 +203,7 @@ font-style: normal;
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: top 0.5s ease-out;
     }
 
     .header-text.visible {
@@ -184,18 +211,14 @@ font-style: normal;
     }
 
     .header-text span {
-        color: white;
-        font-family: 'PPKyoto', sans-serif;
+        color: var(--color-text);
+        font-family: var(--font-main);
         font-size: 48px;
         font-style: italic;
         text-align: center;
         white-space: nowrap;
         text-decoration: underline;
         text-underline-offset: 2px;
-    }
-
-    .menu-item.animating {
-        pointer-events: none;
     }
 
     @media (max-width: 768px) {
@@ -209,555 +232,33 @@ font-style: normal;
             bottom: 0;
         }
     }
-
-</style>
+    </style>
 </head>
 <body>
-<video class="background-video" autoplay muted loop playsinline>
-    <source src="Galleria/galss-loop.mp4" type="video/mp4">
-</video>
-<div class="logo-container" id="logo-container">
-    <div class="pulse-ring" id="pulse-ring"></div>
-    <div class="logo-circle" id="logo-circle">
-        <img src="Logo/logo-light.png" alt="Logo">
+    <video class="background-video" autoplay muted loop playsinline>
+        <source src="Galleria/galss-loop.mp4" type="video/mp4">
+        Il tuo browser non supporta i video HTML5.
+    </video>
+
+    <div class="logo-container" id="logo-container">
+        <div class="pulse-ring" id="pulse-ring"></div>
+        <div class="logo-circle" id="logo-circle" role="button" tabindex="0" aria-label="Apri menu">
+            <img src="Logo/logo-light.png" alt="Logo">
+        </div>
     </div>
-</div>
 
-<div class="bottom-menu" id="bottom-menu">
-    <div class="menu-content">
-        <a href="Galleria/Concept/masonry-grid.html" class="menu-item" data-text="Works">Works</a>
-        <a href="Bio/index.html" class="menu-item" data-text="Bio">Bio</a>
-        <a href="#" class="menu-item" data-text="Contatti">Contatti</a>
+    <div class="bottom-menu" id="bottom-menu">
+        <div class="menu-content">
+            <a href="Galleria/Concept/masonry-grid.html" class="menu-item" data-text="Works">Works</a>
+            <a href="Bio/index.html" class="menu-item" data-text="Bio">Bio</a>
+            <a href="#" class="menu-item" data-text="Contatti">Contatti</a>
+        </div>
     </div>
-</div>
 
-<div class="header-text" id="header-text">
-    <span id="header-text-content"></span>
-</div>
+    <div class="header-text" id="header-text">
+        <span id="header-text-content"></span>
+    </div>
 
-<script>
-(function() {
-    const logoContainer = document.getElementById('logo-container');
-    const logoCircle = document.getElementById('logo-circle');
-    const pulseRing = document.getElementById('pulse-ring');
-    const bottomMenu = document.getElementById('bottom-menu');
-    const CIRCLE_SIZE = 60;
-    const MENU_HEIGHT = 300;
-    let circleRestLeft = 0;
-    let circleRestTop = 0;
-    let isDragging = false;
-    let dragStartX = 0;
-    let dragStartY = 0;
-    let dragStartLeft = 0;
-    let dragStartTop = 0;
-    let currentCircleLeft = 0;
-    let currentCircleTop = 0;
-    let springAnimId = null;
-    let menuOpen = false;
-    let hasClicked = false;
-
-    // Inizializza la posizione al centro
-    function initializeCircle() {
-        circleRestLeft = window.innerWidth / 2;
-        circleRestTop = window.innerHeight / 2;
-        setCirclePosition(circleRestLeft, circleRestTop);
-    }
-
-    // Imposta posizione cerchio
-    function setCirclePosition(left, top, preserveTransition = false) {
-        if (!logoContainer) return;
-        if (!preserveTransition) {
-            logoContainer.style.transition = '';
-            logoContainer.style.removeProperty('transition');
-        }
-        logoContainer.style.setProperty('left', left + 'px', 'important');
-        logoContainer.style.setProperty('top', top + 'px', 'important');
-        logoContainer.style.setProperty('transform', 'translate(-50%, -50%)', 'important');
-        void logoContainer.offsetHeight;
-    }
-
-    // Leggi la posizione reale del cerchio
-    function getCirclePosition() {
-        if (!logoContainer) return { left: 0, top: 0 };
-        const rect = logoContainer.getBoundingClientRect();
-        return {
-            left: rect.left + rect.width / 2,
-            top: rect.top + rect.height / 2
-        };
-    }
-
-    // Aggiorna la posizione di riposo del cerchio - sempre al centro
-    function updateCircleRestPosition() {
-        // Il cerchio rimane sempre al centro
-        circleRestTop = window.innerHeight / 2;
-        circleRestLeft = window.innerWidth / 2;
-    }
-
-    // Animazione a molla
-    function animateSpring(targetLeft, targetTop, startLeft, startTop, velocityX = 0, velocityY = 0) {
-        if (springAnimId) {
-            cancelAnimationFrame(springAnimId);
-        }
-
-        const SPRING = 0.35;
-        const DAMPING = 0.75;
-        let posX = startLeft;
-        let posY = startTop;
-        let velX = velocityX;
-        let velY = velocityY;
-
-        function step() {
-            const distX = targetLeft - posX;
-            const distY = targetTop - posY;
-            
-            const forceX = distX * SPRING;
-            const forceY = distY * SPRING;
-            const dampingX = velX * DAMPING;
-            const dampingY = velY * DAMPING;
-            
-            const accelX = forceX - dampingX;
-            const accelY = forceY - dampingY;
-
-            velX += accelX;
-            velY += accelY;
-            posX += velX;
-            posY += velY;
-
-            setCirclePosition(posX, posY);
-
-            // Condizioni di stop
-            if (Math.abs(distX) < 0.3 && Math.abs(distY) < 0.3 && 
-                Math.abs(velX) < 0.15 && Math.abs(velY) < 0.15) {
-                setCirclePosition(targetLeft, targetTop);
-                circleRestLeft = targetLeft;
-                circleRestTop = targetTop;
-                springAnimId = null;
-                return;
-            }
-
-            springAnimId = requestAnimationFrame(step);
-        }
-
-        step();
-    }
-
-    // Apri menu (solo apertura, senza chiusura)
-    function openMenu(animated = true) {
-        // Se il menu è già aperto, non fare nulla
-        if (menuOpen) return;
-        
-        menuOpen = true;
-        
-        // Salva nello stato che il menu è stato aperto
-        localStorage.setItem('menuOpened', 'true');
-        
-        // Aggiorna il menu
-        if (bottomMenu) {
-            bottomMenu.classList.remove('dragging');
-            if (animated) {
-                bottomMenu.style.transition = 'height 0.2s ease-out';
-            } else {
-                bottomMenu.style.transition = 'none';
-            }
-            bottomMenu.classList.add('open');
-            bottomMenu.style.height = MENU_HEIGHT + 'px';
-            
-            // Se non è animato, rimuovi subito la transizione
-            if (!animated) {
-                setTimeout(() => {
-                    bottomMenu.style.transition = 'height 0.2s ease-out';
-                }, 0);
-            }
-        }
-        
-        // Nascondi l'animazione di pulsazione se non è già stata nascosta
-        if (!hasClicked) {
-            hidePulseAnimation();
-        }
-        
-        // Il cerchio rimane sempre al centro, non si muove
-    }
-
-    // Animazione del testo del menu verso l'alto
-    function animateMenuTextToTop(menuItem) {
-        const headerText = document.getElementById('header-text');
-        const headerTextContent = document.getElementById('header-text-content');
-        const backgroundVideo = document.querySelector('.background-video');
-        const text = menuItem.getAttribute('data-text') || menuItem.textContent;
-        
-        if (!headerText || !headerTextContent) return;
-        
-        // Ottieni la posizione Y del menu item (senza scroll, la pagina è fixed)
-        const menuItemRect = menuItem.getBoundingClientRect();
-        const menuItemTop = menuItemRect.top; // Solo top relativo al viewport, senza scrollY
-        
-        // Posizione target - stessa posizione di Works in masonry-grid.html
-        // In masonry-grid.html, l'header è a calc(50% - 100px) con altezza 70px
-        // Il centro verticale del testo (centrato nell'header) è a calc(50% - 100px + 35px) = calc(50% - 65px)
-        const targetTop = window.innerHeight / 2 - 65;
-        const targetLeft = window.innerWidth / 2;
-        
-        // Salva quale voce è stata cliccata
-        const href = menuItem.getAttribute('href');
-        if (href) {
-            sessionStorage.setItem('activeMenuLink', href);
-        }
-        
-        // Rimuovi active da tutte le voci
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.classList.remove('active');
-        });
-        
-        // Aggiungi active alla voce cliccata
-        menuItem.classList.add('active');
-        
-        // Nascondi il menu item originale
-        menuItem.classList.add('animating');
-        menuItem.style.opacity = '0';
-        menuItem.style.transition = 'opacity 0.3s ease-out';
-        
-        // Fade out di tutti gli elementi tranne il cerchio
-        // Fade out del video di sfondo
-        if (backgroundVideo) {
-            backgroundVideo.classList.add('fade-out');
-        }
-        
-        // Fade out del menu
-        if (bottomMenu) {
-            bottomMenu.classList.add('fade-out');
-        }
-        
-        // Fade out del pulse-ring (se visibile)
-        if (pulseRing && !pulseRing.classList.contains('hidden')) {
-            pulseRing.style.transition = 'opacity 0.5s ease-out';
-            pulseRing.style.opacity = '0';
-        }
-        
-        // Imposta il testo nell'header e posizionalo inizialmente
-        // X sempre al centro della pagina fin dall'inizio
-        headerTextContent.textContent = text;
-        headerText.style.position = 'fixed';
-        headerText.style.left = targetLeft + 'px'; // X sempre al centro
-        headerText.style.top = menuItemTop + 'px'; // Y dalla posizione del menu item
-        headerText.style.transform = 'translate(-50%, -50%)';
-        headerText.style.opacity = '1';
-        headerText.style.transition = 'top 0.5s ease-out'; // Solo top, X resta invariato
-        
-        // Forza un reflow per applicare le modifiche
-        void headerText.offsetHeight;
-        
-        // Anima solo verticalmente verso la posizione target
-        requestAnimationFrame(() => {
-            headerText.style.top = targetTop + 'px'; // Solo Y cambia, X resta al centro
-            headerText.classList.add('visible');
-        });
-        
-        // Dopo l'animazione, naviga alla pagina
-        setTimeout(() => {
-            if (href && href !== '#') {
-                window.location.href = href;
-            }
-        }, 500);
-    }
-
-    // Nascondi l'animazione di pulsazione quando si clicca
-    function hidePulseAnimation() {
-        if (pulseRing) {
-            pulseRing.classList.add('hidden');
-            hasClicked = true;
-        }
-    }
-
-    // Inizializza
-    initializeCircle();
-
-    // Controlla se il menu è stato aperto in precedenza
-    const menuWasOpened = localStorage.getItem('menuOpened') === 'true';
-    
-    if (menuWasOpened) {
-        // Se il menu è stato aperto, nascondi l'animazione di pulsazione
-        hidePulseAnimation();
-        // Imposta lo stato del menu come aperto
-        menuOpen = true;
-        hasClicked = true;
-        // Apri il menu senza animazione per evitare che si veda l'animazione al reload
-        if (bottomMenu) {
-            bottomMenu.classList.add('open');
-            bottomMenu.style.height = MENU_HEIGHT + 'px';
-            bottomMenu.style.transition = 'none';
-            // Ripristina la transizione normale dopo un breve delay
-            setTimeout(() => {
-                bottomMenu.style.transition = 'height 0.2s ease-out';
-            }, 100);
-        }
-    }
-
-    // Controlla se siamo sulla home
-    function isHomePage() {
-        const currentPath = window.location.pathname;
-        const currentHref = window.location.href;
-        return currentPath === '/' || 
-               currentPath.endsWith('index.html') || 
-               currentPath.endsWith('/') || 
-               currentPath.includes('/index.html') ||
-               currentHref.endsWith('/') ||
-               currentHref.endsWith('index.html');
-    }
-    
-    // Controlla quale voce del menu è attiva e sottolineala
-    function setActiveMenuItem() {
-        // Se siamo sulla home, non sottolineare nulla (resetta)
-        if (isHomePage()) {
-            sessionStorage.removeItem('activeMenuLink');
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            return;
-        }
-        
-        // Se non siamo sulla home, controlla quale voce è attiva e sottolineala
-        const activeLink = sessionStorage.getItem('activeMenuLink');
-        if (activeLink) {
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach(item => {
-                const itemHref = item.getAttribute('href');
-                if (itemHref === activeLink) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-        }
-    }
-
-    // Aggiungi event listener ai menu items
-    const menuItems = document.querySelectorAll('.menu-item');
-    menuItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            animateMenuTextToTop(item);
-        });
-    });
-    
-    // Imposta la voce attiva al caricamento
-    setActiveMenuItem();
-    
-    // Quando si naviga (incluso quando si torna indietro), controlla di nuovo
-    window.addEventListener('pageshow', (e) => {
-        setActiveMenuItem();
-    });
-    
-    // Quando si usa il pulsante indietro del browser
-    window.addEventListener('popstate', () => {
-        // Piccolo delay per permettere al browser di navigare
-        setTimeout(() => {
-            setActiveMenuItem();
-        }, 0);
-    });
-
-    // Click sul cerchio
-    let totalDragDistance = 0;
-    let hasMoved = false;
-
-    logoCircle.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        if (springAnimId) {
-            cancelAnimationFrame(springAnimId);
-            springAnimId = null;
-        }
-        
-        logoContainer.style.transition = 'none';
-        if (bottomMenu) {
-            bottomMenu.classList.add('dragging');
-        }
-        
-        isDragging = true;
-        hasMoved = false;
-        totalDragDistance = 0;
-        dragStartX = e.clientX;
-        dragStartY = e.clientY;
-        
-        const pos = getCirclePosition();
-        dragStartLeft = pos.left;
-        dragStartTop = pos.top;
-        currentCircleLeft = dragStartLeft;
-        currentCircleTop = dragStartTop;
-        
-        logoCircle.classList.add('dragging');
-    });
-
-    document.addEventListener('mousemove', (e) => {
-        if (isDragging && logoCircle) {
-            const deltaX = e.clientX - dragStartX;
-            const deltaY = e.clientY - dragStartY;
-            
-            totalDragDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            
-            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
-                hasMoved = true;
-            }
-            
-            const moveRatio = 0.75;
-            currentCircleLeft = dragStartLeft + (deltaX * moveRatio);
-            currentCircleTop = dragStartTop + (deltaY * moveRatio);
-            
-            const minLeft = CIRCLE_SIZE / 2;
-            const maxLeft = window.innerWidth - CIRCLE_SIZE / 2;
-            const minTop = CIRCLE_SIZE / 2;
-            const maxTop = window.innerHeight - CIRCLE_SIZE / 2;
-            
-            currentCircleLeft = Math.max(minLeft, Math.min(maxLeft, currentCircleLeft));
-            currentCircleTop = Math.max(minTop, Math.min(maxTop, currentCircleTop));
-            
-            setCirclePosition(currentCircleLeft, currentCircleTop);
-        }
-    });
-
-    document.addEventListener('mouseup', (e) => {
-        if (isDragging) {
-            isDragging = false;
-            logoCircle.classList.remove('dragging');
-            
-            if (bottomMenu) {
-                bottomMenu.classList.remove('dragging');
-            }
-            
-            // Se il drag è minore di 8px, considera come click
-            if (totalDragDistance < 8 && !hasMoved) {
-                if (!hasClicked) {
-                    // Prima volta: nascondi animazione e apri menu
-                    hidePulseAnimation();
-                    openMenu(true);
-                }
-                // Dopo il primo click, i click non fanno nulla (menu rimane aperto)
-                
-                totalDragDistance = 0;
-                hasMoved = false;
-                return;
-            }
-            
-            // Se è un drag, applica fisica a molla - sempre al centro
-            updateCircleRestPosition();
-            
-            const velocityX = (currentCircleLeft - dragStartLeft) * 0.3;
-            const velocityY = (currentCircleTop - dragStartTop) * 0.3;
-            
-            animateSpring(circleRestLeft, circleRestTop, currentCircleLeft, currentCircleTop, velocityX, velocityY);
-            
-            setTimeout(() => {
-                hasMoved = false;
-                totalDragDistance = 0;
-            }, 100);
-        }
-    });
-
-    // Touch support
-    let totalTouchDistance = 0;
-    
-    logoCircle.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        if (springAnimId) {
-            cancelAnimationFrame(springAnimId);
-            springAnimId = null;
-        }
-        
-        logoContainer.style.transition = 'none';
-        if (bottomMenu) {
-            bottomMenu.classList.add('dragging');
-        }
-        
-        isDragging = true;
-        hasMoved = false;
-        totalTouchDistance = 0;
-        dragStartX = e.touches[0].clientX;
-        dragStartY = e.touches[0].clientY;
-        
-        const pos = getCirclePosition();
-        dragStartLeft = pos.left;
-        dragStartTop = pos.top;
-        currentCircleLeft = dragStartLeft;
-        currentCircleTop = dragStartTop;
-        
-        logoCircle.classList.add('dragging');
-    }, { passive: false });
-
-    document.addEventListener('touchmove', (e) => {
-        if (isDragging && logoCircle) {
-            e.preventDefault();
-            const deltaX = e.touches[0].clientX - dragStartX;
-            const deltaY = e.touches[0].clientY - dragStartY;
-            
-            totalTouchDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            
-            if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
-                hasMoved = true;
-            }
-            
-            const moveRatio = 0.75;
-            currentCircleLeft = dragStartLeft + (deltaX * moveRatio);
-            currentCircleTop = dragStartTop + (deltaY * moveRatio);
-            
-            const minLeft = CIRCLE_SIZE / 2;
-            const maxLeft = window.innerWidth - CIRCLE_SIZE / 2;
-            const minTop = CIRCLE_SIZE / 2;
-            const maxTop = window.innerHeight - CIRCLE_SIZE / 2;
-            
-            currentCircleLeft = Math.max(minLeft, Math.min(maxLeft, currentCircleLeft));
-            currentCircleTop = Math.max(minTop, Math.min(maxTop, currentCircleTop));
-            
-            setCirclePosition(currentCircleLeft, currentCircleTop);
-        }
-    }, { passive: false });
-
-    document.addEventListener('touchend', (e) => {
-        if (isDragging) {
-            isDragging = false;
-            logoCircle.classList.remove('dragging');
-            
-            if (bottomMenu) {
-                bottomMenu.classList.remove('dragging');
-            }
-            
-            // Se il drag è minore di 8px, considera come click
-            if (totalTouchDistance < 8 && !hasMoved) {
-                if (!hasClicked) {
-                    // Prima volta: nascondi animazione e apri menu
-                    hidePulseAnimation();
-                    openMenu(true);
-                }
-                // Dopo il primo click, i click non fanno nulla (menu rimane aperto)
-                
-                totalTouchDistance = 0;
-                hasMoved = false;
-                return;
-            }
-            
-            // Se è un drag, applica fisica a molla - sempre al centro
-            updateCircleRestPosition();
-            
-            const velocityX = (currentCircleLeft - dragStartLeft) * 0.3;
-            const velocityY = (currentCircleTop - dragStartTop) * 0.3;
-            animateSpring(circleRestLeft, circleRestTop, currentCircleLeft, currentCircleTop, velocityX, velocityY);
-            
-            setTimeout(() => {
-                hasMoved = false;
-                totalTouchDistance = 0;
-            }, 100);
-        }
-    });
-
-    // Aggiorna posizione su resize - sempre al centro
-    window.addEventListener('resize', () => {
-        if (!isDragging && !springAnimId) {
-            updateCircleRestPosition();
-            setCirclePosition(circleRestLeft, circleRestTop);
-        }
-    });
-})();
-</script>
+    <script src="script.js" defer></script>
 </body>
 </html>
