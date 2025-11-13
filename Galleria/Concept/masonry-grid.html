@@ -21,6 +21,14 @@
         font-style: normal;
     }
 
+    @font-face {
+        font-family: 'PPNeueMontreal';
+        src: url('../../Fonts/PPNeueMontreal-Book.woff2') format('woff2'),
+             url('../../Fonts/PPNeueMontreal-Book.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+
     * {
         margin: 0;
         padding: 0;
@@ -30,7 +38,7 @@
     body {
         background-color: #000000;
         padding: 20px;
-        padding-top: 70px;
+        padding-top: 140px;
     }
 
     .header {
@@ -48,6 +56,251 @@
 
     .header.loaded {
         animation: moveHeaderToTop 0.5s ease-in-out 0s forwards;
+    }
+
+    .tag-filter-section {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        z-index: 998;
+        background-color: #000000;
+        height: 35px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        opacity: 0;
+        transform: translateX(-100%);
+        transition: opacity 0.5s ease-in, transform 0.5s ease-in-out;
+    }
+
+    .tag-filter-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1.5px;
+        background-color: #ffffff;
+        z-index: 999;
+        pointer-events: none;
+    }
+
+    .tag-filter-section.visible {
+        opacity: 1;
+    }
+
+    .tag-filter-section.loaded {
+        animation: slideInFromLeft 0.6s ease-out forwards;
+    }
+
+    @keyframes slideInFromLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .year-filter-section {
+        position: fixed;
+        top: 105px;
+        left: 0;
+        right: 0;
+        z-index: 998;
+        background-color: #000000;
+        height: 35px;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        opacity: 0;
+        transform: translateX(-100%);
+        transition: opacity 0.5s ease-in, transform 0.5s ease-in-out;
+    }
+
+    .year-filter-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1.5px;        background-color: #ffffff;
+        z-index: 999;
+        pointer-events: none;
+    }
+
+    .year-filter-section::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #ffffff;
+        z-index: 999;
+        pointer-events: none;
+    }
+
+    .year-filter-section.visible {
+        opacity: 1;
+    }
+
+    .year-filter-section.loaded {
+        animation: slideInFromLeft 0.6s ease-out 0.1s forwards;
+    }
+
+    .year-label {
+        color: white;
+        font-family: 'PPNeueMontreal', sans-serif;
+        font-size: 18px;
+        white-space: nowrap;
+        position: absolute;
+        left: 20px;
+        z-index: 1000;
+        pointer-events: none;
+    }
+
+    .year-container {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0;
+        align-items: center;
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex: 1;
+        margin-left: 70px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .year-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .year-button {
+        height: 35px;
+        padding: 0 18px;
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        font-family: 'PPNeueMontreal', sans-serif;
+        font-size: 16px;
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        border-bottom: 1px solid transparent;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .year-button::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: #ffffff;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .year-button:hover::after {
+        opacity: 1;
+    }
+
+    .year-button.selected {
+        background-color: #ffffff;
+        color: #000000;
+    }
+
+    .year-button.selected::after {
+        opacity: 1;
+        background-color: #000000;
+    }
+
+    .tag-label {
+        color: white;
+        font-family: 'PPNeueMontreal', sans-serif;
+        font-size: 18px;
+        white-space: nowrap;
+        position: absolute;
+        left: 20px;
+        z-index: 1000;
+        pointer-events: none;
+    }
+
+    .tag-container {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0;
+        align-items: center;
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex: 1;
+        margin-left: 70px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .tag-container::-webkit-scrollbar {
+        display: none;
+    }
+
+
+    .tag-button {
+        height: 35px;
+        padding: 0 18px;
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        font-family: 'PPNeueMontreal', sans-serif;
+        font-size: 16px;
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        border-bottom: 1px solid transparent;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .tag-button::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: #ffffff;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .tag-button:hover::after {
+        opacity: 1;
+    }
+
+    .tag-button.selected {
+        background-color: #ffffff;
+        color: #000000;
+    }
+
+    .tag-button.selected::after {
+        opacity: 1;
+        background-color: #000000;
     }
 
     .header-rectangle {
@@ -343,7 +596,7 @@
     @media (max-width: 992px) {
         body {
             padding: 15px;
-            padding-top: 75px;
+            padding-top: 140px;
         }
         .masonry-container {
             gap: 15px;
@@ -385,7 +638,7 @@
     @media (max-width: 576px) {
         body {
             padding: 10px;
-            padding-top: 70px;
+            padding-top: 140px;
         }
         .masonry-container {
             gap: 10px;
@@ -423,6 +676,14 @@
     <div class="header-rectangle"></div>
     <div class="header-text">Works</div>
 </header>
+<div class="tag-filter-section" id="tag-filter-section">
+    <span class="tag-label">TAG:</span>
+    <div class="tag-container" id="tag-container"></div>
+</div>
+<div class="year-filter-section" id="year-filter-section">
+    <span class="year-label">ANNO:</span>
+    <div class="year-container" id="year-container"></div>
+</div>
 <div class="logo-circle" id="logo-circle">
     <img src="../../Logo/logo-light.png" alt="Logo">
 </div>
@@ -463,6 +724,620 @@
     // Set per tracciare le immagini già caricate
     const loadedImages = new Set();
 
+    // Sistema di filtraggio per tag
+    let selectedTags = new Set();
+    let allProjectsData = [];
+    const tagFilterSection = document.getElementById('tag-filter-section');
+    const tagContainer = document.getElementById('tag-container');
+    
+    // Sistema di filtraggio per anno
+    let selectedYears = new Set();
+    const yearFilterSection = document.getElementById('year-filter-section');
+    const yearContainer = document.getElementById('year-container');
+    
+    // Variabili per l'animazione automatica dei tag
+    let autoScrollAnimation = null;
+    let isAutoScrollPaused = false;
+    let autoScrollSpeed = 0.2; // pixel per frame (ridotto per scorrimento più lento)
+    let scrollAccumulator = 0; // Accumulatore per valori decimali
+    
+    // Variabili per l'animazione automatica degli anni
+    let autoScrollYearAnimation = null;
+    let isAutoScrollYearPaused = false;
+    let autoScrollYearSpeed = 0.2; // pixel per frame
+    let scrollYearAccumulator = 0; // Accumulatore per valori decimali
+
+    // Funzione per estrarre tutti i tag unici dai progetti
+    function getAllUniqueTags() {
+        const allProjects = [...(projects || []), ...(openProjects || [])];
+        const tagsSet = new Set();
+        allProjects.forEach(project => {
+            if (project.tags && Array.isArray(project.tags)) {
+                project.tags.forEach(tag => tagsSet.add(tag));
+            }
+        });
+        return Array.from(tagsSet).sort();
+    }
+
+    // Funzione per estrarre tutti gli anni unici dai progetti
+    function getAllUniqueYears() {
+        const allProjects = [...(projects || []), ...(openProjects || [])];
+        const yearsSet = new Set();
+        allProjects.forEach(project => {
+            if (project.startDate) {
+                yearsSet.add(project.startDate);
+            }
+        });
+        return Array.from(yearsSet).sort((a, b) => b.localeCompare(a)); // Ordine decrescente (più recenti prima)
+    }
+
+    // Funzione per creare i pulsanti anno
+    function createYearButtons() {
+        const uniqueYears = getAllUniqueYears();
+        yearContainer.innerHTML = '';
+        
+        uniqueYears.forEach(year => {
+            const button = document.createElement('button');
+            button.className = 'year-button';
+            button.textContent = year;
+            button.dataset.year = year;
+            button.addEventListener('click', () => toggleYear(year));
+            yearContainer.appendChild(button);
+        });
+        
+        // Inizializza il drag e lo scroll con la rotella per gli anni
+        initYearContainerScroll();
+        
+        // Avvia l'animazione automatica dopo 2 secondi
+        setTimeout(() => {
+            startAutoScrollYear();
+        }, 2000);
+    }
+
+    // Funzione per selezionare/deselezionare un anno
+    function toggleYear(year) {
+        if (selectedYears.has(year)) {
+            selectedYears.delete(year);
+        } else {
+            selectedYears.add(year);
+        }
+        
+        // Aggiorna lo stato visivo dei pulsanti
+        const buttons = yearContainer.querySelectorAll('.year-button');
+        buttons.forEach(button => {
+            if (selectedYears.has(button.dataset.year)) {
+                button.classList.add('selected');
+            } else {
+                button.classList.remove('selected');
+            }
+        });
+        
+        // Metti in pausa l'animazione quando si seleziona un anno
+        pauseAutoScrollYear();
+        
+        // Filtra i progetti
+        filterProjects();
+    }
+
+    // Funzione per creare i pulsanti tag
+    function createTagButtons() {
+        const uniqueTags = getAllUniqueTags();
+        tagContainer.innerHTML = '';
+        
+        uniqueTags.forEach(tag => {
+            const button = document.createElement('button');
+            button.className = 'tag-button';
+            button.textContent = tag;
+            button.dataset.tag = tag;
+            button.addEventListener('click', () => toggleTag(tag));
+            tagContainer.appendChild(button);
+        });
+        
+        // Inizializza il drag e lo scroll con la rotella
+        initTagContainerScroll();
+        
+        // Avvia l'animazione automatica dopo 2 secondi
+        setTimeout(() => {
+            startAutoScroll();
+        }, 2000);
+    }
+
+    // Funzione per controllare se c'è contenuto scrollabile (tag)
+    function hasScrollableContent() {
+        if (!tagContainer) return false;
+        const maxScroll = tagContainer.scrollWidth - tagContainer.clientWidth;
+        return maxScroll > 1; // Tolleranza di 1px per evitare problemi di arrotondamento
+    }
+
+    // Funzione per controllare se c'è contenuto scrollabile (anni)
+    function hasScrollableContentYear() {
+        if (!yearContainer) return false;
+        const maxScroll = yearContainer.scrollWidth - yearContainer.clientWidth;
+        return maxScroll > 1; // Tolleranza di 1px per evitare problemi di arrotondamento
+    }
+
+    // Funzione per avviare l'animazione automatica di scroll
+    function startAutoScroll() {
+        if (!tagContainer) return;
+        
+        // Controlla se c'è contenuto scrollabile prima di avviare
+        if (!hasScrollableContent()) {
+            // Se non c'è contenuto scrollabile, ferma l'animazione se è attiva
+            if (autoScrollAnimation) {
+                cancelAnimationFrame(autoScrollAnimation);
+                autoScrollAnimation = null;
+            }
+            return;
+        }
+        
+        // Ferma l'animazione precedente se esiste
+        if (autoScrollAnimation) {
+            cancelAnimationFrame(autoScrollAnimation);
+            autoScrollAnimation = null;
+        }
+        
+        // Reset dell'accumulatore quando si riavvia l'animazione
+        scrollAccumulator = 0;
+        
+        function animate() {
+            // Controlla se l'animazione è in pausa
+            if (isAutoScrollPaused) {
+                autoScrollAnimation = requestAnimationFrame(animate);
+                return;
+            }
+            
+            // Calcola la larghezza scrollabile
+            const maxScroll = tagContainer.scrollWidth - tagContainer.clientWidth;
+            
+            // Se non c'è più contenuto scrollabile (finestra ridimensionata), ferma l'animazione
+            if (maxScroll <= 1) {
+                autoScrollAnimation = null;
+                return;
+            }
+            
+            // Se siamo arrivati in fondo, ricomincia dall'inizio
+            if (tagContainer.scrollLeft >= maxScroll - 1) {
+                tagContainer.scrollLeft = 0;
+                scrollAccumulator = 0; // Reset dell'accumulatore quando si ricomincia
+            } else {
+                // Aggiungi la velocità all'accumulatore
+                scrollAccumulator += autoScrollSpeed;
+                
+                // Se l'accumulatore ha raggiunto almeno 1 pixel, applica lo scroll
+                if (scrollAccumulator >= 1) {
+                    const pixelsToScroll = Math.floor(scrollAccumulator);
+                    tagContainer.scrollLeft += pixelsToScroll;
+                    scrollAccumulator -= pixelsToScroll; // Mantieni la parte decimale
+                }
+            }
+            
+            autoScrollAnimation = requestAnimationFrame(animate);
+        }
+        
+        // Avvia l'animazione
+        animate();
+    }
+
+    // Funzione per mettere in pausa l'animazione per 5 secondi (tag)
+    function pauseAutoScroll() {
+        isAutoScrollPaused = true;
+        setTimeout(() => {
+            isAutoScrollPaused = false;
+        }, 5000);
+    }
+
+    // Funzione per avviare l'animazione automatica di scroll degli anni
+    function startAutoScrollYear() {
+        if (!yearContainer) return;
+        
+        // Controlla se c'è contenuto scrollabile prima di avviare
+        if (!hasScrollableContentYear()) {
+            // Se non c'è contenuto scrollabile, ferma l'animazione se è attiva
+            if (autoScrollYearAnimation) {
+                cancelAnimationFrame(autoScrollYearAnimation);
+                autoScrollYearAnimation = null;
+            }
+            return;
+        }
+        
+        // Ferma l'animazione precedente se esiste
+        if (autoScrollYearAnimation) {
+            cancelAnimationFrame(autoScrollYearAnimation);
+            autoScrollYearAnimation = null;
+        }
+        
+        // Reset dell'accumulatore quando si riavvia l'animazione
+        scrollYearAccumulator = 0;
+        
+        function animate() {
+            // Controlla se l'animazione è in pausa
+            if (isAutoScrollYearPaused) {
+                autoScrollYearAnimation = requestAnimationFrame(animate);
+                return;
+            }
+            
+            // Calcola la larghezza scrollabile
+            const maxScroll = yearContainer.scrollWidth - yearContainer.clientWidth;
+            
+            // Se non c'è più contenuto scrollabile (finestra ridimensionata), ferma l'animazione
+            if (maxScroll <= 1) {
+                autoScrollYearAnimation = null;
+                return;
+            }
+            
+            // Se siamo arrivati in fondo, ricomincia dall'inizio
+            if (yearContainer.scrollLeft >= maxScroll - 1) {
+                yearContainer.scrollLeft = 0;
+                scrollYearAccumulator = 0; // Reset dell'accumulatore quando si ricomincia
+            } else {
+                // Aggiungi la velocità all'accumulatore
+                scrollYearAccumulator += autoScrollYearSpeed;
+                
+                // Se l'accumulatore ha raggiunto almeno 1 pixel, applica lo scroll
+                if (scrollYearAccumulator >= 1) {
+                    const pixelsToScroll = Math.floor(scrollYearAccumulator);
+                    yearContainer.scrollLeft += pixelsToScroll;
+                    scrollYearAccumulator -= pixelsToScroll; // Mantieni la parte decimale
+                }
+            }
+            
+            autoScrollYearAnimation = requestAnimationFrame(animate);
+        }
+        
+        // Avvia l'animazione
+        animate();
+    }
+
+    // Funzione per mettere in pausa l'animazione per 5 secondi (anni)
+    function pauseAutoScrollYear() {
+        isAutoScrollYearPaused = true;
+        setTimeout(() => {
+            isAutoScrollYearPaused = false;
+        }, 5000);
+    }
+
+    // Funzione per inizializzare il drag e lo scroll con la rotella
+    function initTagContainerScroll() {
+        if (!tagContainer) return;
+        
+        let isDragging = false;
+        let startX = 0;
+        let scrollLeft = 0;
+        let hasMoved = false;
+        let dragThreshold = 5; // Soglia minima per considerare un movimento come drag
+        let clickedButton = null;
+
+        // Drag con mouse - permette il drag anche quando si clicca su un tag
+        tagContainer.addEventListener('mousedown', (e) => {
+            // Salva quale button è stato cliccato (se presente)
+            if (e.target.classList.contains('tag-button')) {
+                clickedButton = e.target;
+            } else {
+                clickedButton = null;
+            }
+            
+            isDragging = true;
+            hasMoved = false;
+            tagContainer.style.cursor = 'grabbing';
+            tagContainer.style.userSelect = 'none';
+            startX = e.pageX - tagContainer.offsetLeft;
+            scrollLeft = tagContainer.scrollLeft;
+            // Non prevenire il default qui, così il click può funzionare se non c'è movimento
+        });
+
+        tagContainer.addEventListener('mouseleave', () => {
+            isDragging = false;
+            clickedButton = null;
+            tagContainer.style.cursor = 'grab';
+            tagContainer.style.userSelect = '';
+        });
+
+        tagContainer.addEventListener('mouseup', (e) => {
+            if (isDragging) {
+                // Se c'è stato movimento, previeni il click sul button
+                if (hasMoved && clickedButton) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                
+                isDragging = false;
+                clickedButton = null;
+                tagContainer.style.cursor = 'grab';
+                tagContainer.style.userSelect = '';
+                
+                // Reset dopo un breve delay
+                setTimeout(() => {
+                    hasMoved = false;
+                }, 100);
+            }
+        });
+
+        tagContainer.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const x = e.pageX - tagContainer.offsetLeft;
+            const walk = (x - startX) * 2; // Velocità di scroll (2x)
+            
+            // Controlla se il movimento supera la soglia
+            if (Math.abs(walk) > dragThreshold) {
+                hasMoved = true;
+                e.preventDefault();
+                tagContainer.scrollLeft = scrollLeft - walk;
+                // Metti in pausa l'animazione quando l'utente trascina
+                pauseAutoScroll();
+            }
+        });
+
+        // Scroll con rotella del mouse
+        tagContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            tagContainer.scrollLeft += e.deltaY;
+            // Metti in pausa l'animazione quando l'utente scrolla
+            pauseAutoScroll();
+        }, { passive: false });
+
+        // Supporto touch per mobile - permette il drag anche quando si tocca un tag
+        let touchStartX = 0;
+        let touchScrollLeft = 0;
+        let isTouchDragging = false;
+        let touchHasMoved = false;
+        let touchedButton = null;
+
+        tagContainer.addEventListener('touchstart', (e) => {
+            // Salva quale button è stato toccato (se presente)
+            if (e.target.classList.contains('tag-button')) {
+                touchedButton = e.target;
+            } else {
+                touchedButton = null;
+            }
+            
+            isTouchDragging = true;
+            touchHasMoved = false;
+            touchStartX = e.touches[0].pageX - tagContainer.offsetLeft;
+            touchScrollLeft = tagContainer.scrollLeft;
+        }, { passive: true });
+
+        tagContainer.addEventListener('touchmove', (e) => {
+            if (!isTouchDragging) return;
+            const x = e.touches[0].pageX - tagContainer.offsetLeft;
+            const walk = (x - touchStartX) * 2;
+            
+            // Controlla se il movimento supera la soglia
+            if (Math.abs(walk) > dragThreshold) {
+                touchHasMoved = true;
+                tagContainer.scrollLeft = touchScrollLeft - walk;
+                // Metti in pausa l'animazione quando l'utente trascina
+                pauseAutoScroll();
+            }
+        }, { passive: true });
+
+        tagContainer.addEventListener('touchend', (e) => {
+            if (isTouchDragging) {
+                // Se c'è stato movimento, previeni il click sul button
+                if (touchHasMoved && touchedButton) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }
+            
+            isTouchDragging = false;
+            touchedButton = null;
+            touchHasMoved = false;
+        }, { passive: false });
+
+        // Cursore grab quando si passa sopra
+        tagContainer.style.cursor = 'grab';
+    }
+
+    // Funzione per inizializzare il drag e lo scroll con la rotella per gli anni
+    function initYearContainerScroll() {
+        if (!yearContainer) return;
+        
+        let isDragging = false;
+        let startX = 0;
+        let scrollLeft = 0;
+        let hasMoved = false;
+        let dragThreshold = 5; // Soglia minima per considerare un movimento come drag
+        let clickedButton = null;
+
+        // Drag con mouse - permette il drag anche quando si clicca su un anno
+        yearContainer.addEventListener('mousedown', (e) => {
+            // Salva quale button è stato cliccato (se presente)
+            if (e.target.classList.contains('year-button')) {
+                clickedButton = e.target;
+            } else {
+                clickedButton = null;
+            }
+            
+            isDragging = true;
+            hasMoved = false;
+            yearContainer.style.cursor = 'grabbing';
+            yearContainer.style.userSelect = 'none';
+            startX = e.pageX - yearContainer.offsetLeft;
+            scrollLeft = yearContainer.scrollLeft;
+            // Non prevenire il default qui, così il click può funzionare se non c'è movimento
+        });
+
+        yearContainer.addEventListener('mouseleave', () => {
+            isDragging = false;
+            clickedButton = null;
+            yearContainer.style.cursor = 'grab';
+            yearContainer.style.userSelect = '';
+        });
+
+        yearContainer.addEventListener('mouseup', (e) => {
+            if (isDragging) {
+                // Se c'è stato movimento, previeni il click sul button
+                if (hasMoved && clickedButton) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                
+                isDragging = false;
+                clickedButton = null;
+                yearContainer.style.cursor = 'grab';
+                yearContainer.style.userSelect = '';
+                
+                // Reset dopo un breve delay
+                setTimeout(() => {
+                    hasMoved = false;
+                }, 100);
+            }
+        });
+
+        yearContainer.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const x = e.pageX - yearContainer.offsetLeft;
+            const walk = (x - startX) * 2; // Velocità di scroll (2x)
+            
+            // Controlla se il movimento supera la soglia
+            if (Math.abs(walk) > dragThreshold) {
+                hasMoved = true;
+                e.preventDefault();
+                yearContainer.scrollLeft = scrollLeft - walk;
+                // Metti in pausa l'animazione quando l'utente trascina
+                pauseAutoScrollYear();
+            }
+        });
+
+        // Scroll con rotella del mouse
+        yearContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            yearContainer.scrollLeft += e.deltaY;
+            // Metti in pausa l'animazione quando l'utente scrolla
+            pauseAutoScrollYear();
+        }, { passive: false });
+
+        // Supporto touch per mobile - permette il drag anche quando si tocca un anno
+        let touchStartX = 0;
+        let touchScrollLeft = 0;
+        let isTouchDragging = false;
+        let touchHasMoved = false;
+        let touchedButton = null;
+
+        yearContainer.addEventListener('touchstart', (e) => {
+            // Salva quale button è stato toccato (se presente)
+            if (e.target.classList.contains('year-button')) {
+                touchedButton = e.target;
+            } else {
+                touchedButton = null;
+            }
+            
+            isTouchDragging = true;
+            touchHasMoved = false;
+            touchStartX = e.touches[0].pageX - yearContainer.offsetLeft;
+            touchScrollLeft = yearContainer.scrollLeft;
+        }, { passive: true });
+
+        yearContainer.addEventListener('touchmove', (e) => {
+            if (!isTouchDragging) return;
+            const x = e.touches[0].pageX - yearContainer.offsetLeft;
+            const walk = (x - touchStartX) * 2;
+            
+            // Controlla se il movimento supera la soglia
+            if (Math.abs(walk) > dragThreshold) {
+                touchHasMoved = true;
+                yearContainer.scrollLeft = touchScrollLeft - walk;
+                // Metti in pausa l'animazione quando l'utente trascina
+                pauseAutoScrollYear();
+            }
+        }, { passive: true });
+
+        yearContainer.addEventListener('touchend', (e) => {
+            if (isTouchDragging) {
+                // Se c'è stato movimento, previeni il click sul button
+                if (touchHasMoved && touchedButton) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }
+            
+            isTouchDragging = false;
+            touchedButton = null;
+            touchHasMoved = false;
+        }, { passive: false });
+
+        // Cursore grab quando si passa sopra
+        yearContainer.style.cursor = 'grab';
+    }
+
+    // Funzione per selezionare/deselezionare un tag
+    function toggleTag(tag) {
+        if (selectedTags.has(tag)) {
+            selectedTags.delete(tag);
+        } else {
+            selectedTags.add(tag);
+        }
+        
+        // Aggiorna lo stato visivo dei pulsanti
+        const buttons = tagContainer.querySelectorAll('.tag-button');
+        buttons.forEach(button => {
+            if (selectedTags.has(button.dataset.tag)) {
+                button.classList.add('selected');
+            } else {
+                button.classList.remove('selected');
+            }
+        });
+        
+        // Metti in pausa l'animazione quando si seleziona un tag
+        pauseAutoScroll();
+        
+        // Filtra i progetti
+        filterProjects();
+    }
+
+    // Funzione per filtrare i progetti in base ai tag e agli anni selezionati
+    async function filterProjects() {
+        // Filtra i progetti in base ai tag e agli anni selezionati
+        let filteredProjects = allProjectsData;
+        
+        // Filtra per tag se ce ne sono selezionati
+        if (selectedTags.size > 0) {
+            filteredProjects = filteredProjects.filter(projectData => {
+                const projectTags = projectData.tags || [];
+                return Array.from(selectedTags).some(tag => projectTags.includes(tag));
+            });
+        }
+        
+        // Filtra per anno se ce ne sono selezionati
+        if (selectedYears.size > 0) {
+            filteredProjects = filteredProjects.filter(projectData => {
+                const projectYear = projectData.year || '';
+                return selectedYears.has(projectYear);
+            });
+        }
+        
+        // Se non ci sono progetti filtrati, mostra un messaggio
+        if (filteredProjects.length === 0) {
+            container.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Nessun progetto trovato con i filtri selezionati</p>';
+            return;
+        }
+        
+        // Ricrea la griglia con i progetti filtrati e anima
+        const { numColumns, columnWidth, gap } = getResponsiveSettings();
+        
+        try {
+            const imagePromises = filteredProjects.map(imageData => loadImage(imageData, columnWidth));
+            const results = await Promise.allSettled(imagePromises);
+            const imageData = results
+                .filter(result => result.status === 'fulfilled')
+                .map(result => result.value);
+
+            if (imageData.length === 0) {
+                container.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Nessuna immagine disponibile</p>';
+                return;
+            }
+
+            const { columns: distributedColumns, columnHeights: distributedHeights } = distributeImages(imageData, numColumns, gap);
+            // Anima quando si riorganizza dopo il filtraggio
+            renderColumns(distributedColumns, distributedHeights, columnWidth, gap, true);
+        } catch (error) {
+            console.error('Errore nel filtraggio dei progetti:', error);
+        }
+    }
+
+
     // Funzione per aggiustare i percorsi relativi (da Galleria/Concept/ serve un ../ in più)
     function adjustPath(path) {
         if (!path) return path;
@@ -474,21 +1349,61 @@
     }
 
     function getAllImages() {
-        // Combina tutti i progetti (normali e open)
-        const allProjects = [...(projects || []), ...(openProjects || [])];
+        // Usa i progetti base (non mischiati) per mantenere l'ordine sempre uguale
+        // Combina tutti i progetti base (normali e open) nell'ordine originale
+        const allBaseProjects = [];
+        
+        // Aggiungi prima i progetti normali (baseProjects se disponibile, altrimenti projects)
+        if (typeof baseProjects !== 'undefined' && Array.isArray(baseProjects)) {
+            allBaseProjects.push(...baseProjects);
+        } else if (typeof projects !== 'undefined' && Array.isArray(projects)) {
+            // Se baseProjects non è disponibile, usa projects ma prendi solo i primi 8 (numero originale)
+            const uniqueProjects = [];
+            const seen = new Set();
+            projects.forEach(project => {
+                const key = project.preview || project.name;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    uniqueProjects.push(project);
+                }
+            });
+            allBaseProjects.push(...uniqueProjects.slice(0, 8));
+        }
+        
+        // Aggiungi poi i progetti open (baseOpenProjects se disponibile, altrimenti openProjects)
+        if (typeof baseOpenProjects !== 'undefined' && Array.isArray(baseOpenProjects)) {
+            allBaseProjects.push(...baseOpenProjects);
+        } else if (typeof openProjects !== 'undefined' && Array.isArray(openProjects)) {
+            // Se baseOpenProjects non è disponibile, usa openProjects ma prendi solo i primi 10 (numero originale)
+            const uniqueOpenProjects = [];
+            const seen = new Set();
+            openProjects.forEach(project => {
+                const key = project.preview || project.name;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    uniqueOpenProjects.push(project);
+                }
+            });
+            allBaseProjects.push(...uniqueOpenProjects.slice(0, 10));
+        }
         
         // Raccogli solo le preview dei progetti (limitato a 10)
-        // Ogni elemento contiene src e page del progetto
+        // Ogni elemento contiene src, page e tags del progetto
         const allImages = [];
         const maxProjects = 10; // Limita a 10 progetti
         
-        allProjects.slice(0, maxProjects).forEach(project => {
+        allBaseProjects.slice(0, maxProjects).forEach(project => {
             // Aggiungi solo la preview se esiste (aggiustando il percorso)
             if (project.preview) {
-                allImages.push({
+                const imageData = {
                     src: adjustPath(project.preview),
-                    page: adjustPath(project.page || '')
-                });
+                    page: adjustPath(project.page || ''),
+                    tags: project.tags || [],
+                    year: project.startDate || ''
+                };
+                allImages.push(imageData);
+                // Salva anche i dati completi per il filtraggio
+                allProjectsData.push(imageData);
             }
         });
         
@@ -498,7 +1413,7 @@
             return [];
         }
         
-        // Non duplicare più le immagini, restituisci solo le 10 preview
+        // Restituisci le preview nell'ordine originale
         return allImages;
     }
 
@@ -535,6 +1450,8 @@
                 resolve({
                     src: imageData.src,
                     page: imageData.page,
+                    tags: imageData.tags || [],
+                    year: imageData.year || '',
                     width: columnWidth,
                     height: columnWidth * aspectRatio,
                     aspectRatio
@@ -558,7 +1475,7 @@
         return { columns, columnHeights };
     }
 
-    function renderColumns(columns, columnHeights, columnWidth, gap) {
+    function renderColumns(columns, columnHeights, columnWidth, gap, shouldAnimate = true) {
         container.innerHTML = '';
         container.style.gap = gap + 'px';
 
@@ -578,6 +1495,11 @@
                 item.className = 'masonry-item';
                 item.dataset.columnIndex = colIndex;
                 item.dataset.itemIndex = itemIndex;
+                
+                // Salva i tag del progetto nell'elemento per il filtraggio
+                if (imgData.tags && Array.isArray(imgData.tags)) {
+                    item.dataset.tags = JSON.stringify(imgData.tags);
+                }
 
                 // Crea il link se c'è una pagina del progetto
                 if (imgData.page) {
@@ -633,20 +1555,28 @@
 
         if (allImages.length === 0) return;
 
-        // Avvia le animazioni immediatamente, senza aspettare il caricamento delle immagini
-        const allItems = container.querySelectorAll('.masonry-item');
-        allItems.forEach(item => {
-            // Se l'immagine è già stata caricata, non animarla di nuovo
-            if (item.dataset.alreadyLoaded === 'true') {
+        // Avvia le animazioni solo se shouldAnimate è true
+        if (shouldAnimate) {
+            const allItems = container.querySelectorAll('.masonry-item');
+            allItems.forEach(item => {
+                // Se l'immagine è già stata caricata, non animarla di nuovo
+                if (item.dataset.alreadyLoaded === 'true') {
+                    item.classList.add('animate');
+                    return;
+                }
+                
+                const colIndex = parseInt(item.dataset.columnIndex) || 0;
+                const itemIndex = parseInt(item.dataset.itemIndex) || 0;
+                const delay = (ANIMATION_BASE_DELAY + colIndex * COLUMN_DELAY + itemIndex * ITEM_DELAY) * 1000;
+                setTimeout(() => item.classList.add('animate'), delay);
+            });
+        } else {
+            // Se non si deve animare, mostra immediatamente tutti gli elementi
+            const allItems = container.querySelectorAll('.masonry-item');
+            allItems.forEach(item => {
                 item.classList.add('animate');
-                return;
-            }
-            
-            const colIndex = parseInt(item.dataset.columnIndex) || 0;
-            const itemIndex = parseInt(item.dataset.itemIndex) || 0;
-            const delay = (ANIMATION_BASE_DELAY + colIndex * COLUMN_DELAY + itemIndex * ITEM_DELAY) * 1000;
-            setTimeout(() => item.classList.add('animate'), delay);
-        });
+            });
+        }
 
         // Funzione per allineare le colonne (può essere chiamata dopo il caricamento)
         const alignColumns = () => {
@@ -709,7 +1639,10 @@
         });
     }
 
-    async function createMasonryGrid() {
+    async function createMasonryGrid(shouldAnimate = true) {
+        // Reset dei dati dei progetti quando si ricrea la griglia
+        allProjectsData = [];
+        
         const images = getAllImages();
         if (images.length === 0) {
             container.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Nessuna immagine trovata</p>';
@@ -733,7 +1666,7 @@
             }
 
             const { columns: distributedColumns, columnHeights: distributedHeights } = distributeImages(imageData, numColumns, gap);
-            renderColumns(distributedColumns, distributedHeights, columnWidth, gap);
+            renderColumns(distributedColumns, distributedHeights, columnWidth, gap, shouldAnimate);
         } catch (error) {
             console.error('Errore nel caricamento delle immagini:', error);
         }
@@ -939,6 +1872,23 @@
                 headerRectangle.classList.add('loaded');
             }
             
+            // Mostra le sezioni tag e anno quando l'header è caricato
+            if (tagFilterSection) {
+                setTimeout(() => {
+                    tagFilterSection.classList.add('visible');
+                    tagFilterSection.classList.add('loaded');
+                    createTagButtons();
+                }, 500);
+            }
+            
+            if (yearFilterSection) {
+                setTimeout(() => {
+                    yearFilterSection.classList.add('visible');
+                    yearFilterSection.classList.add('loaded');
+                    createYearButtons();
+                }, 500);
+            }
+            
             // Crea la griglia dopo che le animazioni del cerchio e header sono partite
             // Su mobile, ritarda di più per evitare che si carichi troppo presto
             const isMobile = window.innerWidth <= 768;
@@ -949,9 +1899,21 @@
     });
 
     let resizeTimer;
+    let tagResizeTimer;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(createMasonryGrid, 250);
+        // Al resize, ricrea la griglia senza animazione
+        resizeTimer = setTimeout(() => {
+            createMasonryGrid(false);
+        }, 250);
+        
+        // Controlla se l'animazione dei tag deve essere riavviata o fermata
+        clearTimeout(tagResizeTimer);
+        tagResizeTimer = setTimeout(() => {
+            // Riavvia l'animazione se necessario (si fermerà automaticamente se non c'è contenuto scrollabile)
+            startAutoScroll();
+            startAutoScrollYear();
+        }, 300);
     });
 
     // Back to top functionality
