@@ -574,7 +574,7 @@
             }
 
             const { columns, columnHeights } = distributeImages(imageData, numColumns, gap);
-            const gridDelay = LOGO_ANIMATION_DELAY + 500;
+            const gridDelay = LOGO_ANIMATION_DELAY + 10;
             setTimeout(() => {
                 renderColumns(columns, columnHeights, columnWidth, gap, shouldAnimate);
             }, gridDelay);
