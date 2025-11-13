@@ -638,6 +638,12 @@
         }
     }
 
+    function isNearPageBottom(threshold = 80) {
+        const scrollPosition = window.scrollY + window.innerHeight;
+        const totalHeight = document.documentElement.scrollHeight;
+        return totalHeight - scrollPosition <= threshold;
+    }
+
     function getCircleRestBottom() {
         return window.innerWidth <= 768 ? CIRCLE_REST_BOTTOM_MOBILE : CIRCLE_REST_BOTTOM_DESKTOP;
     }
@@ -858,7 +864,14 @@
         document.addEventListener('touchend', handleLogoDragEnd);
 
         window.addEventListener('scroll', () => {
-            if (menuOpen && !isDraggingLogo) {
+            const nearBottom = isNearPageBottom();
+
+            if (!menuOpen && nearBottom) {
+                toggleMenu();
+                return;
+            }
+
+            if (menuOpen && !isDraggingLogo && !nearBottom) {
                 toggleMenu();
             }
         }, { passive: true });
