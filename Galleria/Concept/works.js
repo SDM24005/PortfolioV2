@@ -243,14 +243,18 @@
     }
 
     function getAllUniqueTags() {
-        const all = [...(Array.isArray(baseProjects) ? baseProjects : []), ...(Array.isArray(baseOpenProjects) ? baseOpenProjects : [])];
+        const all = Array.isArray(baseProjects)
+            ? baseProjects
+            : (Array.isArray(projects) ? projects : []);
         const tags = new Set();
         all.forEach(project => project.tags?.forEach(tag => tags.add(tag)));
         return Array.from(tags).sort();
     }
 
     function getAllUniqueYears() {
-        const all = [...(Array.isArray(baseProjects) ? baseProjects : []), ...(Array.isArray(baseOpenProjects) ? baseOpenProjects : [])];
+        const all = Array.isArray(baseProjects)
+            ? baseProjects
+            : (Array.isArray(projects) ? projects : []);
         const years = new Set();
         all.forEach(project => {
             if (project.startDate) years.add(project.startDate);
@@ -349,19 +353,6 @@
         } else if (typeof projects !== 'undefined' && Array.isArray(projects)) {
             const seen = new Set();
             projects.forEach(project => {
-                const key = project.preview || project.name;
-                if (!seen.has(key)) {
-                    seen.add(key);
-                    all.push(project);
-                }
-            });
-        }
-
-        if (typeof baseOpenProjects !== 'undefined' && Array.isArray(baseOpenProjects)) {
-            all.push(...baseOpenProjects);
-        } else if (typeof openProjects !== 'undefined' && Array.isArray(openProjects)) {
-            const seen = new Set();
-            openProjects.forEach(project => {
                 const key = project.preview || project.name;
                 if (!seen.has(key)) {
                     seen.add(key);

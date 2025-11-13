@@ -16,20 +16,11 @@ Questa guida ti aiuterà ad aggiungere nuovi progetti al tuo portfolio in modo s
 
 ## 📁 Struttura delle Cartelle
 
-Il portfolio è organizzato in due categorie principali:
+Il portfolio è organizzato in una singola categoria di progetti:
 
 ```
 PortfolioV2/
-├── Progetti/              # Progetti normali (sfondo nero)
-│   ├── progetto-1/
-│   │   ├── img/
-│   │   │   ├── preview.jpg
-│   │   │   └── [altre immagini/video/pdf]
-│   │   └── progetto.html
-│   └── progetto-2/
-│       └── ...
-│
-├── Progetti Open/         # Progetti open (sfondo bianco)
+├── Progetti/              # Progetti principali (sfondo nero)
 │   ├── progetto-1/
 │   │   ├── img/
 │   │   │   ├── preview.jpg
@@ -39,67 +30,42 @@ PortfolioV2/
 │       └── ...
 │
 └── Template/             # Template per nuovi progetti
-    ├── progetto-normale/
-    └── progetto-open/
+    └── progetto-normale/
 ```
 
 ---
 
 ## 🎨 Tipi di Progetti
 
-### Progetto Normale
+### Progetto Standard
 - **Sfondo**: Nero (#000000)
 - **Testo**: Bianco
 - **Percorso**: `Progetti/progetto-X/`
 - **Template**: `Template/progetto-normale/progetto.html`
 
-### Progetto Open
-- **Sfondo**: Bianco (#ffffff)
-- **Testo**: Nero
-- **Percorso**: `Progetti Open/progetto-X/`
-- **Template**: `Template/progetto-open/progetto.html`
-
 ---
 
 ## 📝 Procedura Passo-Passo
 
-### 1. Scegli il Tipo di Progetto
+### 1. Crea la Cartella del Progetto
 
-Decidi se il progetto è **normale** (sfondo nero) o **open** (sfondo bianco).
-
-### 2. Crea la Cartella del Progetto
-
-#### Per Progetto Normale:
 ```bash
 # Crea la cartella (sostituisci X con il numero del progetto)
 mkdir Progetti/progetto-X
 mkdir Progetti/progetto-X/img
 ```
 
-#### Per Progetto Open:
-```bash
-# Crea la cartella (sostituisci X con il numero del progetto)
-mkdir "Progetti Open/progetto-X"
-mkdir "Progetti Open/progetto-X/img"
-```
-
 **⚠️ IMPORTANTE**: 
 - Usa sempre il formato `progetto-X` (con trattino, senza spazi)
 - I nomi delle cartelle devono essere in minuscolo
 
-### 3. Copia il Template HTML
+### 2. Copia il Template HTML
 
-#### Per Progetto Normale:
 ```bash
 copy Template\progetto-normale\progetto.html Progetti\progetto-X\progetto.html
 ```
 
-#### Per Progetto Open:
-```bash
-copy Template\progetto-open\progetto.html "Progetti Open\progetto-X\progetto.html"
-```
-
-### 4. Prepara i File Media
+### 3. Prepara i File Media
 
 Inserisci tutti i file del progetto nella cartella `img/`:
 
@@ -120,11 +86,9 @@ progetto-X/
 - ✅ Per video loop: aggiungi `-loop` o `_loop` al nome (es: `video-loop.mp4`)
 - ✅ La preview DEVE chiamarsi esattamente `preview.jpg`
 
-### 5. Configura il Progetto in `scripts/projects.js`
+### 4. Configura il Progetto in `scripts/projects.js`
 
-Apri il file `scripts/projects.js` e aggiungi l'oggetto progetto nell'array appropriato:
-
-#### Per Progetto Normale (aggiungi a `projects`):
+Apri il file `scripts/projects.js` e aggiungi l'oggetto progetto nell'array `baseProjects` (o nel punto indicato dalla tua configurazione):
 
 ```javascript
 {
@@ -147,35 +111,12 @@ Apri il file `scripts/projects.js` e aggiungi l'oggetto progetto nell'array appr
 }
 ```
 
-#### Per Progetto Open (aggiungi a `openProjects`):
-
-```javascript
-{
-    name: "Nome del Progetto Open",
-    page: "../Progetti Open/progetto-X/progetto.html",
-    preview: "../Progetti Open/progetto-X/img/preview.jpg",
-    description: "Descrizione del progetto open.",
-    tags: ["open", "tag1", "tag2"],
-    startDate: "2024-01",
-    endDate: "2024-03",
-    images: [
-        "../Progetti Open/progetto-X/img/immagine1.jpg",
-        "../Progetti Open/progetto-X/img/immagine2.jpg"
-    ],
-    media: [
-        "../Progetti Open/progetto-X/img/video-loop.mp4",
-        "../Progetti Open/progetto-X/img/documento.pdf"
-    ]
-}
-```
-
 **⚠️ IMPORTANTE**:
 - I percorsi devono iniziare con `../` (due punti e slash)
 - Usa sempre `/` (slash) nei percorsi, mai `\` (backslash)
-- Per "Progetti Open", mantieni lo spazio nel percorso
 - L'ordine degli elementi in `images` e `media` determina l'ordine di visualizzazione
 
-### 6. Verifica che tutto Funzioni
+### 5. Verifica che tutto Funzioni
 
 1. Apri il sito in un browser
 2. Vai alla galleria
@@ -310,7 +251,7 @@ Apri il file `scripts/projects.js` e aggiungi l'oggetto progetto nell'array appr
     // Descrizione testuale (può essere multi-riga)
     description: "Descrizione dettagliata del progetto. Può contenere più paragrafi se necessario.",
     
-    // Array di tag per filtri (usati nella galleria Open)
+    // Array di tag per filtri (usati nella galleria)
     tags: ["fotografia", "architettura", "2024"],
     
     // Data di inizio (formato: YYYY-MM)
@@ -366,7 +307,7 @@ Apri il file `scripts/projects.js` e aggiungi l'oggetto progetto nell'array appr
 ### Il progetto non appare nella galleria
 - ✅ Verifica che `preview.jpg` esista nella cartella `img/`
 - ✅ Controlla che il percorso in `projects.js` sia corretto
-- ✅ Assicurati che il progetto sia nell'array corretto (`projects` o `openProjects`)
+- ✅ Assicurati che il progetto sia incluso nell'array utilizzato dalla galleria (`baseProjects` / `projects`)
 - ✅ Verifica la sintassi JavaScript (virgole, parentesi graffe)
 
 ### Le immagini non si caricano
@@ -388,7 +329,7 @@ Apri il file `scripts/projects.js` e aggiungi l'oggetto progetto nell'array appr
 ### Il template non funziona
 - ✅ Verifica che il percorso del font sia corretto (`/Fonts/...`)
 - ✅ Controlla che il percorso di `projects.js` sia corretto (`../../scripts/projects.js`)
-- ✅ Assicurati di aver copiato il template corretto (normale vs open)
+- ✅ Assicurati di aver copiato il template `progetto-normale`
 
 ---
 
@@ -413,7 +354,7 @@ Prima di pubblicare un nuovo progetto, verifica:
 ## 💡 Suggerimenti
 
 1. **Ordine dei file**: L'ordine in cui aggiungi i file in `images` e `media` determina l'ordine di visualizzazione
-2. **Tag**: Usa tag coerenti per facilitare il filtraggio nella galleria Open
+2. **Tag**: Usa tag coerenti per facilitare il filtraggio nella galleria principale
 3. **Descrizioni**: Scrivi descrizioni chiare e coinvolgenti
 4. **Date**: Mantieni un formato consistente (YYYY-MM) per tutte le date
 5. **Backup**: Fai sempre backup prima di modificare `projects.js`
