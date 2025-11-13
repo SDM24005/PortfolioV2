@@ -866,15 +866,46 @@
                         logoCircle.classList.contains('loaded')) {
                         // Rimuovi l'event listener dopo l'uso
                         logoCircle.removeEventListener('animationend', handleAnimationEnd);
-                        // Inizializza la fisica del cerchio dopo che l'animazione è completata
-                        // Su mobile, aspetta un po' di più per assicurarsi che l'animazione sia completamente finita
-                        const isMobile = window.innerWidth <= 768;
-                        const delay = isMobile ? 100 : 50;
-                        setTimeout(() => {
-                            if (logoCircle && typeof initializeCirclePhysics === 'function') {
-                                initializeCirclePhysics();
-                            }
-                        }, delay);
+                        // Assicurati che l'header sia caricato prima di inizializzare la fisica
+                        // Questo previene il problema del cerchio che si sposta prima della scritta "Works"
+                        const headerLoaded = header && header.classList.contains('loaded');
+                        const headerRectLoaded = headerRectangle && headerRectangle.classList.contains('loaded');
+                        
+                        // Se l'header non è ancora caricato, aspetta
+                        if (!headerLoaded || !headerRectLoaded) {
+                            const checkHeader = setInterval(() => {
+                                const hLoaded = header && header.classList.contains('loaded');
+                                const hrLoaded = headerRectangle && headerRectangle.classList.contains('loaded');
+                                if (hLoaded && hrLoaded) {
+                                    clearInterval(checkHeader);
+                                    // Inizializza la fisica del cerchio dopo che l'animazione è completata
+                                    const isMobile = window.innerWidth <= 768;
+                                    const delay = isMobile ? 100 : 50;
+                                    setTimeout(() => {
+                                        if (logoCircle && typeof initializeCirclePhysics === 'function') {
+                                            initializeCirclePhysics();
+                                        }
+                                    }, delay);
+                                }
+                            }, 50);
+                            // Timeout di sicurezza dopo 1 secondo
+                            setTimeout(() => {
+                                clearInterval(checkHeader);
+                                if (logoCircle && typeof initializeCirclePhysics === 'function') {
+                                    initializeCirclePhysics();
+                                }
+                            }, 1000);
+                        } else {
+                            // Inizializza la fisica del cerchio dopo che l'animazione è completata
+                            // Su mobile, aspetta un po' di più per assicurarsi che l'animazione sia completamente finita
+                            const isMobile = window.innerWidth <= 768;
+                            const delay = isMobile ? 100 : 50;
+                            setTimeout(() => {
+                                if (logoCircle && typeof initializeCirclePhysics === 'function') {
+                                    initializeCirclePhysics();
+                                }
+                            }, delay);
+                        }
                     }
                 };
                 
@@ -911,6 +942,8 @@
                     }
                 }, fallbackTimeout);
             }
+            // Assicurati che l'header sia caricato PRIMA di spostare il cerchio
+            // Questo previene il problema del cerchio che si sposta prima della scritta "Works"
             if (header) {
                 header.classList.add('loaded');
             }
@@ -919,7 +952,11 @@
             }
             
             // Crea la griglia dopo che le animazioni del cerchio e header sono partite
-            setTimeout(() => createMasonryGrid(), LOGO_ANIMATION_DELAY);
+            // Su mobile, ritarda di più per evitare che si carichi troppo presto
+            const isMobile = window.innerWidth <= 768;
+            const headerAnimationDelay = 500; // Tempo per l'animazione dell'header
+            const gridDelay = isMobile ? LOGO_ANIMATION_DELAY + 500 + headerAnimationDelay : LOGO_ANIMATION_DELAY + headerAnimationDelay;
+            setTimeout(() => createMasonryGrid(), gridDelay);
         });
     });
 
@@ -1779,6 +1816,37 @@
             }
         }, fallbackDelay);
     }
+    // Reset della selezione del menu quando si torna indietro con le frecce
+    // Questo risolve il problema della scritta dell'ultima scelta ancora selezionata
+    window.addEventListener('popstate', () => {
+        // Piccolo delay per permettere al browser di navigare
+        setTimeout(() => {
+            // Se siamo sulla pagina masonry-grid, resetta la selezione
+            const activeLink = sessionStorage.getItem('activeMenuLink');
+            if (activeLink) {
+                // Rimuovi la selezione attiva
+                sessionStorage.removeItem('activeMenuLink');
+                // Rimuovi la classe active da tutti i menu items
+                document.querySelectorAll('.menu-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+            }
+        }, 0);
+    });
+    
+    // Reset anche quando la pagina viene mostrata (per gestire il caso di navigazione)
+    window.addEventListener('pageshow', (e) => {
+        // Se la pagina è stata caricata dalla cache (back/forward), resetta la selezione
+        if (e.persisted) {
+            const activeLink = sessionStorage.getItem('activeMenuLink');
+            if (activeLink) {
+                sessionStorage.removeItem('activeMenuLink');
+                document.querySelectorAll('.menu-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+            }
+        }
+    });
 })();
 </script>
 </body>
