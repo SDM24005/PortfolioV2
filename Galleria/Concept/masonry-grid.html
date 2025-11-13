@@ -462,6 +462,18 @@
         opacity: 1;
     }
 
+    .bottom-menu::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #ffffff;
+        z-index: 999;
+        pointer-events: none;
+    }
+
     .bottom-menu.fade-out {
         opacity: 0;
         pointer-events: none;
@@ -723,6 +735,9 @@
     
     // Set per tracciare le immagini già caricate
     const loadedImages = new Set();
+    
+    // Flag per evitare ricreazioni multiple della griglia
+    let isCreatingGrid = false;
 
     // Sistema di filtraggio per tag
     let selectedTags = new Set();
@@ -1640,20 +1655,38 @@
     }
 
     async function createMasonryGrid(shouldAnimate = true) {
-        // Reset dei dati dei progetti quando si ricrea la griglia
-        allProjectsData = [];
-        
-        const images = getAllImages();
-        if (images.length === 0) {
-            container.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Nessuna immagine trovata</p>';
+        // Evita ricreazioni multiple
+        if (isCreatingGrid) {
+            console.log('Griglia già in creazione, skip...');
             return;
         }
-
-        const { numColumns, columnWidth, gap } = getResponsiveSettings();
-        const columns = Array(numColumns).fill(null).map(() => []);
-        const columnHeights = Array(numColumns).fill(0);
-
+        
+        isCreatingGrid = true;
+        
+        // Timeout di sicurezza per resettare il flag dopo 10 secondi
+        const safetyTimeout = setTimeout(() => {
+            if (isCreatingGrid) {
+                console.warn('Timeout nella creazione della griglia, reset del flag');
+                isCreatingGrid = false;
+            }
+        }, 10000);
+        
         try {
+            // Reset dei dati dei progetti quando si ricrea la griglia
+            allProjectsData = [];
+            
+            const images = getAllImages();
+            if (images.length === 0) {
+                container.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Nessuna immagine trovata</p>';
+                clearTimeout(safetyTimeout);
+                isCreatingGrid = false;
+                return;
+            }
+
+            const { numColumns, columnWidth, gap } = getResponsiveSettings();
+            const columns = Array(numColumns).fill(null).map(() => []);
+            const columnHeights = Array(numColumns).fill(0);
+
             const imagePromises = images.map(imageData => loadImage(imageData, columnWidth));
             const results = await Promise.allSettled(imagePromises);
             const imageData = results
@@ -1662,6 +1695,8 @@
 
             if (imageData.length === 0) {
                 container.innerHTML = '<p style="color: white; text-align: center; padding: 50px;">Nessuna immagine disponibile</p>';
+                clearTimeout(safetyTimeout);
+                isCreatingGrid = false;
                 return;
             }
 
@@ -1669,6 +1704,10 @@
             renderColumns(distributedColumns, distributedHeights, columnWidth, gap, shouldAnimate);
         } catch (error) {
             console.error('Errore nel caricamento delle immagini:', error);
+        } finally {
+            // Reset del flag quando la funzione è completata
+            clearTimeout(safetyTimeout);
+            isCreatingGrid = false;
         }
     }
 
@@ -1900,14 +1939,35 @@
 
     let resizeTimer;
     let tagResizeTimer;
+    let lastWindowWidth = window.innerWidth;
+    let lastWindowHeight = window.innerHeight;
+    const RESIZE_THRESHOLD = 50; // Soglia minima di cambiamento per considerare un resize significativo
+    
     window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        // Al resize, ricrea la griglia senza animazione
-        resizeTimer = setTimeout(() => {
-            createMasonryGrid(false);
-        }, 250);
+        const currentWidth = window.innerWidth;
+        const currentHeight = window.innerHeight;
+        const widthChange = Math.abs(currentWidth - lastWindowWidth);
+        const heightChange = Math.abs(currentHeight - lastWindowHeight);
         
-        // Controlla se l'animazione dei tag deve essere riavviata o fermata
+        // Su mobile, ignora i cambiamenti di altezza (causati dalla barra degli indirizzi)
+        // Ricrea la griglia solo se c'è un cambiamento significativo nella larghezza
+        const isMobile = window.innerWidth <= 768;
+        const shouldResize = isMobile 
+            ? widthChange > RESIZE_THRESHOLD  // Solo larghezza su mobile
+            : (widthChange > RESIZE_THRESHOLD || heightChange > RESIZE_THRESHOLD); // Larghezza o altezza su desktop
+        
+        if (shouldResize) {
+            lastWindowWidth = currentWidth;
+            lastWindowHeight = currentHeight;
+            
+            clearTimeout(resizeTimer);
+            // Al resize, ricrea la griglia senza animazione
+            resizeTimer = setTimeout(() => {
+                createMasonryGrid(false);
+            }, 250);
+        }
+        
+        // Controlla se l'animazione dei tag deve essere riavviata o fermata (sempre, anche per piccoli resize)
         clearTimeout(tagResizeTimer);
         tagResizeTimer = setTimeout(() => {
             // Riavvia l'animazione se necessario (si fermerà automaticamente se non c'è contenuto scrollabile)
