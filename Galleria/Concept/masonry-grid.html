@@ -477,24 +477,17 @@
         // Combina tutti i progetti (normali e open)
         const allProjects = [...(projects || []), ...(openProjects || [])];
         
-        // Raccogli tutte le immagini: preview + immagini dei progetti
+        // Raccogli solo le preview dei progetti (limitato a 10)
         // Ogni elemento contiene src e page del progetto
         const allImages = [];
-        allProjects.forEach(project => {
-            // Aggiungi la preview se esiste (aggiustando il percorso)
+        const maxProjects = 10; // Limita a 10 progetti
+        
+        allProjects.slice(0, maxProjects).forEach(project => {
+            // Aggiungi solo la preview se esiste (aggiustando il percorso)
             if (project.preview) {
                 allImages.push({
                     src: adjustPath(project.preview),
                     page: adjustPath(project.page || '')
-                });
-            }
-            // Aggiungi tutte le immagini del progetto se esistono (aggiustando i percorsi)
-            if (Array.isArray(project.images) && project.images.length > 0) {
-                project.images.forEach(img => {
-                    allImages.push({
-                        src: adjustPath(img),
-                        page: adjustPath(project.page || '')
-                    });
                 });
             }
         });
@@ -505,13 +498,8 @@
             return [];
         }
         
-        // Duplica le immagini per avere più contenuto (come prima con NUM_COPIES)
-        const duplicatedImages = [];
-        for (let i = 0; i < NUM_COPIES; i++) {
-            duplicatedImages.push(...allImages);
-        }
-        
-        return duplicatedImages;
+        // Non duplicare più le immagini, restituisci solo le 10 preview
+        return allImages;
     }
 
     function getResponsiveSettings() {
